@@ -123,11 +123,12 @@ function getSolutionPoints(path: Cell[], cellWidth: number, cellHeight: number) 
   const points = path.map((cell) => getCellCenter(cell, cellWidth, cellHeight))
   const start = points[0]
   const end = points[points.length - 1]
+  const edgeOvershoot = Math.min(cellWidth, cellHeight) * MAZE_CONFIG.solutionEdgeOvershoot
 
   return [
-    { x: start.x, y: start.y - cellHeight / 2 },
+    { x: start.x, y: start.y - cellHeight / 2 - edgeOvershoot },
     ...points,
-    { x: end.x, y: end.y + cellHeight / 2 }
+    { x: end.x, y: end.y + cellHeight / 2 + edgeOvershoot }
   ]
 }
 
@@ -188,8 +189,10 @@ export function createMazeRenderState(
   height: number,
   pixelRatio: number
 ): MazeRenderState {
+  const overshootFactor = MAZE_CONFIG.solutionEdgeOvershoot
   const cellWidth = width / cols
-  const cellHeight = height / rows
+  const cellHeight = height / (rows + overshootFactor * 2)
+  const offsetY = cellHeight * overshootFactor
   const solutionPoints = getSolutionPoints(solutionPath, cellWidth, cellHeight)
   const { wallColor, solutionColor } = getMazeThemeColors()
 
@@ -197,7 +200,7 @@ export function createMazeRenderState(
     width,
     height,
     offsetX: 0,
-    offsetY: 0,
+    offsetY,
     pixelRatio,
     mazePath: buildMazePath(grid, cols, rows, pixelRatio, cellWidth, cellHeight),
     solutionPoints,
