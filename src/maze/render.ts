@@ -1,5 +1,5 @@
 import type { Cell } from './Cell'
-import { MAZE_CONFIG } from './config'
+import { MAZE_CONFIG, type MazeTheme } from './config'
 
 type Point = {
   x: number
@@ -17,15 +17,61 @@ export type MazeRenderState = {
   maxProgress: number
   wallColor: string
   solutionColor: string
+  theme: MazeTheme
 }
 
-function getMazeThemeColors() {
-  const styles = getComputedStyle(document.documentElement)
+function traceSolutionPath(ctx: CanvasRenderingContext2D, points: Point[], progress: number) {
+  const clampedProgress = Math.max(0, Math.min(progress, points.length - 1))
+  const completedSegments = Math.floor(clampedProgress)
+  const remainder = clampedProgress - completedSegments
 
-  return {
-    wallColor: styles.getPropertyValue('--app-maze-wall').trim() || 'rgba(0,0,0,0.32)',
-    solutionColor: styles.getPropertyValue('--app-maze-solution').trim() || '#dc2626'
+  ctx.beginPath()
+  ctx.moveTo(points[0].x, points[0].y)
+
+  for (let index = 1; index <= completedSegments; index += 1) {
+    ctx.lineTo(points[index].x, points[index].y)
   }
+
+  if (completedSegments < points.length - 1) {
+    const start = points[completedSegments]
+    const end = points[completedSegments + 1]
+
+    ctx.lineTo(start.x + (end.x - start.x) * remainder, start.y + (end.y - start.y) * remainder)
+  }
+
+  return clampedProgress
+}
+
+function drawDarkSolution(
+  ctx: CanvasRenderingContext2D,
+  points: Point[],
+  progress: number,
+  solutionColor: string
+) {
+  ctx.save()
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+  ctx.strokeStyle = solutionColor
+
+  ctx.globalAlpha = 0.12
+  ctx.shadowColor = solutionColor
+  ctx.shadowBlur = 18
+  ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 2.6
+  traceSolutionPath(ctx, points, progress)
+  ctx.stroke()
+
+  ctx.globalAlpha = 0.28
+  ctx.shadowBlur = 10
+  ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 1.6
+  traceSolutionPath(ctx, points, progress)
+  ctx.stroke()
+
+  ctx.globalAlpha = 1
+  ctx.shadowBlur = 4
+  ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 0.9
+  traceSolutionPath(ctx, points, progress)
+  ctx.stroke()
+  ctx.restore()
 }
 
 function addAlignedLine(
@@ -101,7 +147,16 @@ function buildMazePath(
     }
 
     if (cell.y === rows - 1 && cell.walls.bottom) {
-      addAlignedLine(path, x + cellWidth, y + cellHeight, x, y + cellHeight, pixelOffset, maxX, maxY)
+      addAlignedLine(
+        path,
+        x + cellWidth,
+        y + cellHeight,
+        x,
+        y + cellHeight,
+        pixelOffset,
+        maxX,
+        maxY
+      )
     }
   })
 
@@ -136,7 +191,8 @@ function drawSolution(
   ctx: CanvasRenderingContext2D,
   points: Point[],
   progress: number,
-  solutionColor: string
+  solutionColor: string,
+  theme: MazeTheme
 ) {
   if (points.length === 0) {
     return
@@ -146,30 +202,21 @@ function drawSolution(
   ctx.lineWidth = MAZE_CONFIG.solutionLineWidth
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
-  ctx.beginPath()
-  ctx.moveTo(points[0].x, points[0].y)
 
   if (points.length === 1) {
+    ctx.beginPath()
+    ctx.moveTo(points[0].x, points[0].y)
     ctx.lineTo(points[0].x, points[0].y)
     ctx.stroke()
     return
   }
 
-  const clampedProgress = Math.max(0, Math.min(progress, points.length - 1))
-  const completedSegments = Math.floor(clampedProgress)
-  const remainder = clampedProgress - completedSegments
-
-  for (let index = 1; index <= completedSegments; index += 1) {
-    ctx.lineTo(points[index].x, points[index].y)
+  if (theme === 'dark') {
+    drawDarkSolution(ctx, points, progress, solutionColor)
+    return
   }
 
-  if (completedSegments < points.length - 1) {
-    const start = points[completedSegments]
-    const end = points[completedSegments + 1]
-
-    ctx.lineTo(start.x + (end.x - start.x) * remainder, start.y + (end.y - start.y) * remainder)
-  }
-
+  traceSolutionPath(ctx, points, progress)
   ctx.stroke()
 }
 
@@ -187,14 +234,16 @@ export function createMazeRenderState(
   rows: number,
   width: number,
   height: number,
-  pixelRatio: number
+  pixelRatio: number,
+  wallColor: string,
+  solutionColor: string,
+  theme: MazeTheme
 ): MazeRenderState {
   const overshootFactor = MAZE_CONFIG.solutionEdgeOvershoot
   const cellWidth = width / cols
   const cellHeight = height / (rows + overshootFactor * 2)
   const offsetY = cellHeight * overshootFactor
   const solutionPoints = getSolutionPoints(solutionPath, cellWidth, cellHeight)
-  const { wallColor, solutionColor } = getMazeThemeColors()
 
   return {
     width,
@@ -206,7 +255,8 @@ export function createMazeRenderState(
     solutionPoints,
     maxProgress: Math.max(solutionPoints.length - 1, 0),
     wallColor,
-    solutionColor
+    solutionColor,
+    theme
   }
 }
 
@@ -221,6 +271,12 @@ export function renderMazeFrame(
   ctx.strokeStyle = renderState.wallColor
   ctx.lineWidth = MAZE_CONFIG.wallLineWidth / renderState.pixelRatio
   ctx.stroke(renderState.mazePath)
-  drawSolution(ctx, renderState.solutionPoints, progress, renderState.solutionColor)
+  drawSolution(
+    ctx,
+    renderState.solutionPoints,
+    progress,
+    renderState.solutionColor,
+    renderState.theme
+  )
   ctx.restore()
 }

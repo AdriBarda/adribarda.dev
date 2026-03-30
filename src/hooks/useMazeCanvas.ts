@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { Cell } from '../maze/Cell'
-import { MAZE_CONFIG } from '../maze/config'
+import { MAZE_CONFIG, getMazeColors, type MazeTheme } from '../maze/config'
 import { generateMaze, solveMaze } from '../maze/helpers'
 import { createMazeRenderState, getMazeSize, renderMazeFrame } from '../maze/render'
 
@@ -9,6 +9,7 @@ type MazeState = {
   rows: number
   grid: Cell[]
   solutionPath: Cell[]
+  solutionColor: string
 }
 
 type MazePhase = 'solving' | 'cooldown'
@@ -34,17 +35,24 @@ export function useMazeCanvas() {
     let progress = 0
     let lastTimestamp = 0
     let phase: MazePhase = 'solving'
+    let currentTheme: MazeTheme = 'light'
     let mazeState: MazeState | undefined
     let renderState: ReturnType<typeof createMazeRenderState> | undefined
 
-    const createMazeState = (cols: number, rows: number): MazeState => {
+    const getTheme = (): MazeTheme =>
+      document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'
+
+    const pickRandomColor = (colors: string[]) => colors[Math.floor(Math.random() * colors.length)]
+
+    const createMazeState = (cols: number, rows: number, solutionColors: string[]): MazeState => {
       const grid = generateMaze(cols, rows)
 
       return {
         cols,
         rows,
         grid,
-        solutionPath: solveMaze(cols, rows, grid)
+        solutionPath: solveMaze(cols, rows, grid),
+        solutionColor: pickRandomColor(solutionColors)
       }
     }
 
@@ -93,8 +101,10 @@ export function useMazeCanvas() {
           return
         }
 
+        const mazeColors = getMazeColors()
+        currentTheme = getTheme()
         restartTimeoutId = 0
-        mazeState = createMazeState(mazeState.cols, mazeState.rows)
+        mazeState = createMazeState(mazeState.cols, mazeState.rows, mazeColors.solutionColors)
         progress = 0
         lastTimestamp = 0
         phase = 'solving'
@@ -136,9 +146,19 @@ export function useMazeCanvas() {
         return
       }
 
+      const mazeColors = getMazeColors()
+      const theme = getTheme()
+
       if (!mazeState) {
         const { cols, rows } = getMazeSize(width, height)
-        mazeState = createMazeState(cols, rows)
+        currentTheme = theme
+        mazeState = createMazeState(cols, rows, mazeColors.solutionColors)
+      } else if (currentTheme !== theme) {
+        currentTheme = theme
+        mazeState = {
+          ...mazeState,
+          solutionColor: pickRandomColor(mazeColors.solutionColors)
+        }
       }
 
       const pixelRatio = Math.max(window.devicePixelRatio || 1, 1)
@@ -154,7 +174,10 @@ export function useMazeCanvas() {
         mazeState.rows,
         width,
         height,
-        pixelRatio
+        pixelRatio,
+        mazeColors.wallColor,
+        mazeState.solutionColor,
+        currentTheme
       )
 
       render()
