@@ -1,7 +1,8 @@
 ---
 interface Slide {
 	id: string
-	Component: unknown
+  Component: unknown
+	props?: Record<string, unknown>
 }
 
 const { slides } = Astro.props as { slides: Slide[] }
@@ -14,9 +15,9 @@ const slideClass =
 	<div class="mx-auto h-[calc(100dvh-(var(--page-padding)*2))] w-full max-w-7xl overflow-hidden">
 		<div data-card-track class="flex flex-col gap-14 will-change-transform">
 			{
-				slides.map(({ id, Component }) => (
+				slides.map(({ id, Component, props = {} }) => (
 					<section class={slideClass} data-scene-slide={id}>
-						<Component />
+						<Component {...props} />
 					</section>
 				))
 			}

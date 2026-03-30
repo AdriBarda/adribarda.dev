@@ -1,11 +1,16 @@
 ---
+import BentoScene from './BentoScene.astro'
 import CardSceneViewport from './CardSceneViewport.astro'
-import ExperienceScene from './ExperienceScene.astro'
-import PresentationScene from './PresentationScene.astro'
+import SingleScene from './SingleScene.astro'
+import type { SectionGroup } from '../content/sections'
+
+const { sectionGroups } = Astro.props as { sectionGroups: SectionGroup[] }
 
 const slides = [
-	{ id: 'presentation', Component: PresentationScene },
-	{ id: 'experience', Component: ExperienceScene }
+	{ id: 'presentation', Component: SingleScene, props: { group: sectionGroups.find((group) => group.scene === 1) } },
+	{ id: 'experience', Component: BentoScene, props: { group: sectionGroups.find((group) => group.scene === 2) } },
+	{ id: 'stack', Component: BentoScene, props: { group: sectionGroups.find((group) => group.scene === 3) } },
+	{ id: 'about-me', Component: SingleScene, props: { group: sectionGroups.find((group) => group.scene === 4) } }
 ]
 ---
 

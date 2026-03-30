@@ -1,0 +1,77 @@
+---
+import type { SectionEntry, SectionGroup } from '../content/sections'
+import GlassCard from './GlassCard.astro'
+
+const { group } = Astro.props as { group?: SectionGroup }
+const largeEntry = group?.entries.find((entry) => entry.data.cardSize === 'large')
+const smallEntries = group?.entries.filter((entry) => entry.data.cardSize === 'small') ?? []
+
+function getHighlights(entry?: SectionEntry) {
+	return entry?.data.highlights.slice(0, 3) ?? []
+}
+
+const primarySmallEntry = smallEntries[0]
+const secondarySmallEntry = smallEntries[1] ?? primarySmallEntry
+---
+
+<div class="grid w-full gap-4 md:grid-cols-[1.45fr_1fr] md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
+	<GlassCard class="p-6 sm:p-8 md:row-span-2 lg:p-10">
+		<div class="flex h-full flex-col justify-between gap-8">
+			<div>
+				<p class="text-[0.78rem] uppercase tracking-[0.14em] text-app-muted">
+					{largeEntry?.data.eyebrow ?? 'Section'}
+				</p>
+				<h2 class="mt-4 max-w-[12ch] text-balance text-[clamp(2.4rem,5vw,4.8rem)] leading-[0.95] font-semibold tracking-[-0.05em]">
+					{largeEntry?.data.title ?? 'Missing section title.'}
+				</h2>
+				<p class="mt-5 max-w-2xl text-[clamp(1rem,1.35vw,1.1rem)] leading-[1.7] text-app-muted">
+					{largeEntry?.data.summary ?? 'Missing section summary.'}
+				</p>
+			</div>
+
+			<div class="grid gap-3 sm:grid-cols-3">
+				{
+					getHighlights(largeEntry).map((note) => (
+						<GlassCard as="div" class="rounded-[1.25rem] p-4 text-sm leading-[1.65] text-app-text">
+							{note}
+						</GlassCard>
+					))
+				}
+			</div>
+		</div>
+	</GlassCard>
+
+	<GlassCard class="p-5 lg:p-6">
+		<div class="flex h-full flex-col justify-between gap-4">
+			<div>
+				<p class="text-[0.76rem] uppercase tracking-[0.14em] text-app-muted">
+					{primarySmallEntry?.data.eyebrow ?? 'Detail'}
+				</p>
+				<p class="mt-3 text-base leading-[1.7] text-app-text">
+					{primarySmallEntry?.data.title ?? 'Missing detail title.'}
+				</p>
+			</div>
+			<p class="text-sm leading-[1.7] text-app-muted">
+				{primarySmallEntry?.data.summary ?? 'Missing detail summary.'}
+			</p>
+		</div>
+	</GlassCard>
+
+	<GlassCard class="p-5 lg:p-6">
+		<div class="flex h-full flex-col justify-between gap-4">
+			<div>
+				<p class="text-[0.76rem] uppercase tracking-[0.14em] text-app-muted">
+					{secondarySmallEntry ? 'Highlights' : 'Details'}
+				</p>
+				<p class="mt-3 text-base leading-[1.7] text-app-text">
+					{secondarySmallEntry
+						? (secondarySmallEntry.data.highlights ?? []).join(' / ')
+						: 'Missing detail highlights.'}
+				</p>
+			</div>
+			<p class="text-sm leading-[1.7] text-app-muted">
+				{secondarySmallEntry?.body ?? 'Missing detail body.'}
+			</p>
+		</div>
+	</GlassCard>
+</div>
