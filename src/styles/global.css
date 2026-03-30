@@ -1,1 +1,54 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme inline {
+  --color-app-bg: var(--app-bg);
+  --color-app-surface: var(--app-surface);
+  --color-app-border: var(--app-border);
+  --color-app-text: var(--app-text);
+  --color-app-muted: var(--app-muted);
+  --color-app-accent: var(--app-accent);
+}
+
+:root {
+  --app-bg: #f8fafc;
+  --app-surface: rgba(255, 255, 255, 0.72);
+  --app-border: rgba(15, 23, 42, 0.12);
+  --app-text: #0f172a;
+  --app-muted: #475569;
+  --app-accent: #7c3aed;
+  --app-maze-wall: rgba(15, 23, 42, 0.14);
+  --app-maze-solution: #dc2626;
+}
+
+:root[data-theme='dark'] {
+  --app-bg: #020617;
+  --app-surface: rgba(15, 23, 42, 0.72);
+  --app-border: rgba(148, 163, 184, 0.24);
+  --app-text: #e2e8f0;
+  --app-muted: #94a3b8;
+  --app-accent: #c084fc;
+  --app-maze-wall: rgba(226, 232, 240, 0.18);
+  --app-maze-solution: #fb7185;
+}
+
+html,
+body {
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+
+body {
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+a,
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
