@@ -26,11 +26,17 @@ import '../styles/global.css'
 		height: 100dvh;
 	}
 
+	body {
+		--page-padding: clamp(16px, 4vw, 48px);
+	}
+
 	main {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
 		min-height: 100dvh;
+		padding: var(--page-padding);
+		box-sizing: border-box;
 	}
 </style>
