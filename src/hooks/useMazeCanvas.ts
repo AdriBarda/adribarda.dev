@@ -11,6 +11,8 @@ type MazeState = {
   solutionPath: Cell[]
 }
 
+type MazePhase = 'solving' | 'cooldown'
+
 export function useMazeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
@@ -28,10 +30,23 @@ export function useMazeCanvas() {
     }
 
     let animationFrameId = 0
+    let restartTimeoutId = 0
     let progress = 0
     let lastTimestamp = 0
+    let phase: MazePhase = 'solving'
     let mazeState: MazeState | undefined
     let renderState: ReturnType<typeof createMazeRenderState> | undefined
+
+    const createMazeState = (cols: number, rows: number): MazeState => {
+      const grid = generateMaze(cols, rows)
+
+      return {
+        cols,
+        rows,
+        grid,
+        solutionPath: solveMaze(cols, rows, grid)
+      }
+    }
 
     const stopAnimation = () => {
       if (!animationFrameId) {
@@ -42,12 +57,50 @@ export function useMazeCanvas() {
       animationFrameId = 0
     }
 
+    const clearRestartTimeout = () => {
+      if (!restartTimeoutId) {
+        return
+      }
+
+      window.clearTimeout(restartTimeoutId)
+      restartTimeoutId = 0
+    }
+
     const render = () => {
       if (!renderState) {
         return
       }
 
       renderMazeFrame(ctx, renderState, progress)
+    }
+
+    const startSolving = () => {
+      if (!renderState || animationFrameId || phase !== 'solving') {
+        return
+      }
+
+      clearRestartTimeout()
+      animationFrameId = requestAnimationFrame(animate)
+    }
+
+    const scheduleRestart = () => {
+      if (restartTimeoutId || !mazeState || phase !== 'cooldown') {
+        return
+      }
+
+      restartTimeoutId = window.setTimeout(() => {
+        if (!mazeState) {
+          return
+        }
+
+        restartTimeoutId = 0
+        mazeState = createMazeState(mazeState.cols, mazeState.rows)
+        progress = 0
+        lastTimestamp = 0
+        phase = 'solving'
+        draw()
+        startSolving()
+      }, MAZE_CONFIG.restartDelayMs)
     }
 
     const animate = (timestamp: number) => {
@@ -69,7 +122,11 @@ export function useMazeCanvas() {
 
       if (progress < renderState.maxProgress) {
         animationFrameId = requestAnimationFrame(animate)
+        return
       }
+
+      phase = 'cooldown'
+      scheduleRestart()
     }
 
     const draw = () => {
@@ -81,14 +138,7 @@ export function useMazeCanvas() {
 
       if (!mazeState) {
         const { cols, rows } = getMazeSize(width, height)
-        const grid = generateMaze(cols, rows)
-
-        mazeState = {
-          cols,
-          rows,
-          grid,
-          solutionPath: solveMaze(cols, rows, grid)
-        }
+        mazeState = createMazeState(cols, rows)
       }
 
       const pixelRatio = Math.max(window.devicePixelRatio || 1, 1)
@@ -108,10 +158,6 @@ export function useMazeCanvas() {
       )
 
       render()
-
-      if (!animationFrameId && progress < renderState.maxProgress) {
-        animationFrameId = requestAnimationFrame(animate)
-      }
     }
 
     const resizeObserver = new ResizeObserver(draw)
@@ -123,9 +169,11 @@ export function useMazeCanvas() {
       attributeFilter: ['data-theme']
     })
     draw()
+    startSolving()
 
     return () => {
       stopAnimation()
+      clearRestartTimeout()
       resizeObserver.disconnect()
       themeObserver.disconnect()
     }
