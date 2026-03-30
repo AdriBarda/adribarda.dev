@@ -1,0 +1,90 @@
+---
+interface Slide {
+	id: string
+	Component: unknown
+}
+
+const { slides } = Astro.props as { slides: Slide[] }
+
+const slideClass =
+	'h-[calc(100dvh-(var(--page-padding)*2))] flex w-full shrink-0 items-center justify-center'
+---
+
+<section data-card-scene class="relative z-10 w-full overflow-hidden">
+	<div class="mx-auto h-[calc(100dvh-(var(--page-padding)*2))] w-full max-w-7xl overflow-hidden">
+		<div data-card-track class="flex flex-col gap-14 will-change-transform">
+			{
+				slides.map(({ id, Component }) => (
+					<section class={slideClass} data-scene-slide={id}>
+						<Component />
+					</section>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<script>
+	import { gsap } from 'gsap'
+	import { Observer } from 'gsap/Observer'
+
+	gsap.registerPlugin(Observer)
+
+	document.querySelectorAll<HTMLElement>('[data-card-scene]').forEach((scene) => {
+		const viewport = scene.querySelector<HTMLElement>('[data-card-track]')?.parentElement
+		const track = scene.querySelector<HTMLElement>('[data-card-track]')
+
+		if (!viewport || !track) {
+			return
+		}
+
+		let activeIndex = 0
+		let isAnimating = false
+
+		const getStride = () => {
+			const rowGap = Number.parseFloat(window.getComputedStyle(track).rowGap || '0')
+			return viewport.clientHeight + rowGap
+		}
+
+		const moveTo = (nextIndex: number) => {
+			if (isAnimating || nextIndex === activeIndex) {
+				return
+			}
+
+			isAnimating = true
+
+			gsap.to(track, {
+				y: -getStride() * nextIndex,
+				duration: 0.9,
+				ease: 'power3.inOut',
+				onComplete: () => {
+					activeIndex = nextIndex
+					isAnimating = false
+				}
+			})
+		}
+
+		const observer = Observer.create({
+			target: scene,
+			type: 'wheel,touch',
+			tolerance: 18,
+			preventDefault: true,
+			onDown: () => moveTo(Math.min(activeIndex + 1, track.children.length - 1)),
+			onUp: () => moveTo(Math.max(activeIndex - 1, 0))
+		})
+
+		const handleResize = () => {
+			gsap.set(track, { y: -getStride() * activeIndex })
+		}
+
+		window.addEventListener('resize', handleResize)
+		window.addEventListener(
+			'pagehide',
+			() => {
+				observer.kill()
+				window.removeEventListener('resize', handleResize)
+			},
+			{ once: true }
+		)
+	})
+</script>

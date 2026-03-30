@@ -1,0 +1,20 @@
+---
+interface Props {
+	as?: keyof HTMLElementTagNameMap
+	class?: string
+}
+
+const { as = 'article', class: className = '' } = Astro.props
+const Tag = as
+
+const glassClass = [
+	'relative overflow-hidden rounded-[16px] border border-white/45',
+	'bg-white/24 backdrop-blur-[6px] backdrop-saturate-125',
+	'shadow-[0_4px_30px_rgba(0,0,0,0.10)]',
+	'dark:bg-white/10 dark:border-white/20 dark:shadow-[0_4px_30px_rgba(0,0,0,0.22)]'
+].join(' ')
+---
+
+<Tag class:list={[glassClass, className]}>
+	<slot />
+</Tag>

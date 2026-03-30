@@ -1,0 +1,12 @@
+---
+import CardSceneViewport from './CardSceneViewport.astro'
+import ExperienceScene from './ExperienceScene.astro'
+import PresentationScene from './PresentationScene.astro'
+
+const slides = [
+	{ id: 'presentation', Component: PresentationScene },
+	{ id: 'experience', Component: ExperienceScene }
+]
+---
+
+<CardSceneViewport slides={slides} />
