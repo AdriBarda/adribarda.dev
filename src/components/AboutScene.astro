@@ -1,11 +1,13 @@
 ---
 import { render } from 'astro:content'
+import { sceneToneAccentClasses, type SceneTone } from './sceneTheme'
 import type { SectionGroup } from '../content/sections'
 import GlassCard from './GlassCard.astro'
 
-const { group } = Astro.props as { group?: SectionGroup }
+const { group, accentTone } = Astro.props as { group?: SectionGroup; accentTone?: SceneTone }
 const entry = group?.entries[0]
 const renderedEntry = entry ? await render(entry) : undefined
+const accentClass = accentTone ? sceneToneAccentClasses[accentTone] : ''
 
 const pillClass = [
 	'rounded-full border border-white/35 px-4 py-2.5 text-sm text-app-text',
@@ -14,6 +16,7 @@ const pillClass = [
 ---
 
 <GlassCard class="w-full p-6 sm:p-8 lg:p-12">
+	<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
 	<div class="grid gap-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.8fr)] lg:gap-12">
 		<div class="flex flex-col justify-between gap-8">
 			<div>
@@ -42,14 +45,14 @@ const pillClass = [
 		</div>
 
 		<div class="flex flex-col justify-end gap-8 lg:pl-6">
-			<div class="max-w-[26rem] self-start border-l border-app-border pl-6">
+			<div class="max-w-104 self-start border-l border-app-border pl-6">
 				<p class="text-[0.76rem] uppercase tracking-[0.14em] text-app-muted">Notes</p>
 				<div class="mt-4 text-[1.02rem] leading-[1.8] text-app-text text-balance">
 					{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing about body.</p>}
 				</div>
 			</div>
 
-			<div class="grid max-w-[26rem] gap-4 border-t border-app-border pt-5 text-sm leading-[1.7] text-app-muted sm:grid-cols-2 lg:grid-cols-1">
+			<div class="grid max-w-104 gap-4 border-t border-app-border pt-5 text-sm leading-[1.7] text-app-muted sm:grid-cols-2 lg:grid-cols-1">
 				<p>{entry?.data.summary ?? 'Missing about summary.'}</p>
 				<p>{entry?.data.eyebrow ?? 'About me'}</p>
 			</div>

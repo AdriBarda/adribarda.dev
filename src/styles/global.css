@@ -18,6 +18,10 @@
   --app-text: #0f172a;
   --app-muted: #475569;
   --app-accent: #7c3aed;
+  --scene-accent-presentation: #c959dd;
+  --scene-accent-experience: #0894ff;
+  --scene-accent-stack: #ff9004;
+  --scene-accent-about: #34d399;
   --app-maze-wall: rgba(15, 23, 42, 0.302);
   --app-maze-solution-colors: #dc2626|#ea580c|#ca8a04|#7c3aed|#2563eb;
 }

@@ -1,10 +1,12 @@
 ---
+import { sceneToneAccentClasses, type SceneTone } from './sceneTheme'
 import type { SectionEntry, SectionGroup } from '../content/sections'
 import GlassCard from './GlassCard.astro'
 
-const { group } = Astro.props as { group?: SectionGroup }
+const { group, accentTone } = Astro.props as { group?: SectionGroup; accentTone?: SceneTone }
 const experience = group?.entries.find((entry) => entry.data.section === 'experience')
 const impact = group?.entries.find((entry) => entry.data.section === 'impact')
+const accentClass = accentTone ? sceneToneAccentClasses[accentTone] : ''
 
 function getHighlights(entry?: SectionEntry) {
 	return entry?.data.highlights.slice(0, 3) ?? []
@@ -13,6 +15,7 @@ function getHighlights(entry?: SectionEntry) {
 
 <div class="grid w-full gap-4 md:grid-cols-[1.45fr_1fr] md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
 	<GlassCard class="p-6 sm:p-8 md:row-span-2 lg:p-10">
+		<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
 		<div class="flex h-full flex-col justify-between gap-8">
 			<div>
 				{experience?.data.eyebrow && (

@@ -1,91 +1,37 @@
 ---
+import { SceneViewportController } from './SceneViewportController'
+import type { SceneNavSlide, SceneTone } from './sceneTheme'
+
 interface Slide {
 	id: string
-  	Component: unknown
+	Component: any
 	props?: Record<string, unknown>
+	navTone: SceneTone
 }
 
 const { slides } = Astro.props as { slides: Slide[] }
 
-const slideClass =
-	'h-[calc(100dvh-(var(--page-padding)*2))] flex w-full shrink-0 items-center justify-center'
+const viewportId = `scene-viewport-${Math.random().toString(36).slice(2, 10)}`
+const slideClass = 'flex w-full shrink-0 items-center justify-center py-3 md:h-[calc(100dvh-(var(--page-padding)*2))] md:py-0'
+const navSlides: SceneNavSlide[] = slides.map(({ id, navTone }) => ({ id, navTone }))
 ---
 
-<section data-card-scene class="relative z-10 w-full overflow-hidden">
-	<div class="mx-auto h-[calc(100dvh-(var(--page-padding)*2))] w-full max-w-[72rem] overflow-hidden">
-		<div data-card-track class="flex flex-col gap-14 will-change-transform">
-			{
-				slides.map(({ id, Component, props = {} }) => (
-					<section class={slideClass} data-scene-slide={id}>
-						<Component {...props} />
-					</section>
-				))
-			}
+<section data-card-scene={viewportId} class="relative z-10 w-full overflow-visible">
+	<div class="mx-auto relative w-full max-w-6xl overflow-visible">
+		<div class="overflow-visible md:h-[calc(100dvh-(var(--page-padding)*2))] md:overflow-hidden">
+			<div data-card-track class="flex flex-col gap-6 md:gap-14 md:will-change-transform">
+				{
+					slides.map(({ id, Component, props = {} }) => (
+						<section class={slideClass} data-scene-slide={id}>
+							<Component {...props} />
+						</section>
+					))
+				}
+			</div>
+		</div>
+
+		<div class="absolute -right-6 top-1/2 hidden -translate-y-1/2 md:block min-[1390px]:-right-20">
+			<SceneViewportController client:load viewportId={viewportId} slides={navSlides} />
 		</div>
 	</div>
 </section>
-
-<script>
-	import { gsap } from 'gsap'
-	import { Observer } from 'gsap/Observer'
-
-	gsap.registerPlugin(Observer)
-
-	document.querySelectorAll<HTMLElement>('[data-card-scene]').forEach((scene) => {
-		const viewport = scene.querySelector<HTMLElement>('[data-card-track]')?.parentElement
-		const track = scene.querySelector<HTMLElement>('[data-card-track]')
-
-		if (!viewport || !track) {
-			return
-		}
-
-		let activeIndex = 0
-		let isAnimating = false
-
-		const getStride = () => {
-			const rowGap = Number.parseFloat(window.getComputedStyle(track).rowGap || '0')
-			return viewport.clientHeight + rowGap
-		}
-
-		const moveTo = (nextIndex: number) => {
-			if (isAnimating || nextIndex === activeIndex) {
-				return
-			}
-
-			isAnimating = true
-
-			gsap.to(track, {
-				y: -getStride() * nextIndex,
-				duration: 0.9,
-				ease: 'power3.inOut',
-				onComplete: () => {
-					activeIndex = nextIndex
-					isAnimating = false
-				}
-			})
-		}
-
-		const observer = Observer.create({
-			target: scene,
-			type: 'wheel,touch',
-			tolerance: 18,
-			preventDefault: true,
-			onDown: () => moveTo(Math.min(activeIndex + 1, track.children.length - 1)),
-			onUp: () => moveTo(Math.max(activeIndex - 1, 0))
-		})
-
-		const handleResize = () => {
-			gsap.set(track, { y: -getStride() * activeIndex })
-		}
-
-		window.addEventListener('resize', handleResize)
-		window.addEventListener(
-			'pagehide',
-			() => {
-				observer.kill()
-				window.removeEventListener('resize', handleResize)
-			},
-			{ once: true }
-		)
-	})
-</script>

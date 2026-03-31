@@ -1,11 +1,13 @@
 ---
 import { render } from 'astro:content'
+import { sceneToneAccentClasses, type SceneTone } from './sceneTheme'
 import type { SectionGroup } from '../content/sections'
 import GlassCard from './GlassCard.astro'
 
-const { group } = Astro.props as { group?: SectionGroup }
+const { group, accentTone } = Astro.props as { group?: SectionGroup; accentTone?: SceneTone }
 const entry = group?.entries[0]
 const renderedEntry = entry ? await render(entry) : undefined
+const accentClass = accentTone ? sceneToneAccentClasses[accentTone] : ''
 
 const socialLinkClass = [
 	'inline-flex items-center gap-2 rounded-full border border-white/35 px-4 py-2.5 text-sm text-app-text',
@@ -35,7 +37,8 @@ const titleText = titleMatch?.[1]?.trim() ?? title
 const titleEmoji = titleMatch?.[2]?.trim() ?? ''
 ---
 
-<GlassCard class="w-full p-6 sm:p-8 lg:p-12">
+<GlassCard class="w-full p-5 sm:p-8 lg:p-12">
+	<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
 	<div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.16),transparent_28%)] dark:bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.08),transparent_28%)]"></div>
 
 	<div class="flex flex-col gap-5 lg:gap-6">
@@ -54,17 +57,17 @@ const titleEmoji = titleMatch?.[2]?.trim() ?? ''
 		</div>
 
 		<div class="flex flex-col gap-2">
-			<p class="text-[clamp(1.65rem,2.7vw,2.45rem)] leading-[1.04] font-semibold tracking-[-0.04em] text-app-text text-balance">
+			<p class="text-[clamp(1.55rem,7vw,2.45rem)] leading-[1.04] font-semibold tracking-[-0.04em] text-app-text text-balance">
 				{titleText}
 				{titleEmoji && <span class="ml-2 inline-block align-middle leading-none">{titleEmoji}</span>}
 			</p>
 
-			<h1 class="lava-title max-w-full overflow-visible whitespace-nowrap pb-[0.14em] text-[clamp(3.25rem,5.5vw,5rem)] leading-[1.02] font-semibold tracking-[-0.055em] text-transparent bg-clip-text">
+			<h1 class="lava-title max-w-full overflow-visible whitespace-normal pb-[0.14em] text-[clamp(2.8rem,15vw,5rem)] leading-[0.96] font-semibold tracking-[-0.06em] text-transparent bg-clip-text sm:whitespace-nowrap sm:text-[clamp(3.25rem,5.5vw,5rem)] sm:leading-[1.02] sm:tracking-[-0.055em]">
 				{role}
 			</h1>
 		</div>
 
-		<p class="w-full text-[clamp(1rem,1.04vw,1.02rem)] leading-[1.72] text-app-text/80 text-pretty">
+		<p class="w-full text-[clamp(1rem,1.04vw,1.02rem)] leading-[1.72] text-app-text/80 text-pretty sm:max-w-184">
 			{entry?.data.summary ?? 'Missing presentation summary.'}
 		</p>
 
