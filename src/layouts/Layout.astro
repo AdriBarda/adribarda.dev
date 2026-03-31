@@ -40,7 +40,11 @@ import '../styles/global.css'
 		</script>
 	</head>
 	<body class="bg-app-bg text-app-text">
-		<ThemeToggle client:load />
+		<div class="pointer-events-none fixed top-[max(12px,calc(var(--page-padding)-32px))] right-[max(12px,calc(var(--page-padding)-4px))] z-30">
+			<div class="flex justify-end">
+				<ThemeToggle client:only="react" />
+			</div>
+		</div>
 		<main>
 			<slot />
 		</main>
