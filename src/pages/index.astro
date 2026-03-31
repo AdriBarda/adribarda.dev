@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import HeroPanel from '../components/HeroPanel.astro';
+import HeroPanel from '../components/scene/HeroPanel.astro';
 import { groupSectionsByScene } from '../content/sections';
-import { MazeCanvas } from '../components/MazeCanvas';
+import { MazeCanvas } from '../components/maze/MazeCanvas';
 import Layout from '../layouts/Layout.astro';
 
 const sections = await getCollection('sections');

@@ -1,7 +1,7 @@
 ---
-import { sceneToneAccentClasses, type SceneTone } from './sceneTheme'
-import type { SectionEntry, SectionGroup } from '../content/sections'
-import GlassCard from './GlassCard.astro'
+import { sceneToneAccentClasses, type SceneTone } from '../../theme/sceneTheme'
+import type { SectionEntry, SectionGroup } from '../../content/sections'
+import GlassCard from '../ui/GlassCard.astro'
 
 const { group, accentTone } = Astro.props as { group?: SectionGroup; accentTone?: SceneTone }
 const experience = group?.entries.find((entry) => entry.data.section === 'experience')

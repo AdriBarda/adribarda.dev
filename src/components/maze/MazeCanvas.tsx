@@ -1,4 +1,4 @@
-import { useMazeCanvas } from '../hooks/useMazeCanvas'
+import { useMazeCanvas } from '../../hooks/useMazeCanvas'
 
 export function MazeCanvas() {
   const canvasRef = useMazeCanvas()

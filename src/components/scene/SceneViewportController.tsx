@@ -1,5 +1,5 @@
-import { sceneToneAccentClasses, type SceneNavSlide } from './sceneTheme'
-import { useSceneViewportController } from '../hooks/useSceneViewportController'
+import { sceneToneAccentClasses, type SceneNavSlide } from '../../theme/sceneTheme'
+import { useSceneViewportController } from '../../hooks/useSceneViewportController'
 
 interface Props {
   viewportId: string

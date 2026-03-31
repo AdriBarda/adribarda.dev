@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { Observer } from 'gsap/Observer'
-import type { SceneNavSlide, SceneTone } from '../components/sceneTheme'
+import type { SceneNavSlide, SceneTone } from '../theme/sceneTheme'
 
 gsap.registerPlugin(Observer)
 
