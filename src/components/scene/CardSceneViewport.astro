@@ -11,27 +11,16 @@ interface Slide {
 
 const { slides } = Astro.props as { slides: Slide[] }
 
-const viewportId = `scene-viewport-${Math.random().toString(36).slice(2, 10)}`
 const slideClass = 'flex w-full shrink-0 items-center justify-center py-3 md:h-[calc(100dvh-(var(--page-padding)*2))] md:py-0'
 const navSlides: SceneNavSlide[] = slides.map(({ id, navTone }) => ({ id, navTone }))
 ---
 
-<section data-card-scene={viewportId} class="relative z-10 w-full overflow-visible">
-	<div class="mx-auto relative w-full max-w-6xl overflow-visible">
-		<div class="overflow-visible md:h-[calc(100dvh-(var(--page-padding)*2))] md:overflow-hidden">
-			<div data-card-track class="flex flex-col gap-6 md:gap-14 md:will-change-transform">
-				{
-					slides.map(({ id, Component, props = {} }) => (
-						<section class={slideClass} data-scene-slide={id}>
-							<Component {...props} />
-						</section>
-					))
-				}
-			</div>
-		</div>
-
-		<div class="absolute -right-6 top-1/2 hidden -translate-y-1/2 md:block min-[1390px]:-right-20">
-			<SceneViewportController client:load viewportId={viewportId} slides={navSlides} />
-		</div>
-	</div>
-</section>
+<SceneViewportController client:load slides={navSlides}>
+	{
+		slides.map(({ id, Component, props = {} }) => (
+			<section class={slideClass} data-scene-slide={id}>
+				<Component {...props} />
+			</section>
+		))
+	}
+</SceneViewportController>

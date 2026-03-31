@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type RefObject } from 'react'
 import { gsap } from 'gsap'
 import { Observer } from 'gsap/Observer'
 import type { SceneNavSlide, SceneTone } from '../theme/sceneTheme'
@@ -8,30 +8,40 @@ gsap.registerPlugin(Observer)
 export type { SceneNavSlide, SceneTone }
 
 interface Options {
-  viewportId: string
   slideCount: number
+  sceneRef: RefObject<HTMLDivElement | null>
+  viewportRef: RefObject<HTMLDivElement | null>
+  trackRef: RefObject<HTMLDivElement | null>
 }
 
-export function useSceneViewportController({ viewportId, slideCount }: Options) {
+export function useSceneViewportController({
+  slideCount,
+  sceneRef,
+  viewportRef,
+  trackRef
+}: Options) {
   const [activeIndex, setActiveIndex] = useState(0)
   const activeIndexRef = useRef(0)
   const isAnimatingRef = useRef(false)
   const moveToRef = useRef<(index: number) => void>(() => {})
 
   useEffect(() => {
-    const scene = document.querySelector<HTMLElement>(`[data-card-scene="${viewportId}"]`)
-    const track = scene?.querySelector<HTMLElement>('[data-card-track]')
-    const viewport = track?.parentElement
-    const desktopMedia = window.matchMedia('(min-width: 768px)')
+    const scene = sceneRef.current
+    const viewport = viewportRef.current
+    const track = trackRef.current
 
     if (!scene || !track || !viewport) {
       return
     }
 
+    const desktopMedia = window.matchMedia('(min-width: 768px)')
     let observer: Observer | null = null
+    const resizeObserver = new ResizeObserver(() => {
+      syncTrackPosition()
+    })
 
     const getStride = () => {
-      const rowGap = Number.parseFloat(window.getComputedStyle(track).rowGap || '0')
+      const rowGap = Number.parseFloat(getComputedStyle(track).rowGap || '0')
       return viewport.clientHeight + rowGap
     }
 
@@ -45,7 +55,7 @@ export function useSceneViewportController({ viewportId, slideCount }: Options) 
     }
 
     const moveTo = (nextIndex: number) => {
-      if (isAnimatingRef.current || nextIndex === activeIndexRef.current) {
+      if (!desktopMedia.matches || isAnimatingRef.current || nextIndex === activeIndexRef.current) {
         return
       }
 
@@ -98,26 +108,23 @@ export function useSceneViewportController({ viewportId, slideCount }: Options) 
       disableDesktopCarousel()
     }
 
-    const handleResize = () => {
+    const handleMediaChange = () => {
       syncMode()
-
-      if (!desktopMedia.matches) {
-        return
-      }
-
       syncTrackPosition()
     }
 
     syncMode()
     syncTrackPosition()
-    window.addEventListener('resize', handleResize)
+    resizeObserver.observe(viewport)
+    desktopMedia.addEventListener('change', handleMediaChange)
 
     return () => {
       observer?.kill()
       moveToRef.current = () => {}
-      window.removeEventListener('resize', handleResize)
+      resizeObserver.disconnect()
+      desktopMedia.removeEventListener('change', handleMediaChange)
     }
-  }, [slideCount, viewportId])
+  }, [sceneRef, slideCount, trackRef, viewportRef])
 
   return {
     activeIndex,
