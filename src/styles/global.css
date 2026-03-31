@@ -52,3 +52,39 @@ textarea,
 select {
   font: inherit;
 }
+
+@keyframes lava-flow {
+  0% {
+    background-position: 42% 50%;
+  }
+
+  50% {
+    background-position: 58% 50%;
+  }
+
+  100% {
+    background-position: 42% 50%;
+  }
+}
+
+.lava-title {
+  background-image: linear-gradient(
+    108deg,
+    #0894ff,
+    #c959dd 34%,
+    #ff2e54 68%,
+    #ff9004
+  );
+  background-size: 220% 220%;
+  animation: lava-flow 28s ease-in-out infinite;
+}
+
+:root[data-theme='dark'] .lava-title {
+  background-image: linear-gradient(
+    108deg,
+    #0894ff,
+    #c959dd 34%,
+    #ff2e54 68%,
+    #ff9004
+  );
+}
