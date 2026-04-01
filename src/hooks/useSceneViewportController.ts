@@ -37,6 +37,20 @@ const STACKED_BENTO_MOTION = {
   rightEase: 'none'
 } as const
 
+const EXPERIENCE_BENTO_MOTION = {
+  start: 'top 84%',
+  end: 'top 26%',
+  scrub: 0.48,
+  leftY: 88,
+  rightY: 136,
+  leftStart: 0.08,
+  leftDuration: 0.82,
+  rightStart: 0.52,
+  rightDuration: 0.26,
+  leftEase: 'none',
+  rightEase: 'none'
+} as const
+
 const HERO_BENTO_MOTION = {
   heroY: 56,
   leftY: 88,
@@ -111,11 +125,7 @@ export function useSceneViewportController({
       }
 
       slideTargets.forEach(({ slide, target }, index) => {
-        const cardTargets = target.matches('[data-glass-card]')
-          ? [target]
-          : Array.from(target.querySelectorAll<HTMLElement>(':scope > [data-glass-card]'))
-        const timelineViewport = target.querySelector<HTMLElement>('[data-experience-timeline-viewport]')
-        const timelineTrack = target.querySelector<HTMLElement>('[data-experience-timeline-track]')
+        const cardTargets = getAnimatedCards(target)
         const timelineItems = Array.from(target.querySelectorAll<HTMLElement>('[data-experience-timeline-item]'))
 
         const animatedCards = cardTargets.length ? cardTargets : [target]
@@ -125,8 +135,10 @@ export function useSceneViewportController({
           return role ? [{ card, role }] : []
         })
         const isBento = bentoCards.length > 0
+        const hasExperienceTimeline = target.hasAttribute('data-experience-section') && timelineItems.length > 1
+        const slideProgressHandlers = createSlideProgressHandlers(index, slideProgresses, notifySlideProgressChange, setCurrentIndex)
 
-        if (timelineViewport && timelineTrack && timelineItems.length > 1) {
+        if (hasExperienceTimeline) {
           ScrollTrigger.create({
             trigger: slide,
             scroller: viewport,
@@ -134,34 +146,9 @@ export function useSceneViewportController({
             end: DEFAULT_CARD_SCROLL_TRIGGER.end,
             scrub: DEFAULT_CARD_SCROLL_TRIGGER.scrub,
             invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              slideProgresses[index] = self.progress
-              notifySlideProgressChange()
-            },
-            onEnter: () => setCurrentIndex(index),
-            onEnterBack: () => setCurrentIndex(index)
+            ...slideProgressHandlers
           })
-
-          return
         }
-
-        const timeline = gsap.timeline({
-          defaults: { ease: 'none' },
-          scrollTrigger: {
-            trigger: slide,
-            scroller: viewport,
-            start: DEFAULT_CARD_SCROLL_TRIGGER.start,
-            end: DEFAULT_CARD_SCROLL_TRIGGER.end,
-            scrub: DEFAULT_CARD_SCROLL_TRIGGER.scrub,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              slideProgresses[index] = self.progress
-              notifySlideProgressChange()
-            },
-            onEnter: () => setCurrentIndex(index),
-            onEnterBack: () => setCurrentIndex(index)
-          }
-        })
 
         if (isBento) {
           const heroCards = bentoCards.filter(({ role }) => role === 'hero').map(({ card }) => card)
@@ -169,6 +156,8 @@ export function useSceneViewportController({
           const rightCards = bentoCards.filter(({ role }) => role === 'right').map(({ card }) => card)
 
           if (!heroCards.length) {
+            const stackedMotion = hasExperienceTimeline ? EXPERIENCE_BENTO_MOTION : STACKED_BENTO_MOTION
+
             gsap.set(leftCards, { clearProps: 'transform' })
 
             const bentoTimeline = gsap.timeline({
@@ -176,9 +165,9 @@ export function useSceneViewportController({
               scrollTrigger: {
                 trigger: slide,
                 scroller: viewport,
-                start: STACKED_BENTO_MOTION.start,
-                end: STACKED_BENTO_MOTION.end,
-                scrub: STACKED_BENTO_MOTION.scrub,
+                start: stackedMotion.start,
+                end: stackedMotion.end,
+                scrub: stackedMotion.scrub,
                 invalidateOnRefresh: true
               }
             })
@@ -187,15 +176,15 @@ export function useSceneViewportController({
               bentoTimeline.fromTo(
                 card,
                 {
-                  y: STACKED_BENTO_MOTION.leftY + leftIndex * 8,
+                  y: stackedMotion.leftY + leftIndex * 8,
                   force3D: true
                 },
                 {
                   y: 0,
-                  duration: STACKED_BENTO_MOTION.leftDuration,
-                  ease: STACKED_BENTO_MOTION.leftEase
+                  duration: stackedMotion.leftDuration,
+                  ease: stackedMotion.leftEase
                 },
-                STACKED_BENTO_MOTION.leftStart
+                stackedMotion.leftStart
               )
             })
 
@@ -203,20 +192,33 @@ export function useSceneViewportController({
               bentoTimeline.fromTo(
                 card,
                 {
-                  y: STACKED_BENTO_MOTION.rightY + rightIndex * 16,
+                  y: stackedMotion.rightY + (hasExperienceTimeline ? 0 : rightIndex * 16),
                   force3D: true
                 },
                 {
                   y: 0,
-                  duration: STACKED_BENTO_MOTION.rightDuration,
-                  ease: STACKED_BENTO_MOTION.rightEase
+                  duration: stackedMotion.rightDuration,
+                  ease: stackedMotion.rightEase
                 },
-                STACKED_BENTO_MOTION.rightStart
+                stackedMotion.rightStart
               )
             })
 
             return
           }
+
+          const timeline = gsap.timeline({
+            defaults: { ease: 'none' },
+            scrollTrigger: {
+              trigger: slide,
+              scroller: viewport,
+              start: DEFAULT_CARD_SCROLL_TRIGGER.start,
+              end: DEFAULT_CARD_SCROLL_TRIGGER.end,
+              scrub: DEFAULT_CARD_SCROLL_TRIGGER.scrub,
+              invalidateOnRefresh: true,
+              ...slideProgressHandlers
+            }
+          })
 
           heroCards.forEach((card) => {
             timeline.set(card, { y: HERO_BENTO_MOTION.heroY, force3D: true }, 0)
@@ -236,6 +238,19 @@ export function useSceneViewportController({
           timeline.to({}, { duration: HERO_BENTO_MOTION.settleDuration })
           return
         }
+
+        const timeline = gsap.timeline({
+          defaults: { ease: 'none' },
+          scrollTrigger: {
+            trigger: slide,
+            scroller: viewport,
+            start: DEFAULT_CARD_SCROLL_TRIGGER.start,
+            end: DEFAULT_CARD_SCROLL_TRIGGER.end,
+            scrub: DEFAULT_CARD_SCROLL_TRIGGER.scrub,
+            invalidateOnRefresh: true,
+            ...slideProgressHandlers
+          }
+        })
 
         animatedCards.forEach((card, cardIndex) => {
           const offset = card === target ? 0 : cardIndex * 0.04
@@ -319,4 +334,32 @@ function getBentoRole(card: HTMLElement): BentoRole | null {
   }
 
   return null
+}
+
+function getAnimatedCards(target: HTMLElement) {
+  const directCardTargets = target.matches('[data-glass-card]')
+    ? [target]
+    : Array.from(target.querySelectorAll<HTMLElement>(':scope > [data-glass-card]'))
+
+  if (directCardTargets.length > 0) {
+    return directCardTargets
+  }
+
+  return Array.from(target.querySelectorAll<HTMLElement>(':scope > [data-experience-pin] > [data-glass-card]'))
+}
+
+function createSlideProgressHandlers(
+  index: number,
+  slideProgresses: number[],
+  notifySlideProgressChange: () => void,
+  setCurrentIndex: (nextIndex: number) => void
+) {
+  return {
+    onUpdate: (self: ScrollTrigger) => {
+      slideProgresses[index] = self.progress
+      notifySlideProgressChange()
+    },
+    onEnter: () => setCurrentIndex(index),
+    onEnterBack: () => setCurrentIndex(index)
+  }
 }
