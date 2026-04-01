@@ -37,76 +37,85 @@ const titleText = titleMatch?.[1]?.trim() ?? title
 const titleEmoji = titleMatch?.[2]?.trim() ?? ''
 ---
 
-<GlassCard class="w-full p-5 sm:p-8 lg:p-12">
-	<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
-	<div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.16),transparent_28%)] dark:bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.08),transparent_28%)]"></div>
+<div class="grid w-full gap-4 lg:grid-cols-[minmax(0,1.28fr)_minmax(18rem,0.82fr)]">
+	<GlassCard data-bento-role="hero" class="w-full p-5 sm:p-8 lg:col-span-2 lg:p-10">
+		<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
+		<div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.16),transparent_28%)] dark:bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.08),transparent_28%)]"></div>
 
-	<div class="flex flex-col gap-5 lg:gap-6">
-		<div class="flex flex-col gap-3">
-			{entry?.data.eyebrow && (
-				<p class="text-[0.78rem] uppercase tracking-[0.18em] text-app-text/58">{entry.data.eyebrow}</p>
-			)}
-
-			{meta.length > 0 && (
-				<div class="flex flex-wrap gap-x-4 gap-y-2 text-[0.74rem] uppercase tracking-[0.16em] text-app-text/58">
-					{meta.map((item) => (
-						<span>{item}</span>
-					))}
-				</div>
-			)}
-		</div>
-
-		<div class="flex flex-col gap-2">
-			<p class="text-[clamp(1.55rem,7vw,2.45rem)] leading-[1.04] font-semibold tracking-[-0.04em] text-app-text text-balance">
-				{titleText}
-				{titleEmoji && <span class="ml-2 inline-block align-middle leading-none">{titleEmoji}</span>}
-			</p>
-
-			<h1 class="lava-title max-w-full overflow-visible whitespace-normal pb-[0.14em] text-[clamp(2.8rem,15vw,5rem)] leading-[0.96] font-semibold tracking-[-0.06em] text-transparent bg-clip-text sm:whitespace-nowrap sm:text-[clamp(3.25rem,5.5vw,5rem)] sm:leading-[1.02] sm:tracking-[-0.055em]">
-				{role}
-			</h1>
-		</div>
-
-		<p class="w-full text-[clamp(1rem,1.04vw,1.02rem)] leading-[1.72] text-app-text/80 text-pretty sm:max-w-184">
-			{entry?.data.summary ?? 'Missing presentation summary.'}
-		</p>
-
-		{(github || linkedin) && (
-			<div class="flex flex-wrap gap-3 pt-0.5">
-				{github && (
-					<a href={githubUrl} target="_blank" rel="noopener noreferrer" class={socialLinkClass}>
-						<svg aria-hidden="true" class="size-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.589 2 12.248c0 4.526 2.865 8.367 6.839 9.722.5.094.682-.221.682-.494 0-.243-.009-.888-.014-1.743-2.782.617-3.369-1.37-3.369-1.37-.455-1.174-1.11-1.487-1.11-1.487-.908-.636.069-.623.069-.623 1.004.072 1.532 1.054 1.532 1.054.892 1.562 2.341 1.111 2.91.85.091-.664.349-1.111.635-1.367-2.22-.259-4.555-1.137-4.555-5.062 0-1.118.389-2.033 1.029-2.75-.103-.26-.446-1.303.098-2.717 0 0 .84-.275 2.75 1.05A9.4 9.4 0 0 1 12 6.844a9.4 9.4 0 0 1 2.504.346c1.909-1.325 2.748-1.05 2.748-1.05.546 1.414.202 2.457.1 2.717.64.717 1.028 1.632 1.028 2.75 0 3.935-2.338 4.8-4.566 5.054.358.315.678.936.678 1.886 0 1.361-.012 2.459-.012 2.793 0 .276.18.593.688.492 3.97-1.221 6.832-5.06 6.832-9.584C22 6.589 17.523 2 12 2"/></svg>
-						{github.label}
-					</a>
+		<div class="flex flex-col gap-5 lg:gap-6">
+			<div class="flex flex-col gap-3">
+				{entry?.data.eyebrow && (
+					<p class="text-[0.78rem] uppercase tracking-[0.18em] text-app-text/58">{entry.data.eyebrow}</p>
 				)}
 
-				{linkedin && (
-					<a href={linkedinUrl} target="_blank" rel="noopener noreferrer" class={socialLinkClass}>
-						<svg aria-hidden="true" class="size-4 fill-current" viewBox="0 0 24 24"><path d="M6.94 8.5H3.56V20h3.38zm.22-3.55C7.16 3.87 6.37 3 5.27 3s-1.89.87-1.89 1.95c0 1.06.77 1.94 1.85 1.94h.02c1.12 0 1.91-.88 1.91-1.94m13.46 8.01c0-3.47-1.81-5.08-4.22-5.08-1.94 0-2.81 1.08-3.29 1.85V8.5H9.73c.04.82 0 11.5 0 11.5h3.38v-6.42c0-.34.02-.68.12-.92.27-.68.88-1.38 1.91-1.38 1.35 0 1.89 1.04 1.89 2.56V20h3.37v-6.04Z"/></svg>
-						{linkedin.label}
-					</a>
+				{meta.length > 0 && (
+					<div class="flex flex-wrap gap-x-4 gap-y-2 text-[0.74rem] uppercase tracking-[0.16em] text-app-text/58">
+						{meta.map((item) => (
+							<span>{item}</span>
+						))}
+					</div>
 				)}
 			</div>
-		)}
 
-		<div class="grid gap-5 border-t border-white/12 pt-5 dark:border-white/10 lg:grid-cols-[minmax(0,1.45fr)_minmax(15rem,0.7fr)] lg:gap-8">
-			<div>
-				{profileLabel && <p class="text-[0.76rem] uppercase tracking-[0.16em] text-app-text/58">{profileLabel}</p>}
-				<div class="mt-3 w-full text-[0.96rem] leading-[1.75] text-app-text/90 text-pretty [&_p+p]:mt-3">
-					{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing presentation body.</p>}
-				</div>
+			<div class="flex flex-col gap-2">
+				<p class="text-[clamp(1.55rem,7vw,2.45rem)] leading-[1.04] font-semibold tracking-[-0.04em] text-app-text text-balance">
+					{titleText}
+					{titleEmoji && <span class="ml-2 inline-block align-middle leading-none">{titleEmoji}</span>}
+				</p>
+
+				<h1 class="lava-title max-w-full overflow-visible whitespace-normal pb-[0.14em] text-[clamp(2.8rem,15vw,5rem)] leading-[0.96] font-semibold tracking-[-0.06em] text-transparent bg-clip-text sm:whitespace-nowrap sm:text-[clamp(3.25rem,5.5vw,5rem)] sm:leading-[1.02] sm:tracking-[-0.055em]">
+					{role}
+				</h1>
 			</div>
 
-			{details.length > 0 && (
-				<div class="flex flex-col gap-3 text-[0.92rem] leading-[1.55] text-app-text/66 lg:border-l lg:border-white/12 lg:pl-6 dark:lg:border-white/10">
-					{details.map((detail) => (
+			<div class="flex flex-col gap-4 lg:max-w-3xl">
+				<p class="w-full text-[clamp(1rem,1.04vw,1.02rem)] leading-[1.72] text-app-text/80 text-pretty sm:max-w-160">
+					{entry?.data.summary ?? 'Missing presentation summary.'}
+				</p>
+
+				{(github || linkedin) && (
+					<div class="flex flex-wrap gap-3 pt-0.5">
+						{github && (
+							<a href={githubUrl} target="_blank" rel="noopener noreferrer" class={socialLinkClass}>
+								<svg aria-hidden="true" class="size-4 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.589 2 12.248c0 4.526 2.865 8.367 6.839 9.722.5.094.682-.221.682-.494 0-.243-.009-.888-.014-1.743-2.782.617-3.369-1.37-3.369-1.37-.455-1.174-1.11-1.487-1.11-1.487-.908-.636.069-.623.069-.623 1.004.072 1.532 1.054 1.532 1.054.892 1.562 2.341 1.111 2.91.85.091-.664.349-1.111.635-1.367-2.22-.259-4.555-1.137-4.555-5.062 0-1.118.389-2.033 1.029-2.75-.103-.26-.446-1.303.098-2.717 0 0 .84-.275 2.75 1.05A9.4 9.4 0 0 1 12 6.844a9.4 9.4 0 0 1 2.504.346c1.909-1.325 2.748-1.05 2.748-1.05.546 1.414.202 2.457.1 2.717.64.717 1.028 1.632 1.028 2.75 0 3.935-2.338 4.8-4.566 5.054.358.315.678.936.678 1.886 0 1.361-.012 2.459-.012 2.793 0 .276.18.593.688.492 3.97-1.221 6.832-5.06 6.832-9.584C22 6.589 17.523 2 12 2"/></svg>
+								{github.label}
+							</a>
+						)}
+
+						{linkedin && (
+							<a href={linkedinUrl} target="_blank" rel="noopener noreferrer" class={socialLinkClass}>
+								<svg aria-hidden="true" class="size-4 fill-current" viewBox="0 0 24 24"><path d="M6.94 8.5H3.56V20h3.38zm.22-3.55C7.16 3.87 6.37 3 5.27 3s-1.89.87-1.89 1.95c0 1.06.77 1.94 1.85 1.94h.02c1.12 0 1.91-.88 1.91-1.94m13.46 8.01c0-3.47-1.81-5.08-4.22-5.08-1.94 0-2.81 1.08-3.29 1.85V8.5H9.73c.04.82 0 11.5 0 11.5h3.38v-6.42c0-.34.02-.68.12-.92.27-.68.88-1.38 1.91-1.38 1.35 0 1.89 1.04 1.89 2.56V20h3.37v-6.04Z"/></svg>
+								{linkedin.label}
+							</a>
+						)}
+					</div>
+				)}
+			</div>
+		</div>
+	</GlassCard>
+
+	<GlassCard data-bento-role="left" class="p-5 sm:p-6 lg:p-7">
+		{profileLabel && <p class="text-[0.76rem] uppercase tracking-[0.16em] text-app-text/58">{profileLabel}</p>}
+		<div class="mt-3 w-full text-[0.95rem] leading-[1.72] text-app-text/90 text-pretty [&_p+p]:mt-3">
+			{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing presentation body.</p>}
+		</div>
+	</GlassCard>
+
+	<GlassCard data-bento-role="right" class="p-5 sm:p-6 lg:p-7">
+		<div class="flex h-full flex-col gap-4 text-[0.9rem] leading-[1.55] text-app-text/68">
+			<p class="text-[0.76rem] uppercase tracking-[0.16em] text-app-text/58">Details</p>
+			<div class="flex flex-col gap-3 border-t border-white/12 pt-4 dark:border-white/10">
+				{details.length > 0 ? (
+					details.map((detail) => (
 						<div>
 							<p class="text-[0.72rem] uppercase tracking-[0.16em] text-app-text/46">{detail.label}</p>
-							<p class="mt-2">{detail.value}</p>
+							<p class="mt-2 text-app-text/88">{detail.value}</p>
 						</div>
-					))}
-				</div>
-			)}
+					))
+				) : (
+					<p class="text-app-text/66">Missing presentation details.</p>
+				)}
+			</div>
 		</div>
-	</div>
-</GlassCard>
+	</GlassCard>
+</div>

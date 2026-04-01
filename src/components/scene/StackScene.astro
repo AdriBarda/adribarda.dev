@@ -14,7 +14,7 @@ function getHighlights(entry?: SectionEntry) {
 ---
 
 <div class="grid w-full gap-4 md:grid-cols-[1.45fr_1fr] md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
-	<GlassCard class="p-6 sm:p-8 md:row-span-2 lg:p-10">
+	<GlassCard data-bento-role="left" class="p-6 sm:p-8 md:row-span-2 lg:p-9">
 		<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
 		<div class="flex h-full flex-col justify-between gap-8">
 			<div>
@@ -39,7 +39,7 @@ function getHighlights(entry?: SectionEntry) {
 		</div>
 	</GlassCard>
 
-	<GlassCard class="p-5 lg:p-6">
+	<GlassCard data-bento-role="right" class="p-5 lg:p-6">
 		<div class="flex h-full flex-col justify-between gap-4">
 			<div>
 				{skills?.data.eyebrow && (
@@ -51,7 +51,7 @@ function getHighlights(entry?: SectionEntry) {
 		</div>
 	</GlassCard>
 
-	<GlassCard class="p-5 lg:p-6">
+	<GlassCard data-bento-role="right" class="p-5 lg:p-6">
 		<div class="flex h-full flex-col justify-between gap-4">
 			<div>
 				<p class="text-[0.76rem] uppercase tracking-[0.14em] text-app-muted">Highlights</p>

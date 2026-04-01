@@ -5,14 +5,14 @@ cardSize: hero
 section: presentation
 role: Frontend Engineer
 title: Hi, I'm Adri 👋
-meta: [🇪🇸 Spain]
-summary: Frontend engineer building scalable SaaS interfaces with a focus on performance and easy UX.
+meta: [🇪🇸 Barcelona, Vue + Vite, React]
+summary: Experienced frontend engineer focused on clean, scalable web applications, with a strong preference for Vue, Vite, and thoughtful developer experience.
 profileLabel: Profile
 details:
   - label: Location
     value: 📍 Barcelona, Spain
   - label: Focus
-    value: Maintainability, scalability, performance, and easy UX.
+    value: Clean architecture, state management, DX, and scalable interfaces.
 socials:
   github:
     label: GitHub
@@ -22,8 +22,6 @@ socials:
     url: linkedin.com/in/adriabardajicros/
 ---
 
-I build frontend products and interfaces. A good part of my experience comes from SaaS, where I’ve worked on making complex tools faster, clearer, and easier to use.
+I build frontend applications with a strong focus on clean architecture, maintainability, and scalable UI systems.
 
-My usual toolset includes **Vue.js**, **Pinia**, **React**, **Tailwind CSS**, **pnpm**, and **Vite**.
-
-I have a **B.Sc. in Computer Engineering** from Universitat Pompeu Fabra (Tecnocampus) and I am fluent in **English**, **Spanish**, and **Catalan**.
+I’m particularly drawn to the **Vue** and **Vite** ecosystem, while also being experienced with **React**. Most recently at **Logbook**, I helped build a logistics data platform working across state management, API integration, TypeScript contracts, and user experience.
