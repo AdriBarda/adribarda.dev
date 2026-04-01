@@ -87,7 +87,7 @@ export function SceneViewportController({ slides, children }: Props) {
     const mm = gsap.matchMedia()
 
     mm.add('(min-width: 768px)', () => {
-      gsap.set(footer, { yPercent: 100 })
+      gsap.set(footer, { yPercent: 100, autoAlpha: 1 })
 
       const tween = gsap.to(footer, {
         yPercent: 0,
@@ -105,7 +105,7 @@ export function SceneViewportController({ slides, children }: Props) {
       return () => {
         tween.scrollTrigger?.kill()
         tween.kill()
-        gsap.set(footer, { clearProps: 'transform' })
+        gsap.set(footer, { clearProps: 'transform,opacity,visibility' })
       }
     })
 
