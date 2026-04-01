@@ -20,7 +20,9 @@ const navSlides: SceneNavSlide[] = slides.map(({ id, navTone }) => ({ id, navTon
 			<section
 				class:list={[
 					'flex w-full shrink-0 items-center justify-center py-3 md:py-0',
-					index === 0 ? 'md:min-h-dvh' : 'md:min-h-[min(100dvh,54rem)]'
+					index === 0
+						? 'md:min-h-[calc(100dvh-(var(--page-padding)*2))]'
+						: 'md:min-h-[min(calc(100dvh-(var(--page-padding)*2)),54rem)]'
 				]}
 				data-scene-slide={id}
 			>
