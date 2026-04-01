@@ -9,6 +9,8 @@ meta: [🇪🇸 Barcelona]
 summary: Frontend engineer focused on building clean, scalable web applications with a strong preference for Vue, Vite, and thoughtful developer experience.
 profileLabel: Profile
 details:
+  - label: Status
+    value: Open To Work
   - label: Location
     value: 📍 Barcelona, Spain
   - label: Focus
