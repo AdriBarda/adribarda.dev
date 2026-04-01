@@ -1,12 +1,19 @@
 ---
 import { getCollection } from 'astro:content';
 import HeroPanel from '../components/scene/HeroPanel.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
 import { groupSectionsByScene } from '../content/sections';
 import { MazeCanvas } from '../components/maze/MazeCanvas';
 import Layout from '../layouts/Layout.astro';
 
 const sections = await getCollection('sections');
 const sectionGroups = groupSectionsByScene(sections);
+const presentationEntry = sectionGroups.find((group) => group.scene === 1)?.entries[0]
+const footer = {
+	location: presentationEntry?.data.details.find((detail) => detail.label.toLowerCase() === 'location')?.value,
+	github: presentationEntry?.data.socials?.github,
+	linkedin: presentationEntry?.data.socials?.linkedin
+}
 ---
 
 <Layout>
@@ -14,4 +21,5 @@ const sectionGroups = groupSectionsByScene(sections);
 		<MazeCanvas client:load />
 		<HeroPanel sectionGroups={sectionGroups} />
 	</section>
+	<SiteFooter slot="footer" footer={footer} />
 </Layout>

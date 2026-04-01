@@ -1,8 +1,11 @@
-import { useCallback, useRef, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, type ReactNode } from 'react'
 import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import { useSceneViewportController } from '../../hooks/useSceneViewportController'
 import { sceneToneAccentColors, type SceneNavSlide } from '../../theme/sceneTheme'
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface Props {
   slides: SceneNavSlide[]
@@ -12,12 +15,37 @@ interface Props {
 export function SceneViewportController({ slides, children }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
+  const footerTriggerRef = useRef<HTMLDivElement>(null)
   const tickRefs = useRef<Array<HTMLSpanElement | null>>([])
+  const tickColorCacheRef = useRef<{ muted: string; accents: string[] }>({ muted: '', accents: [] })
+
+  useEffect(() => {
+    const updateTickColors = () => {
+      const rootStyles = getComputedStyle(document.documentElement)
+
+      tickColorCacheRef.current = {
+        muted: resolveCssVarColor('var(--app-muted)', rootStyles),
+        accents: slides.map((slide) => resolveCssVarColor(sceneToneAccentColors[slide.navTone], rootStyles))
+      }
+    }
+
+    updateTickColors()
+
+    const themeObserver = new MutationObserver(updateTickColors)
+
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    })
+
+    return () => {
+      themeObserver.disconnect()
+    }
+  }, [slides])
 
   const handleSlideProgressChange = useCallback(
     (progresses: number[]) => {
-      const rootStyles = getComputedStyle(document.documentElement)
-      const mutedColor = resolveCssVarColor('var(--app-muted)', rootStyles)
+      const { muted, accents } = tickColorCacheRef.current
 
       tickRefs.current.slice(0, slides.length).forEach((tick, index) => {
         if (!tick) {
@@ -27,13 +55,13 @@ export function SceneViewportController({ slides, children }: Props) {
         const progress = progresses[index] ?? 0
         const proximity = gsap.utils.clamp(0, 1, 1 - Math.abs(progress - 0.5) / 0.5)
         const eased = gsap.parseEase('power2.out')(proximity)
-        const accentColor = resolveCssVarColor(sceneToneAccentColors[slides[index].navTone], rootStyles)
+        const accentColor = accents[index] ?? muted
 
         gsap.set(tick, {
           width: gsap.utils.interpolate(10, 32, eased),
           opacity: gsap.utils.interpolate(0.58, 1, eased),
           scaleY: gsap.utils.interpolate(1, 1.35, eased),
-          backgroundColor: gsap.utils.interpolate(mutedColor, accentColor, eased),
+          backgroundColor: gsap.utils.interpolate(muted, accentColor, eased),
           transformOrigin: 'right center'
         })
       })
@@ -47,18 +75,63 @@ export function SceneViewportController({ slides, children }: Props) {
     onSlideProgressChange: handleSlideProgressChange
   })
 
+  useEffect(() => {
+    const viewport = viewportRef.current
+    const trigger = footerTriggerRef.current
+    const footer = document.querySelector<HTMLElement>('[data-site-footer]')
+
+    if (!viewport || !trigger || !footer) {
+      return
+    }
+
+    const mm = gsap.matchMedia()
+
+    mm.add('(min-width: 768px)', () => {
+      gsap.set(footer, { yPercent: 100 })
+
+      const tween = gsap.to(footer, {
+        yPercent: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger,
+          scroller: viewport,
+          start: 'top bottom',
+          end: 'top 35%',
+          scrub: 0.2,
+          invalidateOnRefresh: true
+        }
+      })
+
+      return () => {
+        tween.scrollTrigger?.kill()
+        tween.kill()
+        gsap.set(footer, { clearProps: 'transform' })
+      }
+    })
+
+    return () => {
+      mm.revert()
+    }
+  }, [])
+
   return (
     <section className="relative z-10 w-full overflow-visible">
       <div
         ref={viewportRef}
         data-scene-viewport-scroll
-        className="w-full overflow-visible md:h-dvh md:overflow-x-hidden md:overflow-y-auto md:scroll-smooth"
+        className="w-full overflow-visible md:h-[calc(100dvh-(var(--page-padding)*2))] md:overflow-x-hidden md:overflow-y-auto md:scroll-smooth"
       >
         <div className="mx-auto w-full max-w-5xl overflow-visible">
           <div ref={trackRef} data-card-track className="flex flex-col gap-6 md:gap-8 lg:gap-10 md:pt-8 md:pb-14">
             {children}
           </div>
         </div>
+
+        <div
+          ref={footerTriggerRef}
+          aria-hidden="true"
+          className="hidden md:block md:h-[calc(100dvh-(var(--page-padding)*2))]"
+        />
       </div>
 
       <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-full max-w-5xl -translate-x-1/2 md:block">

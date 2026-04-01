@@ -1,0 +1,75 @@
+---
+interface FooterLink {
+	label: string
+	url: string
+}
+
+const { footer } = Astro.props as {
+	footer?: {
+		location?: string
+		github?: FooterLink
+		linkedin?: FooterLink
+	}
+}
+
+const normalizeUrl = (url?: string) => {
+	if (!url) {
+		return '#'
+	}
+
+	return url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`
+}
+---
+
+<footer data-site-footer class="w-full rounded-t-[28px] bg-[color-mix(in_srgb,var(--app-bg)_94%,var(--app-text)_6%)] md:fixed md:inset-x-0 md:bottom-0 md:z-20">
+	<div class="mx-auto flex w-full max-w-5xl flex-col gap-8 px-[var(--page-padding)] py-10 md:py-12 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:py-14">
+		<div class="max-w-2xl">
+			<h2 class="max-w-[12ch] text-balance text-[clamp(2.4rem,5vw,4.8rem)] leading-[0.95] font-semibold tracking-[-0.05em] text-app-text">
+				Let&apos;s build something clear and scalable.
+			</h2>
+		</div>
+
+		<div class="grid gap-5 text-sm leading-[1.7] text-app-muted sm:grid-cols-2 lg:min-w-[20rem] lg:grid-cols-1">
+			{footer?.location && (
+				<div>
+					<p class="text-[0.72rem] uppercase tracking-[0.16em] text-app-text/46">Location</p>
+					<p class="mt-2 text-app-text">{footer.location}</p>
+				</div>
+			)}
+
+			<div>
+				<p class="text-[0.72rem] uppercase tracking-[0.16em] text-app-text/46">Links</p>
+				<div class="mt-2 flex flex-wrap gap-3">
+					{footer?.github && (
+						<a
+							href={normalizeUrl(footer.github.url)}
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label={footer.github.label}
+							title={footer.github.label}
+							class="inline-flex items-center justify-center text-app-text/62 transition-[color,transform] duration-200 ease-out hover:scale-110 hover:text-app-text"
+						>
+							<svg aria-hidden="true" class="size-5 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.589 2 12.248c0 4.526 2.865 8.367 6.839 9.722.5.094.682-.221.682-.494 0-.243-.009-.888-.014-1.743-2.782.617-3.369-1.37-3.369-1.37-.455-1.174-1.11-1.487-1.11-1.487-.908-.636.069-.623.069-.623 1.004.072 1.532 1.054 1.532 1.054.892 1.562 2.341 1.111 2.91.85.091-.664.349-1.111.635-1.367-2.22-.259-4.555-1.137-4.555-5.062 0-1.118.389-2.033 1.029-2.75-.103-.26-.446-1.303.098-2.717 0 0 .84-.275 2.75 1.05A9.4 9.4 0 0 1 12 6.844a9.4 9.4 0 0 1 2.504.346c1.909-1.325 2.748-1.05 2.748-1.05.546 1.414.202 2.457.1 2.717.64.717 1.028 1.632 1.028 2.75 0 3.935-2.338 4.8-4.566 5.054.358.315.678.936.678 1.886 0 1.361-.012 2.459-.012 2.793 0 .276.18.593.688.492 3.97-1.221 6.832-5.06 6.832-9.584C22 6.589 17.523 2 12 2" /></svg>
+						</a>
+					)}
+					{footer?.linkedin && (
+						<a
+							href={normalizeUrl(footer.linkedin.url)}
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label={footer.linkedin.label}
+							title={footer.linkedin.label}
+							class="inline-flex items-center justify-center text-app-text/62 transition-[color,transform] duration-200 ease-out hover:scale-110 hover:text-app-text"
+						>
+							<svg aria-hidden="true" class="size-5 fill-current" viewBox="0 0 24 24"><path d="M6.94 8.5H3.56V20h3.38zm.22-3.55C7.16 3.87 6.37 3 5.27 3s-1.89.87-1.89 1.95c0 1.06.77 1.94 1.85 1.94h.02c1.12 0 1.91-.88 1.91-1.94m13.46 8.01c0-3.47-1.81-5.08-4.22-5.08-1.94 0-2.81 1.08-3.29 1.85V8.5H9.73c.04.82 0 11.5 0 11.5h3.38v-6.42c0-.34.02-.68.12-.92.27-.68.88-1.38 1.91-1.38 1.35 0 1.89 1.04 1.89 2.56V20h3.37v-6.04Z" /></svg>
+						</a>
+					)}
+				</div>
+			</div>
+
+			<p class="text-[0.72rem] uppercase tracking-[0.14em] text-app-text/38">
+				&trade; Almost All Rights Reserved.
+			</p>
+		</div>
+	</div>
+</footer>

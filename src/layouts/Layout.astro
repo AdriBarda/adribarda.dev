@@ -48,6 +48,7 @@ import '../styles/global.css'
 		<main>
 			<slot />
 		</main>
+		<slot name="footer" />
 	</body>
 </html>
 
@@ -69,7 +70,17 @@ import '../styles/global.css'
 		justify-content: center;
 		align-items: center;
 		min-height: 100dvh;
-		padding-inline: var(--page-padding);
+		padding: var(--page-padding);
 		box-sizing: border-box;
+	}
+
+	@media (min-width: 768px) {
+		body {
+			overflow: hidden;
+		}
+
+		main {
+			height: 100dvh;
+		}
 	}
 </style>
