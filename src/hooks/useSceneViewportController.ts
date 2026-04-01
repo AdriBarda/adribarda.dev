@@ -114,6 +114,9 @@ export function useSceneViewportController({
         const cardTargets = target.matches('[data-glass-card]')
           ? [target]
           : Array.from(target.querySelectorAll<HTMLElement>(':scope > [data-glass-card]'))
+        const timelineViewport = target.querySelector<HTMLElement>('[data-experience-timeline-viewport]')
+        const timelineTrack = target.querySelector<HTMLElement>('[data-experience-timeline-track]')
+        const timelineItems = Array.from(target.querySelectorAll<HTMLElement>('[data-experience-timeline-item]'))
 
         const animatedCards = cardTargets.length ? cardTargets : [target]
         const bentoCards = animatedCards.flatMap((card) => {
@@ -122,6 +125,25 @@ export function useSceneViewportController({
           return role ? [{ card, role }] : []
         })
         const isBento = bentoCards.length > 0
+
+        if (timelineViewport && timelineTrack && timelineItems.length > 1) {
+          ScrollTrigger.create({
+            trigger: slide,
+            scroller: viewport,
+            start: DEFAULT_CARD_SCROLL_TRIGGER.start,
+            end: DEFAULT_CARD_SCROLL_TRIGGER.end,
+            scrub: DEFAULT_CARD_SCROLL_TRIGGER.scrub,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              slideProgresses[index] = self.progress
+              notifySlideProgressChange()
+            },
+            onEnter: () => setCurrentIndex(index),
+            onEnterBack: () => setCurrentIndex(index)
+          })
+
+          return
+        }
 
         const timeline = gsap.timeline({
           defaults: { ease: 'none' },

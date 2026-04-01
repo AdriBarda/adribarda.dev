@@ -24,6 +24,19 @@ const sections = defineCollection({
         })
       )
       .default([]),
+    items: z
+      .array(
+        z.object({
+          company: z.string(),
+          location: z.string().optional(),
+          role: z.string(),
+          period: z.string(),
+          description: z.string(),
+          highlights: z.array(z.string()).default([]),
+          highlight: z.boolean().optional()
+        })
+      )
+      .default([]),
     socials: z
       .object({
         github: z
