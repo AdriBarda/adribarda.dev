@@ -11,3 +11,10 @@ export const sceneToneAccentClasses: Record<SceneTone, string> = {
   stack: 'bg-[var(--scene-accent-stack)]',
   'about-me': 'bg-[var(--scene-accent-about)]'
 }
+
+export const sceneToneAccentColors: Record<SceneTone, string> = {
+  presentation: 'var(--scene-accent-presentation)',
+  experience: 'var(--scene-accent-experience)',
+  stack: 'var(--scene-accent-stack)',
+  'about-me': 'var(--scene-accent-about)'
+}

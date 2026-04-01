@@ -11,14 +11,19 @@ interface Slide {
 
 const { slides } = Astro.props as { slides: Slide[] }
 
-const slideClass = 'flex w-full shrink-0 items-center justify-center py-3 md:h-[calc(100dvh-(var(--page-padding)*2))] md:py-0'
 const navSlides: SceneNavSlide[] = slides.map(({ id, navTone }) => ({ id, navTone }))
 ---
 
 <SceneViewportController client:load slides={navSlides}>
 	{
-		slides.map(({ id, Component, props = {} }) => (
-			<section class={slideClass} data-scene-slide={id}>
+		slides.map(({ id, Component, props = {} }, index) => (
+			<section
+				class:list={[
+					'flex w-full shrink-0 items-center justify-center py-3 md:py-0',
+					index === 0 ? 'md:min-h-dvh' : 'md:min-h-[min(100dvh,54rem)]'
+				]}
+				data-scene-slide={id}
+			>
 				<Component {...props} />
 			</section>
 		))

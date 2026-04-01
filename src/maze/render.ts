@@ -53,15 +53,15 @@ function drawDarkSolution(
   ctx.lineJoin = 'round'
   ctx.strokeStyle = solutionColor
 
-  ctx.globalAlpha = 0.12
+  ctx.globalAlpha = 0.16
   ctx.shadowColor = solutionColor
-  ctx.shadowBlur = 18
+  ctx.shadowBlur = 22
   ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 2.6
   traceSolutionPath(ctx, points, progress)
   ctx.stroke()
 
-  ctx.globalAlpha = 0.28
-  ctx.shadowBlur = 10
+  ctx.globalAlpha = 0.34
+  ctx.shadowBlur = 12
   ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 1.6
   traceSolutionPath(ctx, points, progress)
   ctx.stroke()
@@ -69,6 +69,32 @@ function drawDarkSolution(
   ctx.globalAlpha = 1
   ctx.shadowBlur = 4
   ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 0.9
+  traceSolutionPath(ctx, points, progress)
+  ctx.stroke()
+  ctx.restore()
+}
+
+function drawLightSolution(
+  ctx: CanvasRenderingContext2D,
+  points: Point[],
+  progress: number,
+  solutionColor: string
+) {
+  ctx.save()
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+  ctx.strokeStyle = solutionColor
+
+  ctx.globalAlpha = 0.18
+  ctx.shadowColor = solutionColor
+  ctx.shadowBlur = 10
+  ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 1.9
+  traceSolutionPath(ctx, points, progress)
+  ctx.stroke()
+
+  ctx.globalAlpha = 0.95
+  ctx.shadowBlur = 3
+  ctx.lineWidth = MAZE_CONFIG.solutionLineWidth
   traceSolutionPath(ctx, points, progress)
   ctx.stroke()
   ctx.restore()
@@ -216,8 +242,7 @@ function drawSolution(
     return
   }
 
-  traceSolutionPath(ctx, points, progress)
-  ctx.stroke()
+  drawLightSolution(ctx, points, progress, solutionColor)
 }
 
 export function getMazeSize(width: number, height: number) {

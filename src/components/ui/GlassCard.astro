@@ -2,9 +2,10 @@
 interface Props {
 	as?: keyof HTMLElementTagNameMap
 	class?: string
+	[key: string]: unknown
 }
 
-const { as = 'article', class: className = '' } = Astro.props
+const { as = 'article', class: className = '', ...rest } = Astro.props
 const Tag = as
 
 const glassClass = [
@@ -15,6 +16,6 @@ const glassClass = [
 ].join(' ')
 ---
 
-<Tag class:list={[glassClass, className]}>
+<Tag {...rest} data-glass-card class:list={[glassClass, className]}>
 	<slot />
 </Tag>
