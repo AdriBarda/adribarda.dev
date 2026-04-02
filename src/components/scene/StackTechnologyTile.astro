@@ -1,0 +1,29 @@
+---
+interface Props {
+	name: string
+	Icon: any
+	level: 'Advanced' | 'Comfortable' | 'Familiar'
+	getLevelMeterClass: (level: 'Advanced' | 'Comfortable' | 'Familiar', index: number) => string
+	tileClass: string
+	iconClass: string
+}
+
+const { name, Icon, level, getLevelMeterClass, tileClass, iconClass } = Astro.props
+---
+
+<div class={tileClass}>
+	<div class={iconClass}>
+		<Icon class="size-5" aria-hidden="true" />
+	</div>
+
+	<div class="min-w-0">
+		<p class="text-[0.92rem] font-medium leading-tight text-app-text">{name}</p>
+		<p class="mt-1 text-[0.68rem] uppercase tracking-[0.16em] text-app-text/52">{level}</p>
+
+		<div class="mt-1.5 flex max-w-14 gap-0.5">
+			{Array.from({ length: 3 }).map((_, index) => (
+				<span class:list={['h-1 w-full rounded-full', getLevelMeterClass(level, index)]}></span>
+			))}
+		</div>
+	</div>
+</div>

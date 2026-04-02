@@ -1,63 +1,186 @@
 ---
 import { sceneToneAccentClasses, type SceneTone } from '../../theme/sceneTheme'
-import type { SectionEntry, SectionGroup } from '../../content/sections'
+import type { SectionGroup } from '../../content/sections'
+import vueIcon from '../../assets/tech-stack/vue.svg'
+import vitestIcon from '../../assets/tech-stack/vitest.svg'
+import viteIcon from '../../assets/tech-stack/vite.svg'
+import typescriptIcon from '../../assets/tech-stack/typescript.svg'
+import reactIcon from '../../assets/tech-stack/react.svg'
+import playwrightIcon from '../../assets/tech-stack/playwright.svg'
+import piniaIcon from '../../assets/tech-stack/pinia.svg'
+import nodeIcon from '../../assets/tech-stack/node.svg'
+import mysqlIcon from '../../assets/tech-stack/mysql.svg'
+import javascriptIcon from '../../assets/tech-stack/javascript.svg'
+import javaIcon from '../../assets/tech-stack/java.svg'
+import expressIcon from '../../assets/tech-stack/express.svg'
+import eslintIcon from '../../assets/tech-stack/eslint.svg'
+import gitIcon from '../../assets/tech-stack/git.svg'
+import postgresqlIcon from '../../assets/tech-stack/postgresql.svg'
+import claudeCodeIcon from '../../assets/tech-stack/claude-code.svg'
+import codexIcon from '../../assets/tech-stack/codex.svg'
+import copilotIcon from '../../assets/tech-stack/copilot.svg'
+import openCodeIcon from '../../assets/tech-stack/opencode.svg'
 import GlassCard from '../ui/GlassCard.astro'
+import StackTechnologyTile from './StackTechnologyTile.astro'
 
 const { group, accentTone } = Astro.props as { group?: SectionGroup; accentTone?: SceneTone }
 const stack = group?.entries.find((entry) => entry.data.section === 'stack')
-const skills = group?.entries.find((entry) => entry.data.section === 'skills')
 const accentClass = accentTone ? sceneToneAccentClasses[accentTone] : ''
 
-function getHighlights(entry?: SectionEntry) {
-	return entry?.data.highlights.slice(0, 3) ?? []
+type StackTech = {
+	name: string
+	Icon: any
+	level: 'Advanced' | 'Comfortable' | 'Familiar'
+}
+
+const stackGroups: Array<{
+	label: string
+	technologies: StackTech[]
+}> = [
+	{
+		label: 'Frontend Systems',
+		technologies: [
+			{ name: 'Vue', Icon: vueIcon, level: 'Advanced' },
+			{ name: 'TypeScript', Icon: typescriptIcon, level: 'Advanced' },
+			{ name: 'JavaScript', Icon: javascriptIcon, level: 'Advanced' },
+			{ name: 'React', Icon: reactIcon, level: 'Comfortable' },
+			{ name: 'Pinia', Icon: piniaIcon, level: 'Advanced' },
+			{ name: 'Vite', Icon: viteIcon, level: 'Comfortable' }
+		]
+	},
+	{
+		label: 'Quality And Tooling',
+		technologies: [
+			{ name: 'Vitest', Icon: vitestIcon, level: 'Comfortable' },
+			{ name: 'Playwright', Icon: playwrightIcon, level: 'Comfortable' },
+			{ name: 'Git', Icon: gitIcon, level: 'Comfortable' },
+			{ name: 'ESLint', Icon: eslintIcon, level: 'Comfortable' },
+		]
+	},
+	{
+		label: 'Backend And Data',
+		technologies: [
+			{ name: 'Node.js', Icon: nodeIcon, level: 'Comfortable' },
+			{ name: 'Express', Icon: expressIcon, level: 'Comfortable' },
+			{ name: 'Java', Icon: javaIcon, level: 'Familiar' },
+			{ name: 'PostgreSQL', Icon: postgresqlIcon, level: 'Familiar' },
+			{ name: 'MySQL', Icon: mysqlIcon, level: 'Familiar' }
+		]
+	},
+	{
+		label: 'AI Tools And Agents',
+		technologies: [
+			{ name: 'Claude Code', Icon: claudeCodeIcon, level: 'Comfortable' },
+			{ name: 'Codex', Icon: codexIcon, level: 'Comfortable' },
+			{ name: 'Copilot', Icon: copilotIcon, level: 'Comfortable' },
+			{ name: 'OpenCode', Icon: openCodeIcon, level: 'Comfortable' }
+		]
+	}
+]
+
+const stackCardGroups = stackGroups.filter(
+	(group) => group.label === 'Frontend Systems' || group.label === 'Quality And Tooling'
+)
+const backendGroup = stackGroups.find((group) => group.label === 'Backend And Data')
+const aiToolsGroup = stackGroups.find((group) => group.label === 'AI Tools And Agents')
+
+const technologyTileClass = 'flex min-h-20 w-[8.1rem] flex-col justify-between rounded-[16px] border border-app-border/65 bg-white/26 px-2.5 py-2 dark:bg-white/5'
+const technologyIconClass = 'flex size-7 items-center justify-center'
+
+// Keep some vertical breathing room before the static stack card enters from experience.
+const stackSectionEntryOffsetClass = 'md:pt-[12vh]'
+
+function getLevelMeterClass(level: StackTech['level'], index: number) {
+	const filledSegments = level === 'Advanced' ? 3 : level === 'Comfortable' ? 2 : 1
+
+	return index < filledSegments
+		? 'bg-app-text/82 dark:bg-white/80'
+		: 'bg-app-text/12 dark:bg-white/12'
 }
 ---
 
-<div class="grid w-full gap-4 md:grid-cols-[1.45fr_1fr] md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
-	<GlassCard data-bento-role="left" class="p-6 sm:p-8 md:row-span-2 lg:p-9">
+<div data-stack-section class:list={['grid w-full gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:grid-rows-[auto_minmax(0,1fr)]', stackSectionEntryOffsetClass]}>
+	<GlassCard data-stack-static class="p-5 sm:p-6 md:col-span-2 lg:p-7">
 		<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
-		<div class="flex h-full flex-col justify-between gap-8">
-			<div>
+		<div class="flex h-full flex-col gap-6">
+			<div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+				<div class="max-w-2xl">
 				{stack?.data.eyebrow && (
 					<p class="text-[0.78rem] uppercase tracking-[0.18em] text-app-text/58">{stack.data.eyebrow}</p>
 				)}
-				<h2 class="mt-4 max-w-[12ch] text-balance text-[clamp(2.4rem,5vw,4.8rem)] leading-[0.95] font-semibold tracking-[-0.05em]">
-					{stack?.data.title ?? 'Missing stack title.'}
+				<h2 class="mt-3 text-[clamp(2rem,3.9vw,3.6rem)] leading-[0.96] font-semibold tracking-[-0.05em] text-app-text md:whitespace-nowrap">
+					Technologies I ship with.
 				</h2>
-				<p class="mt-5 max-w-2xl text-[clamp(1rem,1.35vw,1.1rem)] leading-[1.7] text-app-muted">
-					{stack?.data.summary ?? 'Missing stack summary.'}
+				<p class="mt-3 max-w-2xl text-[clamp(0.95rem,1.1vw,1.02rem)] leading-[1.66] text-app-text/74 text-pretty">
+					Some of the tools I use most, the ones I work with confidently in production, and the technologies I can step into when a project calls for them.
 				</p>
 			</div>
 
-			<div class="grid gap-3 border-t border-app-border pt-5 text-sm leading-[1.65] text-app-muted sm:grid-cols-3">
-				{
-					getHighlights(stack).map((note) => (
-						<div class="pr-4 text-app-text">{note}</div>
-					))
-				}
+			<div class="hidden lg:block"></div>
+		</div>
+
+		<div class="grid gap-3">
+			{stackCardGroups.map((group) => (
+				<section class="border-t border-app-border/70 pt-3 first:border-t-0 first:pt-0">
+					<div class="max-w-xs">
+							<p class="text-[0.74rem] uppercase tracking-[0.16em] text-app-text/56">{group.label}</p>
+					</div>
+
+					<div class="mt-3 flex flex-wrap gap-2">
+						{group.technologies.map((technology) => (
+							<StackTechnologyTile
+								name={technology.name}
+								Icon={technology.Icon}
+								level={technology.level}
+								getLevelMeterClass={getLevelMeterClass}
+								tileClass={technologyTileClass}
+								iconClass={technologyIconClass}
+							/>
+						))}
+					</div>
+				</section>
+			))}
 			</div>
 		</div>
 	</GlassCard>
 
-	<GlassCard data-bento-role="right" class="p-5 lg:p-6">
+	<GlassCard data-bento-role="left" class="h-full p-5 lg:p-6">
 		<div class="flex h-full flex-col justify-between gap-4">
 			<div>
-				{skills?.data.eyebrow && (
-					<p class="text-[0.76rem] uppercase tracking-[0.18em] text-app-text/58">{skills.data.eyebrow}</p>
-				)}
-				<p class="mt-3 text-base leading-[1.7] text-app-text">{skills?.data.title ?? 'Missing skills title.'}</p>
+				<p class="text-[0.76rem] uppercase tracking-[0.18em] text-app-text/58">{backendGroup?.label ?? 'Missing backend stack.'}</p>
 			</div>
-			<p class="text-sm leading-[1.7] text-app-muted">{skills?.data.summary ?? 'Missing skills summary.'}</p>
+			<div class="flex flex-wrap gap-2">
+				{backendGroup?.technologies.map((technology) => (
+					<StackTechnologyTile
+						name={technology.name}
+						Icon={technology.Icon}
+						level={technology.level}
+						getLevelMeterClass={getLevelMeterClass}
+						tileClass={technologyTileClass}
+						iconClass={technologyIconClass}
+					/>
+				))}
+			</div>
 		</div>
 	</GlassCard>
 
-	<GlassCard data-bento-role="right" class="p-5 lg:p-6">
+	<GlassCard data-bento-role="right" class="h-full p-5 lg:p-6">
 		<div class="flex h-full flex-col justify-between gap-4">
 			<div>
-				<p class="text-[0.76rem] uppercase tracking-[0.14em] text-app-muted">Highlights</p>
-				<p class="mt-3 text-base leading-[1.7] text-app-text">{(skills?.data.highlights ?? []).join(' / ') || 'Missing skills highlights.'}</p>
+				<p class="text-[0.76rem] uppercase tracking-[0.14em] text-app-text/58">{aiToolsGroup?.label ?? 'Missing AI tooling.'}</p>
 			</div>
-			<p class="text-sm leading-[1.7] text-app-muted">{skills?.body ?? 'Missing skills body.'}</p>
+			<div class="flex flex-wrap gap-2">
+				{aiToolsGroup?.technologies.map((technology) => (
+					<StackTechnologyTile
+						name={technology.name}
+						Icon={technology.Icon}
+						level={technology.level}
+						getLevelMeterClass={getLevelMeterClass}
+						tileClass={technologyTileClass}
+						iconClass={technologyIconClass}
+					/>
+				))}
+			</div>
 		</div>
 	</GlassCard>
 </div>
