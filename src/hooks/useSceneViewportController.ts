@@ -23,30 +23,16 @@ const DEFAULT_CARD_MOTION = {
   exitDuration: 0.46
 } as const
 
-const STACKED_BENTO_MOTION = {
-  start: 'top 82%',
-  end: 'center 62%',
-  scrub: 0.55,
-  leftY: 84,
-  rightY: 132,
-  leftStart: 0,
-  leftDuration: 0.9,
-  rightStart: 0.68,
-  rightDuration: 0.32,
-  leftEase: 'none',
-  rightEase: 'none'
-} as const
-
-const EXPERIENCE_BENTO_MOTION = {
+const SPLIT_BENTO_MOTION = {
   start: 'top 84%',
   end: 'top 26%',
-  scrub: 0.48,
-  leftY: 88,
-  rightY: 136,
-  leftStart: 0.08,
-  leftDuration: 0.82,
-  rightStart: 0.52,
-  rightDuration: 0.26,
+  scrub: 0.52,
+  leftY: 112,
+  rightY: 164,
+  leftStart: 0,
+  leftDuration: 1,
+  rightStart: 0.24,
+  rightDuration: 0.76,
   leftEase: 'none',
   rightEase: 'none'
 } as const
@@ -156,8 +142,6 @@ export function useSceneViewportController({
           const rightCards = bentoCards.filter(({ role }) => role === 'right').map(({ card }) => card)
 
           if (!heroCards.length) {
-            const stackedMotion = hasExperienceTimeline ? EXPERIENCE_BENTO_MOTION : STACKED_BENTO_MOTION
-
             gsap.set(leftCards, { clearProps: 'transform' })
 
             const bentoTimeline = gsap.timeline({
@@ -165,42 +149,42 @@ export function useSceneViewportController({
               scrollTrigger: {
                 trigger: slide,
                 scroller: viewport,
-                start: stackedMotion.start,
-                end: stackedMotion.end,
-                scrub: stackedMotion.scrub,
+                start: SPLIT_BENTO_MOTION.start,
+                end: SPLIT_BENTO_MOTION.end,
+                scrub: SPLIT_BENTO_MOTION.scrub,
                 invalidateOnRefresh: true
               }
             })
 
-            leftCards.forEach((card, leftIndex) => {
+            leftCards.forEach((card) => {
               bentoTimeline.fromTo(
                 card,
                 {
-                  y: stackedMotion.leftY + leftIndex * 8,
+                  y: SPLIT_BENTO_MOTION.leftY,
                   force3D: true
                 },
                 {
                   y: 0,
-                  duration: stackedMotion.leftDuration,
-                  ease: stackedMotion.leftEase
+                  duration: SPLIT_BENTO_MOTION.leftDuration,
+                  ease: SPLIT_BENTO_MOTION.leftEase
                 },
-                stackedMotion.leftStart
+                SPLIT_BENTO_MOTION.leftStart
               )
             })
 
-            rightCards.forEach((card, rightIndex) => {
+            rightCards.forEach((card) => {
               bentoTimeline.fromTo(
                 card,
                 {
-                  y: stackedMotion.rightY + (hasExperienceTimeline ? 0 : rightIndex * 16),
+                  y: SPLIT_BENTO_MOTION.rightY,
                   force3D: true
                 },
                 {
                   y: 0,
-                  duration: stackedMotion.rightDuration,
-                  ease: stackedMotion.rightEase
+                  duration: SPLIT_BENTO_MOTION.rightDuration,
+                  ease: SPLIT_BENTO_MOTION.rightEase
                 },
-                stackedMotion.rightStart
+                SPLIT_BENTO_MOTION.rightStart
               )
             })
 
