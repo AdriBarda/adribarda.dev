@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -9,11 +9,13 @@ gsap.registerPlugin(ScrollTrigger)
 
 export function MazeCanvas() {
   const canvasRef = useMazeCanvas()
+  const overlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
+    const overlay = overlayRef.current
 
-    if (!canvas) {
+    if (!canvas || !overlay) {
       return
     }
 
@@ -25,26 +27,18 @@ export function MazeCanvas() {
     const getMazeDimTargets = () =>
       document.documentElement.dataset.theme === 'dark'
         ? {
-            opacity: 0.76,
-            brightness: 0.84,
-            saturation: 0.94
+            overlayOpacity: 0.18
           }
         : {
-            opacity: 0.68,
-            brightness: 0.8,
-            saturation: 0.86
+            overlayOpacity: 0.28
           }
 
     const applyMazeIntensity = (progress: number) => {
       const targets = getMazeDimTargets()
-      const nextOpacity = gsap.utils.interpolate(1, targets.opacity, progress)
-      const nextBrightness = gsap.utils.interpolate(1, targets.brightness, progress)
-      const nextSaturation = gsap.utils.interpolate(1, targets.saturation, progress)
+      const nextOverlayOpacity = gsap.utils.interpolate(0, targets.overlayOpacity, progress)
 
-      gsap.set(canvas, {
-        '--maze-opacity': nextOpacity,
-        '--maze-brightness': nextBrightness,
-        '--maze-saturation': nextSaturation
+      gsap.set(overlay, {
+        opacity: nextOverlayOpacity
       })
     }
 
@@ -103,10 +97,17 @@ export function MazeCanvas() {
   }, [canvasRef])
 
   return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden="true"
-      className="absolute inset-0 block size-full pointer-events-none [filter:brightness(var(--maze-brightness,1))_saturate(var(--maze-saturation,1))] [opacity:var(--maze-opacity,1)]"
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className="absolute inset-0 block size-full pointer-events-none"
+      />
+      <div
+        ref={overlayRef}
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none bg-app-bg opacity-0"
+      />
+    </>
   )
 }
