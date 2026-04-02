@@ -3,6 +3,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import { useSceneViewportController } from '../../hooks/useSceneViewportController'
+import { SCENE_VIEWPORT_READY_EVENT, type SceneViewportReadyDetail } from './sceneViewportEvents'
 import { sceneToneAccentColors, type SceneNavSlide } from '../../theme/sceneTheme'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -81,6 +82,20 @@ export function SceneViewportController({ slides, children }: Props) {
     onSlideProgressChange: handleSlideProgressChange,
     onActiveIndexChange: handleActiveIndexChange
   })
+
+  useEffect(() => {
+    const viewport = viewportRef.current
+
+    if (!viewport) {
+      return
+    }
+
+    window.dispatchEvent(
+      new CustomEvent<SceneViewportReadyDetail>(SCENE_VIEWPORT_READY_EVENT, {
+        detail: { viewport }
+      })
+    )
+  }, [])
 
   useEffect(() => {
     const viewport = viewportRef.current

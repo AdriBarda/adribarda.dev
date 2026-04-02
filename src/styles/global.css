@@ -12,28 +12,28 @@
 }
 
 :root {
-  --app-bg: #f8fafc;
-  --app-surface: rgba(255, 255, 255, 0.72);
-  --app-border: rgba(15, 23, 42, 0.12);
-  --app-text: #0f172a;
-  --app-muted: #475569;
+  --app-bg: #f2f5fa;
+  --app-surface: rgba(255, 255, 255, 0.84);
+  --app-border: rgba(15, 23, 42, 0.14);
+  --app-text: #020617;
+  --app-muted: #1e293b;
   --app-accent: #7c3aed;
   --scene-accent-presentation: #c959dd;
   --scene-accent-experience: #0894ff;
   --scene-accent-stack: #ff9004;
   --scene-accent-about: #34d399;
-  --app-maze-wall: rgba(15, 23, 42, 0.16);
-  --app-maze-solution-colors: #dc2626|#ea580c|#ca8a04|#7c3aed|#2563eb;
+  --app-maze-wall: rgba(15, 23, 42, 0.18);
+  --app-maze-solution-colors: #b91c1c|#c2410c|#a16207|#6d28d9|#1d4ed8;
 }
 
 :root[data-theme='dark'] {
   --app-bg: #020617;
   --app-surface: rgba(15, 23, 42, 0.72);
   --app-border: rgba(148, 163, 184, 0.24);
-  --app-text: #e2e8f0;
-  --app-muted: #94a3b8;
+  --app-text: #f1f5fb;
+  --app-muted: #becbdd;
   --app-accent: #c084fc;
-  --app-maze-wall: rgba(226, 232, 240, 0.1);
+  --app-maze-wall: rgba(226, 232, 240, 0.16);
   --app-maze-solution-colors: #fb7185|#f97316|#facc15|#c084fc|#60a5fa;
 }
 
