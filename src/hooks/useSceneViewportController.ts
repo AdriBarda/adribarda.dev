@@ -35,7 +35,7 @@ const SPLIT_BENTO_MOTION = {
   rightEase: 'none'
 } as const
 
-const EXPERIENCE_SPLIT_MOTION = {
+const ENTRY_SPLIT_MOTION = {
   start: 'top 102%',
   end: '+=260',
   scrub: 0.52
@@ -174,6 +174,7 @@ export function useSceneViewportController({
         })
         const isBento = bentoCards.length > 0
         const hasExperienceTimeline = target.hasAttribute('data-experience-section')
+        const hasStaticStackCard = target.hasAttribute('data-stack-section')
 
         if (isBento) {
           const heroCards = bentoCards.filter(({ role }) => role === 'hero').map(({ card }) => card)
@@ -182,8 +183,10 @@ export function useSceneViewportController({
 
           if (!heroCards.length) {
             const splitCards = [...leftCards, ...rightCards]
-            const splitTrigger = hasExperienceTimeline ? leftCards[0] ?? slide : slide
-            const splitMotion = hasExperienceTimeline ? EXPERIENCE_SPLIT_MOTION : SPLIT_BENTO_MOTION
+            const usesEntrySplitTrigger = hasExperienceTimeline || hasStaticStackCard
+            const splitTrigger = usesEntrySplitTrigger ? leftCards[0] ?? slide : slide
+            const splitMotion = usesEntrySplitTrigger ? ENTRY_SPLIT_MOTION : SPLIT_BENTO_MOTION
+            const shouldClearSplitTransforms = hasExperienceTimeline
 
             gsap.set(splitCards, { clearProps: 'transform' })
 
@@ -197,7 +200,9 @@ export function useSceneViewportController({
                 scrub: splitMotion.scrub,
                 invalidateOnRefresh: true,
                 onLeave: () => {
-                  gsap.set(splitCards, { clearProps: 'transform' })
+                  if (shouldClearSplitTransforms) {
+                    gsap.set(splitCards, { clearProps: 'transform' })
+                  }
                 }
               }
             })
@@ -359,6 +364,12 @@ function getBentoRole(card: HTMLElement): BentoRole | null {
 }
 
 function getAnimatedCards(target: HTMLElement) {
+  const staticStackCard = target.querySelector<HTMLElement>(':scope > [data-stack-static]')
+
+  if (staticStackCard) {
+    return Array.from(target.querySelectorAll<HTMLElement>(':scope > [data-glass-card][data-bento-role]'))
+  }
+
   const directCardTargets = target.matches('[data-glass-card]')
     ? [target]
     : Array.from(target.querySelectorAll<HTMLElement>(':scope > [data-glass-card]'))
