@@ -35,6 +35,12 @@ const SPLIT_BENTO_MOTION = {
   rightEase: 'none'
 } as const
 
+const EXPERIENCE_SPLIT_MOTION = {
+  start: 'top 102%',
+  end: '+=260',
+  scrub: 0.52
+} as const
+
 const HERO_BENTO_MOTION = {
   heroY: 56,
   leftY: 88,
@@ -47,6 +53,14 @@ const HERO_BENTO_MOTION = {
   rightDuration: 0.18,
   settleDuration: 0.62
 } as const
+
+const EXPERIENCE_BENTO_TRIGGER = {
+  start: 'top 88%',
+  end: 'top 24%',
+  scrub: 0.55
+} as const
+
+const NAV_DIRECTIONAL_OFFSET = 0.04
 
 export type { SceneNavSlide, SceneTone }
 
@@ -98,7 +112,6 @@ export function useSceneViewportController({
         target: slide.firstElementChild instanceof HTMLElement ? slide.firstElementChild : slide
       }))
       const navFocusTargets = slideTargets.map(({ target }) => getNavFocusTarget(target))
-      const navStrengths = new Array(slideTargets.length).fill(0)
 
       if (!slideTargets.length) {
         return
@@ -128,13 +141,9 @@ export function useSceneViewportController({
 
         const strengths = getNavStrengths(viewportCenter, navPeakAnchors, navReleaseAnchors, navScrollEndAnchor, navDirection)
 
-        strengths.forEach((strength, index) => {
-          navStrengths[index] = strength
-        })
+        onSlideProgressChange?.(strengths)
 
-        onSlideProgressChange?.([...navStrengths])
-
-        const mostProminentIndex = getMostProminentIndex(navStrengths)
+        const mostProminentIndex = getMostProminentIndex(strengths)
 
         if (mostProminentIndex !== null) {
           setCurrentIndex(mostProminentIndex)
@@ -164,6 +173,7 @@ export function useSceneViewportController({
           return role ? [{ card, role }] : []
         })
         const isBento = bentoCards.length > 0
+        const hasExperienceTimeline = target.hasAttribute('data-experience-section')
 
         if (isBento) {
           const heroCards = bentoCards.filter(({ role }) => role === 'hero').map(({ card }) => card)
@@ -172,17 +182,19 @@ export function useSceneViewportController({
 
           if (!heroCards.length) {
             const splitCards = [...leftCards, ...rightCards]
+            const splitTrigger = hasExperienceTimeline ? leftCards[0] ?? slide : slide
+            const splitMotion = hasExperienceTimeline ? EXPERIENCE_SPLIT_MOTION : SPLIT_BENTO_MOTION
 
             gsap.set(splitCards, { clearProps: 'transform' })
 
             const bentoTimeline = gsap.timeline({
               defaults: { ease: 'none' },
               scrollTrigger: {
-                trigger: slide,
+                trigger: splitTrigger,
                 scroller: viewport,
-                start: SPLIT_BENTO_MOTION.start,
-                end: SPLIT_BENTO_MOTION.end,
-                scrub: SPLIT_BENTO_MOTION.scrub,
+                start: splitMotion.start,
+                end: splitMotion.end,
+                scrub: splitMotion.scrub,
                 invalidateOnRefresh: true,
                 onLeave: () => {
                   gsap.set(splitCards, { clearProps: 'transform' })
@@ -228,9 +240,9 @@ export function useSceneViewportController({
             scrollTrigger: {
               trigger: slide,
               scroller: viewport,
-              start: DEFAULT_CARD_SCROLL_TRIGGER.start,
-              end: DEFAULT_CARD_SCROLL_TRIGGER.end,
-              scrub: DEFAULT_CARD_SCROLL_TRIGGER.scrub,
+              start: hasExperienceTimeline ? EXPERIENCE_BENTO_TRIGGER.start : DEFAULT_CARD_SCROLL_TRIGGER.start,
+              end: hasExperienceTimeline ? EXPERIENCE_BENTO_TRIGGER.end : DEFAULT_CARD_SCROLL_TRIGGER.end,
+              scrub: hasExperienceTimeline ? EXPERIENCE_BENTO_TRIGGER.scrub : DEFAULT_CARD_SCROLL_TRIGGER.scrub,
               invalidateOnRefresh: true
             }
           })
@@ -408,6 +420,8 @@ function getNavStrengths(
   const lastPeakAnchor = peakAnchors[lastIndex]
   const lastReleaseAnchor = Math.max(releaseAnchors[lastIndex] ?? lastPeakAnchor, lastPeakAnchor)
 
+  // Each section peaks when its anchor reaches the viewport center. Experience holds
+  // its nav state until the pinned timeline section actually finishes releasing.
   if (viewportCenter <= lastReleaseAnchor) {
     for (let index = 0; index < lastIndex; index += 1) {
       const currentPeakAnchor = peakAnchors[index]
@@ -422,7 +436,7 @@ function getNavStrengths(
       if (viewportCenter > currentReleaseAnchor && viewportCenter < nextPeakAnchor) {
         const distance = Math.max(nextPeakAnchor - currentReleaseAnchor, 1)
         const progress = gsap.utils.clamp(0, 1, (viewportCenter - currentReleaseAnchor) / distance)
-        const directionalOffset = direction === 1 ? 0.08 : -0.08
+        const directionalOffset = direction === 1 ? NAV_DIRECTIONAL_OFFSET : -NAV_DIRECTIONAL_OFFSET
         const biasedProgress = gsap.utils.clamp(0, 1, progress + directionalOffset)
         const easedProgress = gsap.parseEase('sine.inOut')(biasedProgress)
 

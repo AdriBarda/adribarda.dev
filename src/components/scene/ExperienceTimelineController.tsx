@@ -20,16 +20,22 @@ export function ExperienceTimelineController() {
     const mm = gsap.matchMedia()
 
     mm.add('(min-width: 768px)', () => {
-      gsap.set(timelineTrack, { y: 0 })
+      gsap.set(timelineTrack, { x: 0 })
 
-      const maxTimelineOffset = () => Math.max(0, timelineTrack.scrollHeight - timelineViewport.clientHeight)
+      const syncTimelineLayout = () => {
+        timelineTrack.style.setProperty('--experience-timeline-step-width', `${Math.ceil(timelineViewport.clientWidth)}px`)
+      }
+
+      const maxTimelineOffset = () => Math.max(0, timelineTrack.scrollWidth - timelineViewport.clientWidth)
       const timelineScrollDistance = () => {
-        const perItemDistance = Math.max(180, viewport.clientHeight * 0.32) * (timelineItems.length - 1)
+        const perItemDistance = Math.max(timelineViewport.clientWidth * 0.92, 520) * (timelineItems.length - 1)
 
         return Math.max(maxTimelineOffset(), viewport.clientHeight * 0.9, perItemDistance)
       }
 
       const syncSectionHeight = () => {
+        syncTimelineLayout()
+
         const stickyOffset = viewport.clientHeight * 0.12
         const requiredHeight = pinTarget.offsetHeight + stickyOffset + timelineScrollDistance()
 
@@ -39,12 +45,12 @@ export function ExperienceTimelineController() {
       syncSectionHeight()
 
       const tween = gsap.to(timelineTrack, {
-        y: () => -maxTimelineOffset(),
+        x: () => -maxTimelineOffset(),
         ease: 'none',
         scrollTrigger: {
           trigger: section,
           scroller: viewport,
-          start: 'top 12%',
+          start: 'top 6%',
           end: () => `+=${timelineScrollDistance()}`,
           scrub: 0.28,
           invalidateOnRefresh: true,
@@ -54,10 +60,16 @@ export function ExperienceTimelineController() {
         }
       })
 
+      const refreshId = requestAnimationFrame(() => {
+        ScrollTrigger.refresh()
+      })
+
       return () => {
+        cancelAnimationFrame(refreshId)
         tween.scrollTrigger?.kill()
         tween.kill()
         gsap.set(timelineTrack, { clearProps: 'transform' })
+        timelineTrack.style.removeProperty('--experience-timeline-step-width')
         section.style.removeProperty('--experience-scroll-height')
       }
     })
