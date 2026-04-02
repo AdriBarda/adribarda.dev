@@ -108,7 +108,15 @@ const titleEmoji = titleMatch?.[2]?.trim() ?? ''
 					details.map((detail) => (
 						<div>
 							<p class="text-[0.72rem] uppercase tracking-[0.16em] text-app-text/46">{detail.label}</p>
-							<p class="mt-2 text-app-text/88">{detail.value}</p>
+							<p class="mt-2 flex items-center gap-2 text-app-text/88">
+								{detail.label === 'Status' && detail.value === 'Open To Work' && (
+									<span class="relative flex size-2.5 shrink-0 items-center justify-center">
+										<span class="absolute inline-flex size-full rounded-full bg-emerald-400/70 animate-ping motion-reduce:hidden"></span>
+										<span class="relative inline-flex size-2 rounded-full bg-emerald-400"></span>
+									</span>
+								)}
+								<span>{detail.value}</span>
+							</p>
 						</div>
 					))
 				) : (

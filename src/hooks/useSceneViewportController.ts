@@ -165,6 +165,10 @@ export function useSceneViewportController({
       })
 
       slideTargets.forEach(({ slide, target }) => {
+        if (target.hasAttribute('data-about-static')) {
+          return
+        }
+
         const cardTargets = getAnimatedCards(target)
         const animatedCards = cardTargets.length ? cardTargets : [target]
         const bentoCards = animatedCards.flatMap((card) => {
