@@ -15,11 +15,9 @@ const DEFAULT_CARD_SCROLL_TRIGGER = {
 const DEFAULT_CARD_MOTION = {
   enterY: 42,
   enterScale: 0.965,
-  enterOpacity: 0.78,
   enterDuration: 0.54,
   exitY: -20,
   exitScale: 0.988,
-  exitOpacity: 0.94,
   exitDuration: 0.46
 } as const
 
@@ -173,7 +171,9 @@ export function useSceneViewportController({
           const rightCards = bentoCards.filter(({ role }) => role === 'right').map(({ card }) => card)
 
           if (!heroCards.length) {
-            gsap.set(leftCards, { clearProps: 'transform' })
+            const splitCards = [...leftCards, ...rightCards]
+
+            gsap.set(splitCards, { clearProps: 'transform' })
 
             const bentoTimeline = gsap.timeline({
               defaults: { ease: 'none' },
@@ -183,7 +183,10 @@ export function useSceneViewportController({
                 start: SPLIT_BENTO_MOTION.start,
                 end: SPLIT_BENTO_MOTION.end,
                 scrub: SPLIT_BENTO_MOTION.scrub,
-                invalidateOnRefresh: true
+                invalidateOnRefresh: true,
+                onLeave: () => {
+                  gsap.set(splitCards, { clearProps: 'transform' })
+                }
               }
             })
 
@@ -191,8 +194,7 @@ export function useSceneViewportController({
               bentoTimeline.fromTo(
                 card,
                 {
-                  y: SPLIT_BENTO_MOTION.leftY,
-                  force3D: true
+                  y: SPLIT_BENTO_MOTION.leftY
                 },
                 {
                   y: 0,
@@ -207,8 +209,7 @@ export function useSceneViewportController({
               bentoTimeline.fromTo(
                 card,
                 {
-                  y: SPLIT_BENTO_MOTION.rightY,
-                  force3D: true
+                  y: SPLIT_BENTO_MOTION.rightY
                 },
                 {
                   y: 0,
@@ -235,17 +236,17 @@ export function useSceneViewportController({
           })
 
           heroCards.forEach((card) => {
-            timeline.set(card, { y: HERO_BENTO_MOTION.heroY, force3D: true }, 0)
+            timeline.set(card, { y: HERO_BENTO_MOTION.heroY }, 0)
             timeline.to(card, { y: 0, duration: HERO_BENTO_MOTION.heroDuration }, HERO_BENTO_MOTION.heroStart)
           })
 
           leftCards.forEach((card) => {
-            timeline.set(card, { y: HERO_BENTO_MOTION.leftY, force3D: true }, 0)
+            timeline.set(card, { y: HERO_BENTO_MOTION.leftY }, 0)
             timeline.to(card, { y: 0, duration: HERO_BENTO_MOTION.leftDuration }, HERO_BENTO_MOTION.leftStart)
           })
 
           rightCards.forEach((card) => {
-            timeline.set(card, { y: HERO_BENTO_MOTION.rightY, force3D: true }, 0)
+            timeline.set(card, { y: HERO_BENTO_MOTION.rightY }, 0)
             timeline.to(card, { y: 0, duration: HERO_BENTO_MOTION.rightDuration }, HERO_BENTO_MOTION.rightStart)
           })
 
@@ -274,14 +275,11 @@ export function useSceneViewportController({
               {
                 y: DEFAULT_CARD_MOTION.enterY,
                 scale: DEFAULT_CARD_MOTION.enterScale,
-                opacity: DEFAULT_CARD_MOTION.enterOpacity,
-                transformOrigin: 'center center',
-                force3D: true
+                transformOrigin: 'center center'
               },
               {
                 y: 0,
                 scale: 1,
-                opacity: 1,
                 duration: DEFAULT_CARD_MOTION.enterDuration
               },
               offset
@@ -291,7 +289,6 @@ export function useSceneViewportController({
               {
                 y: DEFAULT_CARD_MOTION.exitY,
                 scale: DEFAULT_CARD_MOTION.exitScale,
-                opacity: DEFAULT_CARD_MOTION.exitOpacity,
                 duration: DEFAULT_CARD_MOTION.exitDuration
               },
               DEFAULT_CARD_MOTION.enterDuration + offset
