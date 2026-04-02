@@ -1,4 +1,6 @@
 ---
+import GithubIcon from '../../assets/tech-stack/github.svg'
+
 interface FooterLink {
 	label: string
 	url: string
@@ -51,7 +53,7 @@ const currentYear = new Date().getFullYear()
 							title={footer.github.label}
 							class="inline-flex items-center justify-center text-app-text/62 transition-[color,transform] duration-200 ease-out hover:scale-110 hover:text-app-text"
 						>
-							<svg aria-hidden="true" class="size-5 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.589 2 12.248c0 4.526 2.865 8.367 6.839 9.722.5.094.682-.221.682-.494 0-.243-.009-.888-.014-1.743-2.782.617-3.369-1.37-3.369-1.37-.455-1.174-1.11-1.487-1.11-1.487-.908-.636.069-.623.069-.623 1.004.072 1.532 1.054 1.532 1.054.892 1.562 2.341 1.111 2.91.85.091-.664.349-1.111.635-1.367-2.22-.259-4.555-1.137-4.555-5.062 0-1.118.389-2.033 1.029-2.75-.103-.26-.446-1.303.098-2.717 0 0 .84-.275 2.75 1.05A9.4 9.4 0 0 1 12 6.844a9.4 9.4 0 0 1 2.504.346c1.909-1.325 2.748-1.05 2.748-1.05.546 1.414.202 2.457.1 2.717.64.717 1.028 1.632 1.028 2.75 0 3.935-2.338 4.8-4.566 5.054.358.315.678.936.678 1.886 0 1.361-.012 2.459-.012 2.793 0 .276.18.593.688.492 3.97-1.221 6.832-5.06 6.832-9.584C22 6.589 17.523 2 12 2" /></svg>
+							<GithubIcon aria-hidden="true" class="size-5 fill-current" />
 						</a>
 					)}
 					{footer?.linkedin && (
