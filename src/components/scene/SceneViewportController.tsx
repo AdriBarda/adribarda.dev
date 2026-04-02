@@ -16,6 +16,7 @@ export function SceneViewportController({ slides, children }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const footerTriggerRef = useRef<HTMLDivElement>(null)
+  const buttonRefs = useRef<Array<HTMLButtonElement | null>>([])
   const tickRefs = useRef<Array<HTMLSpanElement | null>>([])
   const tickColorCacheRef = useRef<{ muted: string; accents: string[] }>({ muted: '', accents: [] })
 
@@ -52,9 +53,8 @@ export function SceneViewportController({ slides, children }: Props) {
           return
         }
 
-        const progress = progresses[index] ?? 0
-        const proximity = gsap.utils.clamp(0, 1, 1 - Math.abs(progress - 0.5) / 0.5)
-        const eased = gsap.parseEase('power2.out')(proximity)
+        const strength = gsap.utils.clamp(0, 1, progresses[index] ?? 0)
+        const eased = gsap.parseEase('power2.out')(strength)
         const accentColor = accents[index] ?? muted
 
         gsap.set(tick, {
@@ -69,10 +69,17 @@ export function SceneViewportController({ slides, children }: Props) {
     [slides]
   )
 
-  const { activeIndex, goTo } = useSceneViewportController({
+  const handleActiveIndexChange = useCallback((activeIndex: number) => {
+    buttonRefs.current.slice(0, slides.length).forEach((button, index) => {
+      button?.setAttribute('aria-current', index === activeIndex ? 'true' : 'false')
+    })
+  }, [slides.length])
+
+  const { goTo } = useSceneViewportController({
     viewportRef,
     trackRef,
-    onSlideProgressChange: handleSlideProgressChange
+    onSlideProgressChange: handleSlideProgressChange,
+    onActiveIndexChange: handleActiveIndexChange
   })
 
   useEffect(() => {
@@ -138,14 +145,15 @@ export function SceneViewportController({ slides, children }: Props) {
         <div className="absolute -right-6 top-1/2 hidden -translate-y-1/2 md:block min-[1390px]:-right-20">
           <div className="flex flex-col items-end gap-5 lg:gap-6">
             {slides.map((slide, index) => {
-              const active = index === activeIndex
-
               return (
                 <button
                   key={slide.id}
                   type="button"
+                  ref={(element) => {
+                    buttonRefs.current[index] = element
+                  }}
                   aria-label={`Go to ${slide.id.replace(/-/g, ' ')}`}
-                  aria-current={active ? 'true' : 'false'}
+                  aria-current={index === 0 ? 'true' : 'false'}
                   title={slide.id.replace(/-/g, ' ')}
                   className="pointer-events-auto flex h-3 w-8 items-center justify-end lg:h-4 lg:w-9"
                   onClick={() => goTo(index)}

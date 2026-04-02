@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type RefObject } from 'react'
+import { useEffect, useRef, type RefObject } from 'react'
 import { gsap } from 'gsap'
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -58,14 +58,15 @@ interface Options {
   viewportRef: RefObject<HTMLDivElement | null>
   trackRef: RefObject<HTMLDivElement | null>
   onSlideProgressChange?: (progresses: number[]) => void
+  onActiveIndexChange?: (index: number) => void
 }
 
 export function useSceneViewportController({
   viewportRef,
   trackRef,
-  onSlideProgressChange
+  onSlideProgressChange,
+  onActiveIndexChange
 }: Options) {
-  const [activeIndex, setActiveIndex] = useState(0)
   const activeIndexRef = useRef(0)
   const goToRef = useRef<(index: number) => void>(() => {})
 
@@ -85,11 +86,11 @@ export function useSceneViewportController({
       }
 
       activeIndexRef.current = nextIndex
-      setActiveIndex(nextIndex)
+      onActiveIndexChange?.(nextIndex)
     }
 
     activeIndexRef.current = 0
-    setActiveIndex(0)
+    onActiveIndexChange?.(0)
 
     const mm = gsap.matchMedia()
 
@@ -98,22 +99,58 @@ export function useSceneViewportController({
         slide,
         target: slide.firstElementChild instanceof HTMLElement ? slide.firstElementChild : slide
       }))
-      const slideProgresses = new Array(slideTargets.length).fill(0)
+      const navFocusTargets = slideTargets.map(({ target }) => getNavFocusTarget(target))
+      const navStrengths = new Array(slideTargets.length).fill(0)
 
       if (!slideTargets.length) {
         return
       }
 
       let scrollTween: gsap.core.Tween | null = null
+      let navStateTrigger: ScrollTrigger | null = null
+      let navPeakAnchors = navFocusTargets.map((target) => getNavAnchorPosition(target, track))
+      let navReleaseAnchors = slideTargets.map(({ target }, index) => getNavReleaseAnchor(target, navFocusTargets[index], track, viewport))
+      let navScrollEndAnchor = Math.max(viewport.scrollHeight - viewport.clientHeight / 2, 0)
 
-      const notifySlideProgressChange = () => {
-        onSlideProgressChange?.([...slideProgresses])
+      const syncNavMetrics = () => {
+        navPeakAnchors = navFocusTargets.map((target) => getNavAnchorPosition(target, track))
+        navReleaseAnchors = slideTargets.map(({ target }, index) => getNavReleaseAnchor(target, navFocusTargets[index], track, viewport))
+        navScrollEndAnchor = Math.max(viewport.scrollHeight - viewport.clientHeight / 2, 0)
       }
 
-      slideTargets.forEach(({ slide, target }, index) => {
-        const cardTargets = getAnimatedCards(target)
-        const timelineItems = Array.from(target.querySelectorAll<HTMLElement>('[data-experience-timeline-item]'))
+      const syncNavState = () => {
+        const viewportCenter = viewport.scrollTop + viewport.clientHeight / 2
+        const strengths = getNavStrengths(viewportCenter, navPeakAnchors, navReleaseAnchors, navScrollEndAnchor)
 
+        strengths.forEach((strength, index) => {
+          navStrengths[index] = strength
+        })
+
+        onSlideProgressChange?.([...navStrengths])
+
+        const mostProminentIndex = getMostProminentIndex(navStrengths)
+
+        if (mostProminentIndex !== null) {
+          setCurrentIndex(mostProminentIndex)
+        }
+      }
+
+      navStateTrigger = ScrollTrigger.create({
+        trigger: track,
+        scroller: viewport,
+        start: 'top top',
+        end: () => `+=${Math.max(viewport.scrollHeight - viewport.clientHeight, 1)}`,
+        invalidateOnRefresh: true,
+        onRefreshInit: syncNavMetrics,
+        onUpdate: syncNavState,
+        onRefresh: () => {
+          syncNavMetrics()
+          syncNavState()
+        }
+      })
+
+      slideTargets.forEach(({ slide, target }) => {
+        const cardTargets = getAnimatedCards(target)
         const animatedCards = cardTargets.length ? cardTargets : [target]
         const bentoCards = animatedCards.flatMap((card) => {
           const role = getBentoRole(card)
@@ -121,20 +158,6 @@ export function useSceneViewportController({
           return role ? [{ card, role }] : []
         })
         const isBento = bentoCards.length > 0
-        const hasExperienceTimeline = target.hasAttribute('data-experience-section') && timelineItems.length > 1
-        const slideProgressHandlers = createSlideProgressHandlers(index, slideProgresses, notifySlideProgressChange, setCurrentIndex)
-
-        if (hasExperienceTimeline) {
-          ScrollTrigger.create({
-            trigger: slide,
-            scroller: viewport,
-            start: DEFAULT_CARD_SCROLL_TRIGGER.start,
-            end: DEFAULT_CARD_SCROLL_TRIGGER.end,
-            scrub: DEFAULT_CARD_SCROLL_TRIGGER.scrub,
-            invalidateOnRefresh: true,
-            ...slideProgressHandlers
-          })
-        }
 
         if (isBento) {
           const heroCards = bentoCards.filter(({ role }) => role === 'hero').map(({ card }) => card)
@@ -199,8 +222,7 @@ export function useSceneViewportController({
               start: DEFAULT_CARD_SCROLL_TRIGGER.start,
               end: DEFAULT_CARD_SCROLL_TRIGGER.end,
               scrub: DEFAULT_CARD_SCROLL_TRIGGER.scrub,
-              invalidateOnRefresh: true,
-              ...slideProgressHandlers
+              invalidateOnRefresh: true
             }
           })
 
@@ -231,8 +253,7 @@ export function useSceneViewportController({
             start: DEFAULT_CARD_SCROLL_TRIGGER.start,
             end: DEFAULT_CARD_SCROLL_TRIGGER.end,
             scrub: DEFAULT_CARD_SCROLL_TRIGGER.scrub,
-            invalidateOnRefresh: true,
-            ...slideProgressHandlers
+            invalidateOnRefresh: true
           }
         })
 
@@ -288,9 +309,10 @@ export function useSceneViewportController({
       }
 
       ScrollTrigger.refresh()
-      notifySlideProgressChange()
+      syncNavState()
 
       return () => {
+        navStateTrigger?.kill()
         scrollTween?.kill()
         goToRef.current = () => {}
       }
@@ -300,10 +322,9 @@ export function useSceneViewportController({
       goToRef.current = () => {}
       mm.revert()
     }
-  }, [onSlideProgressChange, trackRef, viewportRef])
+  }, [onActiveIndexChange, onSlideProgressChange, trackRef, viewportRef])
 
   return {
-    activeIndex,
     goTo(index: number) {
       goToRef.current(index)
     }
@@ -332,18 +353,105 @@ function getAnimatedCards(target: HTMLElement) {
   return Array.from(target.querySelectorAll<HTMLElement>(':scope > [data-experience-pin] > [data-glass-card]'))
 }
 
-function createSlideProgressHandlers(
-  index: number,
-  slideProgresses: number[],
-  notifySlideProgressChange: () => void,
-  setCurrentIndex: (nextIndex: number) => void
-) {
-  return {
-    onUpdate: (self: ScrollTrigger) => {
-      slideProgresses[index] = self.progress
-      notifySlideProgressChange()
-    },
-    onEnter: () => setCurrentIndex(index),
-    onEnterBack: () => setCurrentIndex(index)
+function getNavFocusTarget(target: HTMLElement) {
+  return target.querySelector<HTMLElement>(':scope > [data-experience-pin]') ?? target
+}
+
+function getNavAnchorPosition(target: HTMLElement, track: HTMLElement) {
+  return getOffsetTop(target) - getOffsetTop(track) + target.offsetHeight / 2
+}
+
+function getNavReleaseAnchor(target: HTMLElement, focusTarget: HTMLElement, track: HTMLElement, viewport: HTMLElement) {
+  if (!target.hasAttribute('data-experience-section')) {
+    return getNavAnchorPosition(focusTarget, track)
   }
+
+  return getOffsetTop(target) - getOffsetTop(track) + target.offsetHeight - viewport.clientHeight / 2
+}
+
+function getOffsetTop(element: HTMLElement) {
+  let top = 0
+  let current: HTMLElement | null = element
+
+  while (current) {
+    top += current.offsetTop
+    current = current.offsetParent as HTMLElement | null
+  }
+
+  return top
+}
+
+function getNavStrengths(
+  viewportCenter: number,
+  peakAnchors: number[],
+  releaseAnchors: number[],
+  scrollEndAnchor: number
+) {
+  const strengths = new Array(peakAnchors.length).fill(0)
+
+  if (peakAnchors.length === 0) {
+    return strengths
+  }
+
+  if (viewportCenter <= peakAnchors[0]) {
+    strengths[0] = 1
+    return strengths
+  }
+
+  const lastIndex = peakAnchors.length - 1
+  const lastPeakAnchor = peakAnchors[lastIndex]
+  const lastReleaseAnchor = Math.max(releaseAnchors[lastIndex] ?? lastPeakAnchor, lastPeakAnchor)
+
+  if (viewportCenter <= lastReleaseAnchor) {
+    for (let index = 0; index < lastIndex; index += 1) {
+      const currentPeakAnchor = peakAnchors[index]
+      const currentReleaseAnchor = Math.max(releaseAnchors[index] ?? currentPeakAnchor, currentPeakAnchor)
+      const nextPeakAnchor = peakAnchors[index + 1]
+
+      if (viewportCenter >= currentPeakAnchor && viewportCenter <= currentReleaseAnchor) {
+        strengths[index] = 1
+        return strengths
+      }
+
+      if (viewportCenter > currentReleaseAnchor && viewportCenter < nextPeakAnchor) {
+        const distance = Math.max(nextPeakAnchor - currentReleaseAnchor, 1)
+        const progress = gsap.utils.clamp(0, 1, (viewportCenter - currentReleaseAnchor) / distance)
+        const easedProgress = gsap.parseEase('power2.out')(progress)
+
+        strengths[index] = 1 - easedProgress
+        strengths[index + 1] = easedProgress
+        return strengths
+      }
+    }
+
+    strengths[lastIndex] = 1
+    return strengths
+  }
+
+  if (viewportCenter >= lastReleaseAnchor) {
+    const fadeDistance = Math.max(scrollEndAnchor - lastReleaseAnchor, 1)
+    const fadeProgress = gsap.utils.clamp(0, 1, (viewportCenter - lastReleaseAnchor) / fadeDistance)
+
+    strengths[lastIndex] = 1 - fadeProgress
+    return strengths
+  }
+
+  strengths[lastIndex] = 1
+  return strengths
+}
+
+function getMostProminentIndex(strengths: number[]) {
+  let nextIndex: number | null = null
+  let highestProximity = 0
+
+  strengths.forEach((strength, index) => {
+    const proximity = gsap.utils.clamp(0, 1, strength)
+
+    if (proximity > highestProximity) {
+      highestProximity = proximity
+      nextIndex = index
+    }
+  })
+
+  return nextIndex
 }
