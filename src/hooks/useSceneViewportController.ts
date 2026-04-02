@@ -30,9 +30,9 @@ const SPLIT_BENTO_MOTION = {
   leftY: 112,
   rightY: 164,
   leftStart: 0,
-  leftDuration: 1,
-  rightStart: 0.24,
-  rightDuration: 0.76,
+  leftDuration: 0.68,
+  rightStart: 0.22,
+  rightDuration: 0.9,
   leftEase: 'none',
   rightEase: 'none'
 } as const
@@ -108,6 +108,8 @@ export function useSceneViewportController({
 
       let scrollTween: gsap.core.Tween | null = null
       let navStateTrigger: ScrollTrigger | null = null
+      let navDirection: 1 | -1 = 1
+      let lastViewportCenter = viewport.scrollTop + viewport.clientHeight / 2
       let navPeakAnchors = navFocusTargets.map((target) => getNavAnchorPosition(target, track))
       let navReleaseAnchors = slideTargets.map(({ target }, index) => getNavReleaseAnchor(target, navFocusTargets[index], track, viewport))
       let navScrollEndAnchor = Math.max(viewport.scrollHeight - viewport.clientHeight / 2, 0)
@@ -120,7 +122,13 @@ export function useSceneViewportController({
 
       const syncNavState = () => {
         const viewportCenter = viewport.scrollTop + viewport.clientHeight / 2
-        const strengths = getNavStrengths(viewportCenter, navPeakAnchors, navReleaseAnchors, navScrollEndAnchor)
+
+        if (viewportCenter !== lastViewportCenter) {
+          navDirection = viewportCenter > lastViewportCenter ? 1 : -1
+          lastViewportCenter = viewportCenter
+        }
+
+        const strengths = getNavStrengths(viewportCenter, navPeakAnchors, navReleaseAnchors, navScrollEndAnchor, navDirection)
 
         strengths.forEach((strength, index) => {
           navStrengths[index] = strength
@@ -385,7 +393,8 @@ function getNavStrengths(
   viewportCenter: number,
   peakAnchors: number[],
   releaseAnchors: number[],
-  scrollEndAnchor: number
+  scrollEndAnchor: number,
+  direction: 1 | -1
 ) {
   const strengths = new Array(peakAnchors.length).fill(0)
 
@@ -416,7 +425,9 @@ function getNavStrengths(
       if (viewportCenter > currentReleaseAnchor && viewportCenter < nextPeakAnchor) {
         const distance = Math.max(nextPeakAnchor - currentReleaseAnchor, 1)
         const progress = gsap.utils.clamp(0, 1, (viewportCenter - currentReleaseAnchor) / distance)
-        const easedProgress = gsap.parseEase('power2.out')(progress)
+        const directionalOffset = direction === 1 ? 0.08 : -0.08
+        const biasedProgress = gsap.utils.clamp(0, 1, progress + directionalOffset)
+        const easedProgress = gsap.parseEase('sine.inOut')(biasedProgress)
 
         strengths[index] = 1 - easedProgress
         strengths[index + 1] = easedProgress
