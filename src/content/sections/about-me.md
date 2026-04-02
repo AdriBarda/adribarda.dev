@@ -4,12 +4,17 @@ scene: 4
 cardSize: hero
 section: about-me
 eyebrow: About me
-title: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-highlights:
-  - Lorem ipsum dolor
-  - Consectetur adipiscing
-  - Eiusmod tempor
+title: Outside work, languages, and education.
+summary: A few details beyond day-to-day frontend work.
+languages:
+  - 'English: C2 Proficient (EF SET 71 / 100)'
+  - 'English: Cambridge English First Certificate (B2)'
+  - 'Spanish: Native'
+  - 'Catalan: Native'
+education:
+  institution: Universitat Pompeu Fabra (TecnoCampus)
+  program: Bachelor’s Degree in Computer Engineering (Grau en Enginyeria Informàtica de Gestió i Sistemes d’Informació)
+  period: 2017 - 2021
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur.
+During my free time I enjoy playing music 🎸, drinking tea ☕️, playing videogames 👾 and exploring new places 🚶. Before you even ask, I am team pinapple in the pizza 🍕🍍. I love cats 🐈❤️.

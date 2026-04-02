@@ -9,53 +9,88 @@ const entry = group?.entries[0]
 const renderedEntry = entry ? await render(entry) : undefined
 const accentClass = accentTone ? sceneToneAccentClasses[accentTone] : ''
 
-const pillClass = [
-	'rounded-full border border-white/35 px-4 py-2.5 text-sm text-app-text',
-	'bg-white/18 backdrop-blur-[6px] backdrop-saturate-125 dark:bg-white/8 dark:border-white/15'
-].join(' ')
+const languageGroups = (entry?.data.languages ?? []).reduce<Array<{ label: string; details: string[] }>>((groups, item) => {
+	const separatorIndex = item.indexOf(':')
+	const label = separatorIndex >= 0 ? item.slice(0, separatorIndex).trim() : item.trim()
+	const detail = separatorIndex >= 0 ? item.slice(separatorIndex + 1).trim() : ''
+	const previousGroup = groups.at(-1)
+
+	if (previousGroup?.label === label && detail) {
+		previousGroup.details.push(detail)
+		return groups
+	}
+
+	groups.push({
+		label,
+		details: detail ? [detail] : []
+	})
+
+	return groups
+}, [])
 ---
 
-<GlassCard class="w-full p-6 sm:p-8 lg:p-9">
-	<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
-	<div class="grid gap-8 lg:grid-cols-[minmax(0,1.28fr)_minmax(17rem,0.82fr)] lg:gap-9">
-		<div class="flex flex-col justify-between gap-6">
+<div data-about-static class="grid w-full gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
+	<GlassCard class="p-6 sm:p-8 md:row-span-2 lg:p-9">
+		<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
+		<div class="flex h-full flex-col gap-6">
 			<div>
 				{entry?.data.eyebrow && (
 					<p class="text-[0.78rem] uppercase tracking-[0.18em] text-app-text/58">{entry.data.eyebrow}</p>
 				)}
 
-				<p class="mt-5 text-sm tracking-[0.02em] text-app-muted sm:text-base">{entry?.data.section ?? 'about-me'}</p>
-
-				<h1 class="mt-4 max-w-[10ch] text-balance text-[clamp(2.7rem,6vw,5.7rem)] leading-[0.92] font-semibold tracking-[-0.06em]">
-					{entry?.data.title ?? 'Missing about title.'}
+				<h1 class="mt-4 max-w-[12ch] text-balance text-[clamp(2.4rem,5.2vw,4.8rem)] leading-[0.94] font-semibold tracking-[-0.055em] text-app-text">
+					Outside work.
 				</h1>
 
-				<p class="mt-5 max-w-lg text-[clamp(0.98rem,1.35vw,1.08rem)] leading-[1.66] text-app-muted">
+				<p class="mt-4 max-w-lg text-[clamp(0.98rem,1.18vw,1.04rem)] leading-[1.68] text-app-text/74 text-pretty">
 					{entry?.data.summary ?? 'Missing about summary.'}
 				</p>
 			</div>
 
-			<div class="flex flex-wrap gap-2.5">
-				{
-					(entry?.data.highlights ?? []).map((area) => (
-						<span class={pillClass}>{area}</span>
-					))
-				}
+			<div class="text-[0.98rem] leading-[1.74] text-app-text/88 text-pretty [&_p+p]:mt-4">
+				{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing about body.</p>}
 			</div>
 		</div>
+	</GlassCard>
 
-		<div class="flex flex-col justify-end gap-6 lg:pl-5">
-			<div class="max-w-104 self-start border-l border-app-border pl-6">
-				<p class="text-[0.76rem] uppercase tracking-[0.14em] text-app-muted">Notes</p>
-				<div class="mt-4 text-[0.98rem] leading-[1.72] text-app-text text-balance">
-					{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing about body.</p>}
-				</div>
+	<GlassCard class="h-full p-5 lg:p-6">
+		<div class="flex h-full flex-col gap-4">
+			<div>
+				<p class="text-[0.76rem] uppercase tracking-[0.18em] text-app-text/58">Languages</p>
 			</div>
 
-			<div class="grid max-w-104 gap-3 border-t border-app-border pt-4 text-sm leading-[1.62] text-app-muted sm:grid-cols-2 lg:grid-cols-1">
-				<p>{entry?.data.summary ?? 'Missing about summary.'}</p>
-				<p>{entry?.data.eyebrow ?? 'About me'}</p>
+			<ul class="grid gap-3 text-sm leading-[1.7] text-app-text/84">
+				{languageGroups.map((languageGroup) => (
+					<li class="border-t border-app-border/70 pt-3 first:border-t-0 first:pt-0">
+						<p class="font-medium text-app-text">{languageGroup.label}</p>
+						<div class="mt-1 grid gap-1 text-app-text/74">
+							{languageGroup.details.map((detail) => (
+								<p>{detail}</p>
+							))}
+						</div>
+					</li>
+				))}
+			</ul>
+		</div>
+	</GlassCard>
+
+	<GlassCard class="p-5 lg:p-6">
+		<div class="flex h-full flex-col justify-between gap-4">
+			<div>
+				<p class="text-[0.76rem] uppercase tracking-[0.14em] text-app-text/58">Education</p>
+			</div>
+
+			<div class="flex flex-col gap-3 text-app-text/82">
+				<p class="text-base leading-[1.55] font-medium text-app-text">
+					{entry?.data.education?.institution ?? 'Missing education institution.'}
+				</p>
+				<p class="text-sm leading-[1.72] text-app-text/74 text-pretty">
+					{entry?.data.education?.program ?? 'Missing education program.'}
+				</p>
+				<p class="text-[0.76rem] uppercase tracking-[0.16em] text-app-text/56">
+					{entry?.data.education?.period ?? 'Missing education period.'}
+				</p>
 			</div>
 		</div>
-	</div>
-</GlassCard>
+	</GlassCard>
+</div>

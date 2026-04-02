@@ -15,6 +15,14 @@ const sections = defineCollection({
     title: z.string(),
     summary: z.string(),
     highlights: z.array(z.string()).default([]),
+    languages: z.array(z.string()).default([]),
+    education: z
+      .object({
+        institution: z.string(),
+        program: z.string(),
+        period: z.string()
+      })
+      .optional(),
     profileLabel: z.string().optional(),
     details: z
       .array(
