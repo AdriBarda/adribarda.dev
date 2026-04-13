@@ -14,7 +14,7 @@ const { slides } = Astro.props as { slides: Slide[] }
 const navSlides: SceneNavSlide[] = slides.map(({ id, navTone }) => ({ id, navTone }))
 ---
 
-<SceneViewportController client:load slides={navSlides}>
+<SceneViewportController client:idle slides={navSlides}>
 	{
 		slides.map(({ id, Component, props = {} }, index) => (
 			<section

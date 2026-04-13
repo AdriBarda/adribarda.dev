@@ -12,6 +12,10 @@ export function MazeCanvas() {
   const overlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (window.matchMedia('(max-width: 767px)').matches) {
+      return
+    }
+
     const canvas = canvasRef.current
     const overlay = overlayRef.current
 
@@ -101,12 +105,12 @@ export function MazeCanvas() {
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        className="absolute inset-0 block size-full pointer-events-none"
+        className="absolute inset-0 hidden size-full pointer-events-none md:block"
       />
       <div
         ref={overlayRef}
         aria-hidden="true"
-        className="absolute inset-0 pointer-events-none bg-app-bg opacity-0"
+        className="absolute inset-0 hidden pointer-events-none bg-app-bg opacity-0 md:block"
       />
     </>
   )
