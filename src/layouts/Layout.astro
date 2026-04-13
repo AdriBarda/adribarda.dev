@@ -11,33 +11,7 @@ import '../styles/global.css'
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro Basics</title>
-		<script is:inline>
-			const storageKey = 'theme-preference'
-			const root = document.documentElement
-			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-
-			const getStoredPreference = () => {
-				const preference = localStorage.getItem(storageKey)
-				return preference === 'light' || preference === 'dark' || preference === 'system'
-					? preference
-					: 'system'
-			}
-
-			const applyTheme = (preference) => {
-				const theme =
-					preference === 'system'
-						? mediaQuery.matches
-							? 'dark'
-							: 'light'
-						: preference
-
-				root.dataset.theme = theme
-				root.dataset.themePreference = preference
-				root.style.colorScheme = theme
-			}
-
-			applyTheme(getStoredPreference())
-		</script>
+		<script is:inline src="/theme-init.js"></script>
 	</head>
 	<body class="bg-app-bg text-app-text">
 		<div class="pointer-events-none fixed top-[max(12px,calc(var(--page-padding)-32px))] right-[max(12px,calc(var(--page-padding)-4px))] z-30">
