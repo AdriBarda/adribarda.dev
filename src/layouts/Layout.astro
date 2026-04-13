@@ -5,6 +5,20 @@ import '../styles/global.css'
 const assetBase = import.meta.env.BASE_URL.endsWith('/')
 	? import.meta.env.BASE_URL
 	: `${import.meta.env.BASE_URL}/`
+
+const siteUrl = 'https://adribarda.github.io/adribarda.dev/'
+const pageTitle = 'Adrià Bardají | Frontend Engineer portfolio'
+const pageDescription =
+	'Adrià Bardají is a Software Engineer focused on building scalable, maintainable web applications and user-centered digital products. Explore my projects, technical skills, and professional experience.'
+const socialImageUrl = `${siteUrl}og-image.png`
+const structuredData = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: 'Adrià Bardají',
+	url: siteUrl,
+	jobTitle: 'Frontend Engineer',
+	sameAs: ['https://github.com/AdriBarda', 'https://www.linkedin.com/in/adriabardajicros/']
+}
 ---
 <!doctype html>
 <html lang="en">
@@ -13,8 +27,27 @@ const assetBase = import.meta.env.BASE_URL.endsWith('/')
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href={`${assetBase}favicon.svg`} />
 		<meta name="generator" content={Astro.generator} />
-		<title>AdriBarda | Frontend Engineer</title>
+		<meta name="description" content={pageDescription} />
+		<meta name="robots" content="index, follow" />
+		<link rel="canonical" href={siteUrl} />
+
+		<meta property="og:type" content="website" />
+		<meta name="author" content="Adrià Bardají (AdriBarda)">
+		<meta property="og:site_name" content="AdriBarda" />
+		<meta name="language" content="English">
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={pageDescription} />
+		<meta property="og:url" content={siteUrl} />
+		<meta property="og:image" content={socialImageUrl} />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={pageTitle} />
+		<meta name="twitter:description" content={pageDescription} />
+		<meta name="twitter:image" content={socialImageUrl} />
+
+		<title>{pageTitle}</title>
 		<script is:inline src={`${assetBase}theme-init.js`}></script>
+		<script type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
 	</head>
 	<body class="bg-app-bg text-app-text">
 		<div class="pointer-events-none fixed top-[max(12px,calc(var(--page-padding)-32px))] right-[max(12px,calc(var(--page-padding)-4px))] z-30">
