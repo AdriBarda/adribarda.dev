@@ -115,8 +115,6 @@ Use the production build as the main verification step:
 pnpm build
 ```
 
-There is currently no lint or test runner configured in this repo.
-
 ## Author
 
 [@AdriBarda](https://github.com/AdriBarda)
