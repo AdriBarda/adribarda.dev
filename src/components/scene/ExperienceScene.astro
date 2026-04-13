@@ -32,7 +32,7 @@ const experienceMeta = [
 ---
 
 <div data-experience-section class="w-full md:min-h-(--experience-scroll-height)" style={`--experience-scroll-height: ${timelineScrollHeight};`}>
-	<ExperienceTimelineController client:load />
+	<ExperienceTimelineController client:media="(min-width: 768px)" />
 	<div data-experience-pin class="grid w-full gap-4 md:sticky md:top-[12vh] md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:grid-rows-[auto_minmax(0,1fr)]">
 	<GlassCard class="p-6 sm:p-8 md:col-span-2 lg:p-9">
 		<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
