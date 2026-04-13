@@ -42,12 +42,12 @@ const languageGroups = (entry?.data.languages ?? []).reduce<Array<{ label: strin
 					Outside work.
 				</h1>
 
-				<p class="mt-4 max-w-lg text-[clamp(0.98rem,1.18vw,1.04rem)] leading-[1.68] text-app-text/74 text-pretty">
+				<p class="mt-4 max-w-lg text-[clamp(1.02rem,1.22vw,1.08rem)] leading-[1.68] text-app-text/74 text-pretty">
 					{entry?.data.summary ?? 'Missing about summary.'}
 				</p>
 			</div>
 
-			<div class="text-[0.98rem] leading-[1.74] text-app-text/88 text-pretty [&_p+p]:mt-4">
+			<div class="text-[1.02rem] leading-[1.74] text-app-text/88 text-pretty [&_p+p]:mt-4">
 				{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing about body.</p>}
 			</div>
 		</div>
@@ -59,7 +59,7 @@ const languageGroups = (entry?.data.languages ?? []).reduce<Array<{ label: strin
 				<p class="text-[0.76rem] uppercase tracking-[0.18em] text-app-text/58">Languages</p>
 			</div>
 
-			<ul class="grid gap-3 text-sm leading-[1.7] text-app-text/84">
+			<ul class="grid gap-3 text-[0.96rem] leading-[1.7] text-app-text/84">
 				{languageGroups.map((languageGroup) => (
 					<li class="border-t border-app-border/70 pt-3 first:border-t-0 first:pt-0">
 						<p class="font-medium text-app-text">{languageGroup.label}</p>
@@ -84,7 +84,7 @@ const languageGroups = (entry?.data.languages ?? []).reduce<Array<{ label: strin
 				<p class="text-base leading-[1.55] font-medium text-app-text">
 					{entry?.data.education?.institution ?? 'Missing education institution.'}
 				</p>
-				<p class="text-sm leading-[1.72] text-app-text/74 text-pretty">
+				<p class="text-[0.96rem] leading-[1.72] text-app-text/74 text-pretty">
 					{entry?.data.education?.program ?? 'Missing education program.'}
 				</p>
 				<p class="text-[0.76rem] uppercase tracking-[0.16em] text-app-text/56">

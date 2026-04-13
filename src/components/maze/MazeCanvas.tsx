@@ -2,7 +2,10 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-import { SCENE_VIEWPORT_READY_EVENT, type SceneViewportReadyDetail } from '../scene/sceneViewportEvents'
+import {
+  SCENE_VIEWPORT_READY_EVENT,
+  type SceneViewportReadyDetail
+} from '../scene/sceneViewportEvents'
 import { useMazeCanvas } from '../../hooks/useMazeCanvas'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -47,7 +50,8 @@ export function MazeCanvas() {
     }
 
     const setupMazeDimTrigger = (viewport?: HTMLElement | null) => {
-      const resolvedViewport = viewport ?? document.querySelector<HTMLElement>('[data-scene-viewport-scroll]')
+      const resolvedViewport =
+        viewport ?? document.querySelector<HTMLElement>('[data-scene-viewport-scroll]')
       const nextScroller = resolvedViewport ?? window
 
       if (nextScroller === currentScroller) {

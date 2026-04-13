@@ -3,7 +3,7 @@ export type MazeTheme = 'light' | 'dark'
 export const MAZE_CONFIG = {
   baseCellSize: 32,
   restartDelayMs: 1200,
-  solutionSpeed: 33,
+  solutionSpeed: 10,
   solutionEdgeOvershoot: 1,
   wallLineWidth: 1,
   solutionLineWidth: 2
