@@ -20,6 +20,16 @@ export function SceneViewportController({ slides, children }: Props) {
   const buttonRefs = useRef<Array<HTMLButtonElement | null>>([])
   const tickRefs = useRef<Array<HTMLSpanElement | null>>([])
   const tickColorCacheRef = useRef<{ muted: string; accents: string[] }>({ muted: '', accents: [] })
+  const tickProgressesRef = useRef<number[]>(slides.map(() => 0))
+
+  const handleSlideProgressChange = useCallback(
+    (progresses: number[]) => {
+      tickProgressesRef.current = progresses
+
+      applyTickStyles(tickRefs.current, slides.length, progresses, tickColorCacheRef.current)
+    },
+    [slides]
+  )
 
   useEffect(() => {
     const updateTickColors = () => {
@@ -29,6 +39,8 @@ export function SceneViewportController({ slides, children }: Props) {
         muted: resolveCssVarColor('var(--app-muted)', rootStyles),
         accents: slides.map((slide) => resolveCssVarColor(sceneToneAccentColors[slide.navTone], rootStyles))
       }
+
+      handleSlideProgressChange(tickProgressesRef.current)
     }
 
     updateTickColors()
@@ -43,32 +55,7 @@ export function SceneViewportController({ slides, children }: Props) {
     return () => {
       themeObserver.disconnect()
     }
-  }, [slides])
-
-  const handleSlideProgressChange = useCallback(
-    (progresses: number[]) => {
-      const { muted, accents } = tickColorCacheRef.current
-
-      tickRefs.current.slice(0, slides.length).forEach((tick, index) => {
-        if (!tick) {
-          return
-        }
-
-        const strength = gsap.utils.clamp(0, 1, progresses[index] ?? 0)
-        const eased = gsap.parseEase('power2.out')(strength)
-        const accentColor = accents[index] ?? muted
-
-        gsap.set(tick, {
-          width: gsap.utils.interpolate(10, 32, eased),
-          opacity: gsap.utils.interpolate(0.58, 1, eased),
-          scaleY: gsap.utils.interpolate(1, 1.35, eased),
-          backgroundColor: gsap.utils.interpolate(muted, accentColor, eased),
-          transformOrigin: 'right center'
-        })
-      })
-    },
-    [slides]
-  )
+  }, [handleSlideProgressChange, slides])
 
   const handleActiveIndexChange = useCallback((activeIndex: number) => {
     buttonRefs.current.slice(0, slides.length).forEach((button, index) => {
@@ -187,6 +174,33 @@ export function SceneViewportController({ slides, children }: Props) {
       </div>
     </section>
   )
+}
+
+function applyTickStyles(
+  tickRefs: Array<HTMLSpanElement | null>,
+  slideCount: number,
+  progresses: number[],
+  colors: { muted: string; accents: string[] }
+) {
+  const { muted, accents } = colors
+
+  tickRefs.slice(0, slideCount).forEach((tick, index) => {
+    if (!tick) {
+      return
+    }
+
+    const strength = gsap.utils.clamp(0, 1, progresses[index] ?? 0)
+    const eased = gsap.parseEase('power2.out')(strength)
+    const accentColor = accents[index] ?? muted
+
+    gsap.set(tick, {
+      width: gsap.utils.interpolate(10, 32, eased),
+      opacity: gsap.utils.interpolate(0.58, 1, eased),
+      scaleY: gsap.utils.interpolate(1, 1.35, eased),
+      backgroundColor: gsap.utils.interpolate(muted, accentColor, eased),
+      transformOrigin: 'right center'
+    })
+  })
 }
 
 function resolveCssVarColor(value: string, styles: CSSStyleDeclaration) {

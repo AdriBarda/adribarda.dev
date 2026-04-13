@@ -79,7 +79,7 @@ export function useSceneViewportController({
   onSlideProgressChange,
   onActiveIndexChange
 }: Options) {
-  const activeIndexRef = useRef(0)
+  const activeIndexRef = useRef<number | null>(null)
   const goToRef = useRef<(index: number) => void>(() => {})
 
   useEffect(() => {
@@ -101,8 +101,7 @@ export function useSceneViewportController({
       onActiveIndexChange?.(nextIndex)
     }
 
-    activeIndexRef.current = 0
-    onActiveIndexChange?.(0)
+    setCurrentIndex(0)
 
     const mm = gsap.matchMedia()
 

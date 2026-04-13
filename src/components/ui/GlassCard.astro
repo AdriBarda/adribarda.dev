@@ -9,12 +9,11 @@ const { as = 'article', class: className = '', ...rest } = Astro.props
 const Tag = as
 
 const glassClass = [
-	'relative overflow-hidden rounded-[16px] border border-white/55',
-	'bg-white/88 shadow-[0_10px_24px_rgba(15,23,42,0.08)]',
-	'dark:border-white/12 dark:bg-[rgba(15,23,42,0.84)] dark:shadow-[0_12px_28px_rgba(0,0,0,0.22)]',
-	'md:bg-white/44 md:backdrop-blur-[14px] md:backdrop-saturate-145',
-	'md:shadow-[0_14px_40px_rgba(15,23,42,0.12)]',
-	'dark:md:bg-white/9 dark:md:shadow-[0_18px_48px_rgba(0,0,0,0.34)]'
+	'relative overflow-hidden rounded-[16px] border border-[rgba(255,255,255,0.24)]',
+	'bg-[rgba(255,255,255,0.63)] shadow-[0_4px_30px_rgba(0,0,0,0.1)]',
+	'backdrop-blur-[10.2px] backdrop-saturate-140',
+	'dark:border-[rgba(40,40,40,0.24)] dark:bg-[rgba(40,40,40,0.72)]',
+	'dark:backdrop-blur-[12.4px] dark:backdrop-saturate-125'
 ].join(' ')
 ---
 
