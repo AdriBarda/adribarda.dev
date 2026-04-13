@@ -7,11 +7,11 @@ import '../styles/global.css'
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+		<link rel="icon" href={`${import.meta.env.BASE_URL}favicon.ico`} />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-		<script is:inline src="/theme-init.js"></script>
+		<title>AdriBarda | Frontend Engineer</title>
+		<script is:inline src={`${import.meta.env.BASE_URL}theme-init.js`}></script>
 	</head>
 	<body class="bg-app-bg text-app-text">
 		<div class="pointer-events-none fixed top-[max(12px,calc(var(--page-padding)-32px))] right-[max(12px,calc(var(--page-padding)-4px))] z-30">
