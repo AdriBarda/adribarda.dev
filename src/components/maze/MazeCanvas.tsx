@@ -31,10 +31,10 @@ export function MazeCanvas() {
     const getMazeDimTargets = () =>
       document.documentElement.dataset.theme === 'dark'
         ? {
-            overlayOpacity: 0.18
+            overlayOpacity: 0.12
           }
         : {
-            overlayOpacity: 0.28
+            overlayOpacity: 0.16
           }
 
     const applyMazeIntensity = (progress: number) => {

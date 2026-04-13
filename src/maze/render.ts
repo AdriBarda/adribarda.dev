@@ -53,22 +53,22 @@ function drawDarkSolution(
   ctx.lineJoin = 'round'
   ctx.strokeStyle = solutionColor
 
-  ctx.globalAlpha = 0.16
+  ctx.globalAlpha = 0.08
   ctx.shadowColor = solutionColor
-  ctx.shadowBlur = 22
+  ctx.shadowBlur = 14
   ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 2.6
   traceSolutionPath(ctx, points, progress)
   ctx.stroke()
 
-  ctx.globalAlpha = 0.34
-  ctx.shadowBlur = 12
+  ctx.globalAlpha = 0.18
+  ctx.shadowBlur = 7
   ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 1.6
   traceSolutionPath(ctx, points, progress)
   ctx.stroke()
 
-  ctx.globalAlpha = 1
-  ctx.shadowBlur = 4
-  ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 0.9
+  ctx.globalAlpha = 0.42
+  ctx.shadowBlur = 0
+  ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 0.82
   traceSolutionPath(ctx, points, progress)
   ctx.stroke()
   ctx.restore()
@@ -85,16 +85,16 @@ function drawLightSolution(
   ctx.lineJoin = 'round'
   ctx.strokeStyle = solutionColor
 
-  ctx.globalAlpha = 0.18
+  ctx.globalAlpha = 0.08
   ctx.shadowColor = solutionColor
-  ctx.shadowBlur = 10
+  ctx.shadowBlur = 5
   ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 1.9
   traceSolutionPath(ctx, points, progress)
   ctx.stroke()
 
-  ctx.globalAlpha = 0.95
-  ctx.shadowBlur = 3
-  ctx.lineWidth = MAZE_CONFIG.solutionLineWidth
+  ctx.globalAlpha = 0.34
+  ctx.shadowBlur = 0
+  ctx.lineWidth = MAZE_CONFIG.solutionLineWidth * 0.9
   traceSolutionPath(ctx, points, progress)
   ctx.stroke()
   ctx.restore()
