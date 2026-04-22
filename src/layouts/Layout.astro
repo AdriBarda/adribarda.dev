@@ -6,7 +6,7 @@ const assetBase = import.meta.env.BASE_URL.endsWith('/')
 	? import.meta.env.BASE_URL
 	: `${import.meta.env.BASE_URL}/`
 
-const isGithubPagesBuild = import.meta.env.BASE_URL === '/adribarda.dev/'
+const isGithubPagesBuild = import.meta.env.BASE_URL.startsWith('/adribarda.dev')
 const robotsContent = isGithubPagesBuild ? 'noindex, nofollow' : 'index, follow'
 const siteUrl = 'https://adribarda.dev/'
 const pageTitle = 'Adrià Bardají | Frontend Engineer portfolio'
