@@ -1,4 +1,5 @@
 ---
+import Analytics from '@vercel/analytics/astro'
 import { ThemeToggle } from '../components/theme/ThemeToggle'
 import '../styles/global.css'
 
@@ -61,6 +62,7 @@ const structuredData = {
 			<slot />
 		</main>
 		<slot name="footer" />
+		{!isGithubPagesBuild && <Analytics />}
 	</body>
 </html>
 
