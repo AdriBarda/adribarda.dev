@@ -77,24 +77,30 @@ pnpm preview
 
 ```text
 .
+├── .github/
 ├── public/
 ├── src/
-│   ├── assets/tech-stack/
+│   ├── assets/
+│   │   └── tech-stack/
 │   ├── components/
 │   │   ├── maze/
 │   │   ├── scene/
 │   │   ├── site/
 │   │   ├── theme/
 │   │   └── ui/
+│   ├── config/
 │   ├── content/
 │   │   └── sections/
+│   ├── content.config.ts
 │   ├── hooks/
 │   ├── layouts/
+│   ├── maze/
 │   ├── pages/
-│   ├── styles/
-│   └── theme/
+│   └── styles/
 ├── astro.config.mjs
-└── package.json
+├── package.json
+├── pnpm-lock.yaml
+└── tsconfig.json
 ```
 
 ## Content Model
