@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { DESKTOP_SCENE_MEDIA_QUERY } from '../../config/mediaQueries'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export function ExperienceTimelineController() {
+export function ExperienceTimelineAnimator() {
   useEffect(() => {
     const viewport = document.querySelector<HTMLElement>('[data-scene-viewport-scroll]')
     const section = document.querySelector<HTMLElement>('[data-experience-section]')
@@ -19,7 +20,7 @@ export function ExperienceTimelineController() {
 
     const mm = gsap.matchMedia()
 
-    mm.add('(min-width: 768px)', () => {
+    mm.add(DESKTOP_SCENE_MEDIA_QUERY, () => {
       gsap.set(timelineTrack, { x: 0 })
 
       const syncTimelineLayout = () => {

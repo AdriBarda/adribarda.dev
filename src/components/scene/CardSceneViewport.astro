@@ -1,6 +1,6 @@
 ---
-import { SceneViewportController } from './SceneViewportController'
-import type { SceneNavSlide, SceneTone } from '../../theme/sceneTheme'
+import { SceneViewport } from './SceneViewport'
+import type { SceneNavSlide, SceneTone } from './sceneTheme'
 
 interface Slide {
 	id: string
@@ -14,7 +14,7 @@ const { slides } = Astro.props as { slides: Slide[] }
 const navSlides: SceneNavSlide[] = slides.map(({ id, navTone }) => ({ id, navTone }))
 ---
 
-<SceneViewportController client:idle slides={navSlides}>
+<SceneViewport client:idle slides={navSlides}>
 	{
 		slides.map(({ id, Component, props = {} }, index) => (
 			<section
@@ -31,4 +31,4 @@ const navSlides: SceneNavSlide[] = slides.map(({ id, navTone }) => ({ id, navTon
 			</section>
 		))
 	}
-</SceneViewportController>
+</SceneViewport>

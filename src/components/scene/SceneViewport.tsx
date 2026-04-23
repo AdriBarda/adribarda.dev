@@ -4,7 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import { useSceneViewportController } from '../../hooks/useSceneViewportController'
 import { SCENE_VIEWPORT_READY_EVENT, type SceneViewportReadyDetail } from './sceneViewportEvents'
-import { sceneToneAccentColors, type SceneNavSlide } from '../../theme/sceneTheme'
+import { sceneToneAccentColors, type SceneNavSlide } from './sceneTheme'
+import { DESKTOP_SCENE_MEDIA_QUERY } from '../../config/mediaQueries'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -13,7 +14,7 @@ interface Props {
   children?: ReactNode
 }
 
-export function SceneViewportController({ slides, children }: Props) {
+export function SceneViewport({ slides, children }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const footerTriggerRef = useRef<HTMLDivElement>(null)
@@ -37,7 +38,9 @@ export function SceneViewportController({ slides, children }: Props) {
 
       tickColorCacheRef.current = {
         muted: resolveCssVarColor('var(--app-muted)', rootStyles),
-        accents: slides.map((slide) => resolveCssVarColor(sceneToneAccentColors[slide.navTone], rootStyles))
+        accents: slides.map((slide) =>
+          resolveCssVarColor(sceneToneAccentColors[slide.navTone], rootStyles)
+        )
       }
 
       handleSlideProgressChange(tickProgressesRef.current)
@@ -57,11 +60,14 @@ export function SceneViewportController({ slides, children }: Props) {
     }
   }, [handleSlideProgressChange, slides])
 
-  const handleActiveIndexChange = useCallback((activeIndex: number) => {
-    buttonRefs.current.slice(0, slides.length).forEach((button, index) => {
-      button?.setAttribute('aria-current', index === activeIndex ? 'true' : 'false')
-    })
-  }, [slides.length])
+  const handleActiveIndexChange = useCallback(
+    (activeIndex: number) => {
+      buttonRefs.current.slice(0, slides.length).forEach((button, index) => {
+        button?.setAttribute('aria-current', index === activeIndex ? 'true' : 'false')
+      })
+    },
+    [slides.length]
+  )
 
   const { goTo } = useSceneViewportController({
     viewportRef,
@@ -95,7 +101,7 @@ export function SceneViewportController({ slides, children }: Props) {
 
     const mm = gsap.matchMedia()
 
-    mm.add('(min-width: 768px)', () => {
+    mm.add(DESKTOP_SCENE_MEDIA_QUERY, () => {
       gsap.set(footer, { yPercent: 100, autoAlpha: 1 })
 
       const tween = gsap.to(footer, {
@@ -128,22 +134,31 @@ export function SceneViewportController({ slides, children }: Props) {
       <div
         ref={viewportRef}
         data-scene-viewport-scroll
-        className="w-full overflow-visible md:h-[calc(100dvh-(var(--page-padding)*2))] md:overflow-x-hidden md:overflow-y-auto md:scroll-smooth"
+        data-scene-viewport
+        className="w-full overflow-visible desktop:h-[calc(100dvh-(var(--page-padding)*2))] desktop:overflow-x-hidden desktop:overflow-y-auto"
       >
         <div className="mx-auto w-full max-w-5xl overflow-visible">
-          <div ref={trackRef} data-card-track className="flex flex-col gap-6 md:gap-8 lg:gap-10 md:pt-8 md:pb-14">
+          <div
+            ref={trackRef}
+            data-card-track
+            className="flex flex-col gap-6 md:gap-8 lg:gap-10 md:pt-8 md:pb-14"
+          >
             {children}
           </div>
         </div>
 
         <div
           ref={footerTriggerRef}
+          data-scene-footer-trigger
           aria-hidden="true"
-          className="hidden md:block md:h-[calc(100dvh-(var(--page-padding)*2))]"
+          className="hidden desktop:block desktop:h-[calc(100dvh-(var(--page-padding)*2))]"
         />
       </div>
 
-      <div className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-full max-w-5xl -translate-x-1/2 md:block">
+      <div
+        data-scene-nav
+        className="pointer-events-none absolute inset-y-0 left-1/2 hidden w-full max-w-5xl -translate-x-1/2 desktop:block"
+      >
         <div className="absolute -right-6 top-1/2 hidden -translate-y-1/2 md:block min-[1390px]:-right-20">
           <div className="flex flex-col items-end gap-5 lg:gap-6">
             {slides.map((slide, index) => {

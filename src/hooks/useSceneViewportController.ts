@@ -2,7 +2,8 @@ import { useEffect, useRef, type RefObject } from 'react'
 import { gsap } from 'gsap'
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import type { SceneNavSlide, SceneTone } from '../theme/sceneTheme'
+import type { SceneNavSlide, SceneTone } from '../components/scene/sceneTheme'
+import { DESKTOP_SCENE_MEDIA_QUERY } from '../config/mediaQueries'
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
@@ -105,7 +106,7 @@ export function useSceneViewportController({
 
     const mm = gsap.matchMedia()
 
-    mm.add('(min-width: 768px)', () => {
+    mm.add(DESKTOP_SCENE_MEDIA_QUERY, () => {
       const slideTargets = getSlides().map((slide) => ({
         slide,
         target: slide.firstElementChild instanceof HTMLElement ? slide.firstElementChild : slide
