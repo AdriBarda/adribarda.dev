@@ -7,6 +7,7 @@ import {
   type SceneViewportReadyDetail
 } from '../scene/sceneViewportEvents'
 import { useMazeCanvas } from '../../hooks/useMazeCanvas'
+import { DESKTOP_SCENE_MEDIA_QUERY } from '../../config/mediaQueries'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -15,7 +16,7 @@ export function MazeCanvas() {
   const overlayRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (window.matchMedia('(max-width: 767px)').matches) {
+    if (!window.matchMedia(DESKTOP_SCENE_MEDIA_QUERY).matches) {
       return
     }
 
@@ -108,13 +109,15 @@ export function MazeCanvas() {
     <>
       <canvas
         ref={canvasRef}
+        data-maze-canvas
         aria-hidden="true"
-        className="absolute inset-0 hidden size-full pointer-events-none md:block"
+        className="absolute inset-0 hidden size-full pointer-events-none desktop:block"
       />
       <div
         ref={overlayRef}
+        data-maze-overlay
         aria-hidden="true"
-        className="absolute inset-0 hidden pointer-events-none bg-app-bg opacity-0 md:block"
+        className="absolute inset-0 hidden pointer-events-none bg-app-bg opacity-0 desktop:block"
       />
     </>
   )

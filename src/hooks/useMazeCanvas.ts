@@ -3,6 +3,7 @@ import type { Cell } from '../maze/Cell'
 import { MAZE_CONFIG, getMazeColors, type MazeTheme } from '../maze/config'
 import { generateMaze, solveMaze } from '../maze/helpers'
 import { createMazeRenderState, getMazeSize, renderMazeFrame } from '../maze/render'
+import { DESKTOP_SCENE_MEDIA_QUERY } from '../config/mediaQueries'
 
 type MazeState = {
   cols: number
@@ -18,6 +19,10 @@ export function useMazeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
+    if (!window.matchMedia(DESKTOP_SCENE_MEDIA_QUERY).matches) {
+      return
+    }
+
     const canvas = canvasRef.current
 
     if (!canvas) {

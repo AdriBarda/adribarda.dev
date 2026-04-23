@@ -2,6 +2,7 @@
 import Analytics from '@vercel/analytics/astro'
 import { ThemeToggle } from '../components/theme/ThemeToggle'
 import '../styles/global.css'
+import { DESKTOP_SCENE_MEDIA_QUERY } from '../config/mediaQueries'
 
 const assetBase = import.meta.env.BASE_URL.endsWith('/')
 	? import.meta.env.BASE_URL
@@ -51,6 +52,15 @@ const structuredData = {
 
 		<title>{pageTitle}</title>
 		<script is:inline src={`${assetBase}theme-init.js`}></script>
+		<script is:inline define:vars={{ desktopMQ: DESKTOP_SCENE_MEDIA_QUERY }}>
+			if (window.__desktopMQController) window.__desktopMQController.abort()
+			window.__desktopMQController = new AbortController()
+			var mq = window.matchMedia(desktopMQ)
+			document.documentElement.classList.toggle('is-desktop', mq.matches)
+			mq.addEventListener('change', function(e) {
+				document.documentElement.classList.toggle('is-desktop', e.matches)
+			}, { signal: window.__desktopMQController.signal })
+		</script>
 		<script type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
 	</head>
 	<body class="bg-app-bg text-app-text">
@@ -89,10 +99,10 @@ const structuredData = {
 		box-sizing: border-box;
 	}
 
-	@media (min-width: 768px) {
-		body {
-			overflow: hidden;
-		}
+		@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+			body {
+				overflow: hidden;
+			}
 
 		main {
 			height: 100dvh;

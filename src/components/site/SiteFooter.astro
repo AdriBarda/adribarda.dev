@@ -25,8 +25,8 @@ const normalizeUrl = (url?: string) => {
 const currentYear = new Date().getFullYear()
 ---
 
-<footer data-site-footer class="w-full rounded-t-[28px] bg-[#c7c3f2] md:fixed md:inset-x-0 md:bottom-0 md:z-20 md:opacity-0 md:will-change-transform dark:bg-[color-mix(in_srgb,var(--app-bg)_94%,var(--app-text)_6%)]">
-	<div class="mx-auto flex w-full max-w-5xl flex-col gap-8 px-(--page-padding) py-10 md:py-12 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:py-14">
+<footer data-site-footer class="w-full rounded-t-[28px] bg-[#c7c3f2] desktop:fixed desktop:inset-x-0 desktop:bottom-0 desktop:z-20 desktop:opacity-0 desktop:pointer-events-none desktop:will-change-transform dark:bg-[color-mix(in_srgb,var(--app-bg)_94%,var(--app-text)_6%)]">
+	<div class="mx-auto flex w-full max-w-5xl flex-col gap-8 px-(--page-padding) py-10 desktop:pointer-events-none md:py-12 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:py-14">
 		<div class="max-w-2xl">
 			<h2 class="max-w-[12ch] text-balance text-[clamp(2.4rem,5vw,4.8rem)] leading-[0.95] font-semibold tracking-[-0.05em] text-app-text">
 				Let&apos;s build something great together.
@@ -51,7 +51,7 @@ const currentYear = new Date().getFullYear()
 							rel="noopener noreferrer"
 							aria-label={footer.github.label}
 							title={footer.github.label}
-							class="inline-flex items-center justify-center text-app-text/62 transition-[color,transform] duration-200 ease-out hover:scale-110 hover:text-app-text"
+							class="inline-flex items-center justify-center text-app-text/62 transition-[color,transform] duration-200 ease-out desktop:pointer-events-auto hover:scale-110 hover:text-app-text"
 						>
 							<GithubIcon aria-hidden="true" class="size-5 fill-current" />
 						</a>
@@ -63,7 +63,7 @@ const currentYear = new Date().getFullYear()
 							rel="noopener noreferrer"
 							aria-label={footer.linkedin.label}
 							title={footer.linkedin.label}
-							class="inline-flex items-center justify-center text-app-text/62 transition-[color,transform] duration-200 ease-out hover:scale-110 hover:text-app-text"
+							class="inline-flex items-center justify-center text-app-text/62 transition-[color,transform] duration-200 ease-out desktop:pointer-events-auto hover:scale-110 hover:text-app-text"
 						>
 							<svg aria-hidden="true" class="size-5 fill-current" viewBox="0 0 24 24"><path d="M6.94 8.5H3.56V20h3.38zm.22-3.55C7.16 3.87 6.37 3 5.27 3s-1.89.87-1.89 1.95c0 1.06.77 1.94 1.85 1.94h.02c1.12 0 1.91-.88 1.91-1.94m13.46 8.01c0-3.47-1.81-5.08-4.22-5.08-1.94 0-2.81 1.08-3.29 1.85V8.5H9.73c.04.82 0 11.5 0 11.5h3.38v-6.42c0-.34.02-.68.12-.92.27-.68.88-1.38 1.91-1.38 1.35 0 1.89 1.04 1.89 2.56V20h3.37v-6.04Z" /></svg>
 						</a>
@@ -77,13 +77,3 @@ const currentYear = new Date().getFullYear()
 		</div>
 	</div>
 </footer>
-
-<noscript>
-	<style>
-		@media (min-width: 768px) {
-			[data-site-footer] {
-				opacity: 1 !important;
-			}
-		}
-	</style>
-</noscript>
