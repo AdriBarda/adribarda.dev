@@ -179,8 +179,8 @@ export function SceneViewport({ slides, children }: Props) {
                     ref={(element) => {
                       tickRefs.current[index] = element
                     }}
-                    className="block h-0.5 w-2.5 origin-right rounded-full lg:h-[3px]"
-                  />
+						className="block h-0.5 w-2.5 origin-right rounded-full lg:h-0.75"
+					/>
                 </button>
               )
             })}
