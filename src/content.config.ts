@@ -41,6 +41,8 @@ const sections = defineCollection({
           repositoryUrl: z.string(),
           project: z.string(),
           stars: z.string().optional(),
+          language: z.string().optional(),
+          license: z.string().optional(),
           contribution: z.string(),
           reason: z.string().optional(),
           pullRequestUrl: z.string(),

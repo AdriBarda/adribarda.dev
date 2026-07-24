@@ -7,8 +7,6 @@ interface Slide {
 	Component: any
 	props?: Record<string, unknown>
 	navTone: SceneTone
-	// Scenes with little content hug it instead of stretching to a full scene height,
-	// which would leave slack below the cards and widen the gap to the next scene.
 	hugContent?: boolean
 }
 
