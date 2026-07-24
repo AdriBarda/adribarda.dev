@@ -172,7 +172,7 @@ export function SceneViewport({ slides, children }: Props) {
                   aria-label={`Go to ${slide.id.replace(/-/g, ' ')}`}
                   aria-current={index === 0 ? 'true' : 'false'}
                   title={slide.id.replace(/-/g, ' ')}
-                  className="pointer-events-auto flex h-3 w-8 items-center justify-end lg:h-4 lg:w-9"
+                  className="pointer-events-auto flex h-3 w-8 cursor-pointer items-center justify-end lg:h-4 lg:w-9"
                   onClick={() => goTo(index)}
                 >
                   <span
