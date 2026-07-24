@@ -1,4 +1,4 @@
-export type SceneTone = 'presentation' | 'experience' | 'stack' | 'about-me'
+export type SceneTone = 'presentation' | 'experience' | 'stack' | 'open-source' | 'about-me'
 
 export interface SceneNavSlide {
   id: string
@@ -9,6 +9,7 @@ export const sceneToneAccentClasses: Record<SceneTone, string> = {
   presentation: 'bg-[var(--scene-accent-presentation)]',
   experience: 'bg-[var(--scene-accent-experience)]',
   stack: 'bg-[var(--scene-accent-stack)]',
+  'open-source': 'bg-[var(--scene-accent-open-source)]',
   'about-me': 'bg-[var(--scene-accent-about)]'
 }
 
@@ -16,5 +17,6 @@ export const sceneToneAccentColors: Record<SceneTone, string> = {
   presentation: 'var(--scene-accent-presentation)',
   experience: 'var(--scene-accent-experience)',
   stack: 'var(--scene-accent-stack)',
+  'open-source': 'var(--scene-accent-open-source)',
   'about-me': 'var(--scene-accent-about)'
 }

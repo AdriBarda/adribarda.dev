@@ -1,6 +1,6 @@
 ---
 order: 6
-scene: 4
+scene: 5
 cardSize: hero
 section: about-me
 eyebrow: About me

@@ -2,6 +2,7 @@
 import AboutScene from './AboutScene.astro'
 import CardSceneViewport from './CardSceneViewport.astro'
 import ExperienceScene from './ExperienceScene.astro'
+import OpenSourceScene from './OpenSourceScene.astro'
 import PresentationScene from './PresentationScene.astro'
 import StackScene from './StackScene.astro'
 import type { SceneTone } from './sceneTheme'
@@ -13,7 +14,8 @@ const slides = [
 	{ id: 'presentation', navTone: 'presentation' as SceneTone, Component: PresentationScene, props: { group: sectionGroups.find((group) => group.scene === 1), accentTone: 'presentation' as SceneTone } },
 	{ id: 'experience', navTone: 'experience' as SceneTone, Component: ExperienceScene, props: { group: sectionGroups.find((group) => group.scene === 2), accentTone: 'experience' as SceneTone } },
 	{ id: 'stack', navTone: 'stack' as SceneTone, Component: StackScene, props: { group: sectionGroups.find((group) => group.scene === 3), accentTone: 'stack' as SceneTone } },
-	{ id: 'about-me', navTone: 'about-me' as SceneTone, Component: AboutScene, props: { group: sectionGroups.find((group) => group.scene === 4), accentTone: 'about-me' as SceneTone } }
+	{ id: 'open-source', navTone: 'open-source' as SceneTone, Component: OpenSourceScene, hugContent: true, props: { group: sectionGroups.find((group) => group.scene === 4), accentTone: 'open-source' as SceneTone } },
+	{ id: 'about-me', navTone: 'about-me' as SceneTone, Component: AboutScene, props: { group: sectionGroups.find((group) => group.scene === 5), accentTone: 'about-me' as SceneTone } }
 ]
 ---
 

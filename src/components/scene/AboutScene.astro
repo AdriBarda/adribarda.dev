@@ -29,7 +29,7 @@ const languageGroups = (entry?.data.languages ?? []).reduce<Array<{ label: strin
 }, [])
 ---
 
-<div data-about-static class="grid w-full gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
+<div data-about-static class="grid w-full gap-4 md:pt-(--scene-entry-offset) md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:grid-rows-[minmax(0,1fr)_minmax(0,1fr)]">
 	<GlassCard class="p-6 sm:p-8 md:row-span-2 lg:p-9">
 		<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
 		<div class="flex h-full flex-col gap-6">

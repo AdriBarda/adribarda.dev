@@ -6,9 +6,9 @@ const sections = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/sections' }),
   schema: z.object({
     order: z.number().int().positive(),
-    scene: z.number().int().min(1).max(4),
+    scene: z.number().int().min(1).max(5),
     cardSize: z.enum(['hero', 'large', 'small']),
-    section: z.enum(['presentation', 'impact', 'experience', 'stack', 'skills', 'about-me']),
+    section: z.enum(['presentation', 'impact', 'experience', 'stack', 'open-source', 'about-me']),
     eyebrow: z.string().optional(),
     meta: z.array(z.string()).default([]),
     role: z.string().optional(),
@@ -28,7 +28,23 @@ const sections = defineCollection({
       .array(
         z.object({
           label: z.string(),
-          value: z.string()
+          value: z.string(),
+          url: z.string().optional()
+        })
+      )
+      .default([]),
+    links: z
+      .array(
+        z.object({
+          repository: z.string(),
+          owner: z.string(),
+          repositoryUrl: z.string(),
+          project: z.string(),
+          stars: z.string().optional(),
+          contribution: z.string(),
+          reason: z.string().optional(),
+          pullRequestUrl: z.string(),
+          meta: z.array(z.string()).default([])
         })
       )
       .default([]),

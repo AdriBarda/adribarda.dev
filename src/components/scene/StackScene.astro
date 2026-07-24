@@ -88,7 +88,7 @@ const technologyTileClass = 'flex min-h-20 w-[8.1rem] flex-col justify-between r
 const technologyIconClass = 'flex size-7 items-center justify-center'
 
 // Keep some vertical breathing room before the static stack card enters from experience.
-const stackSectionEntryOffsetClass = 'md:pt-[12vh]'
+const stackSectionEntryOffsetClass = 'md:pt-(--scene-entry-offset)'
 
 function getLevelMeterClass(level: StackTech['level'], index: number) {
 	const filledSegments = level === 'Advanced' ? 3 : level === 'Comfortable' ? 2 : 1

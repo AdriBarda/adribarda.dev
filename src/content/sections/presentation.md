@@ -15,6 +15,9 @@ details:
     value: 📍 Barcelona, Spain
   - label: Focus
     value: Clean architecture, state management and scalable interfaces.
+  - label: Open source
+    value: Merged /notion-sync into ai-job-search
+    url: https://github.com/MadsLorentzen/ai-job-search/pull/169
 socials:
   github:
     label: GitHub

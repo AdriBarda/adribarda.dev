@@ -87,6 +87,9 @@ const structuredData = {
 
 	body {
 		--page-padding: clamp(16px, 4vw, 48px);
+		/* Height of a scrolled scene section, shared by the viewport and the scenes that fill it. */
+		--scene-height: min(calc(100dvh - (var(--page-padding) * 2)), 54rem);
+		--scene-entry-offset: 12vh;
 	}
 
 	main {

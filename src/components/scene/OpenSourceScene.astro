@@ -1,0 +1,110 @@
+---
+import { sceneToneAccentClasses, type SceneTone } from './sceneTheme'
+import type { SectionGroup } from '../../content/sections'
+import GithubIcon from '../../assets/tech-stack/github.svg'
+import GlassCard from '../ui/GlassCard.astro'
+
+const { group, accentTone } = Astro.props as { group?: SectionGroup; accentTone?: SceneTone }
+const entry = group?.entries.find((item) => item.data.section === 'open-source')
+const accentClass = accentTone ? sceneToneAccentClasses[accentTone] : ''
+const link = entry?.data.links[0]
+
+// Match the entry offset used by the other scrolled scenes. The section hugs this content
+// (see `hugContent` in HeroPanel), so there is no slack to fill below the cards.
+const sceneEntryOffsetClass = 'md:pt-(--scene-entry-offset)'
+
+const cardLabelClass = 'text-[0.76rem] uppercase tracking-[0.18em] text-app-text/58'
+const factLabelClass = 'text-[0.72rem] uppercase tracking-[0.16em] text-app-text/56'
+const factValueClass = 'mt-1.5 text-[0.98rem] leading-[1.68] text-app-text/82 text-pretty'
+---
+
+<div class:list={['grid w-full gap-4 md:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]', sceneEntryOffsetClass]}>
+	<GlassCard data-bento-role="left" class="h-full p-6 sm:p-7 lg:p-8">
+		<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
+		<div class="flex h-full flex-col gap-7">
+			<div>
+				{entry?.data.eyebrow && <p class="text-[0.78rem] uppercase tracking-[0.18em] text-app-text/58">{entry.data.eyebrow}</p>}
+
+				<h2 class="mt-3 max-w-[14ch] text-balance text-[clamp(2rem,3.9vw,3.6rem)] leading-[0.96] font-semibold tracking-[-0.05em] text-app-text">
+					{entry?.data.title ?? 'Missing open-source title.'}
+				</h2>
+
+				<p class="mt-4 text-[clamp(1rem,1.16vw,1.06rem)] leading-[1.68] text-app-text/74 text-pretty">
+					{entry?.data.summary ?? 'Missing open-source summary.'}
+				</p>
+			</div>
+
+			{link ? (
+				<div class="mt-auto border-t border-app-border/70 pt-6">
+					<p class={factLabelClass}>The project</p>
+
+					<a
+						href={link.repositoryUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="group mt-3 inline-flex items-center gap-2.5"
+					>
+						<GithubIcon aria-hidden="true" class="size-4.5 shrink-0 fill-current text-app-text/70" />
+						<span class="text-[1.04rem] font-medium leading-tight text-app-text underline decoration-app-border underline-offset-4 transition-colors group-hover:decoration-app-text/70">
+							{link.repository}
+						</span>
+					</a>
+
+					<p class="mt-2.5 text-[0.86rem] leading-[1.5] text-app-text/62">
+						Created and maintained by {link.owner}{link.stars && <span class="text-app-text/48"> · {link.stars}</span>}
+					</p>
+
+					<p class="mt-3 text-[0.96rem] leading-[1.66] text-app-text/78 text-pretty">{link.project}</p>
+				</div>
+			) : (
+				<p class="mt-auto text-[0.96rem] leading-[1.7] text-app-text/66">Missing open-source project.</p>
+			)}
+		</div>
+	</GlassCard>
+
+	<GlassCard data-bento-role="right" class="h-full p-6 sm:p-7 lg:p-8">
+		<div class="flex h-full flex-col gap-7">
+			<p class={cardLabelClass}>My contribution</p>
+
+			{link ? (
+				<div class="flex h-full flex-col gap-6">
+					<div>
+						<p class={factLabelClass}>What I added</p>
+						<p class={factValueClass}>{link.contribution}</p>
+					</div>
+
+					{link.reason && (
+						<div>
+							<p class={factLabelClass}>Why</p>
+							<p class={factValueClass}>{link.reason}</p>
+						</div>
+					)}
+
+					<div class="mt-auto border-t border-app-border/70 pt-6">
+						<a
+							href={link.pullRequestUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="group inline-flex items-center gap-2.5"
+						>
+							<GithubIcon aria-hidden="true" class="size-4.5 shrink-0 fill-current text-app-text/70" />
+							<span class="text-[0.98rem] font-medium leading-tight text-app-text underline decoration-app-border underline-offset-4 transition-colors group-hover:decoration-app-text/70">
+								Read the pull request
+							</span>
+						</a>
+
+						{link.meta.length > 0 && (
+							<div class="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[0.72rem] uppercase tracking-[0.14em] text-app-text/56">
+								{link.meta.map((item) => (
+									<span>{item}</span>
+								))}
+							</div>
+						)}
+					</div>
+				</div>
+			) : (
+				<p class="text-[0.96rem] leading-[1.7] text-app-text/66">Missing open-source contribution.</p>
+			)}
+		</div>
+	</GlassCard>
+</div>
