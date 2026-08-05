@@ -24,9 +24,6 @@ const experienceMeta = [
 <div class="flex w-full flex-col gap-(--space-3xl)">
 	<SectionHead title={experience?.data.title ?? 'Missing experience title.'} lead={experience?.data.summary} />
 
-	
-	{/* Space is the separator — the label rail already marks where each row
-	    starts, so a rule between them would be drawing what the layout says. */}
 	<ol class="flex flex-col gap-(--space-3xl)">
 		{timeline.length > 0 ? (
 			timeline.map((item) => (
@@ -90,13 +87,10 @@ const experienceMeta = [
 <script>
 	import { gsap, ScrollTrigger, motionOK, refreshOnFonts } from '../../scripts/motion'
 
-	// The pin is native CSS sticky. GSAP only scrubs the meta column's opacity as
-	// its role scrolls out, so the pinned label matches what you're reading.
 	const rows = document.querySelectorAll<HTMLElement>('[data-role-row]')
 	const pinned = window.matchMedia('(min-width: 48rem)')
 
 	if (rows.length > 0 && pinned.matches && motionOK()) {
-		// Dim floor, not zero — the row is leaving, not gone.
 		const REST = 0.32
 
 		rows.forEach((row) => {

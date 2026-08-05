@@ -53,36 +53,3 @@ const linkClass = [
 		</div>
 	</div>
 </footer>
-
-<script>
-	import { gsap, motionOK, refreshOnFonts } from '../../scripts/motion'
-
-	// Scrubs the card up over the last section's runway (its padding-bottom).
-	const card = document.querySelector<HTMLElement>('.footer-card')
-	const last = document.querySelector<HTMLElement>('[data-band]:last-of-type')
-	const enabled = window.matchMedia('(min-width: 64rem) and (min-height: 40rem)')
-
-	if (card && last && enabled.matches && motionOK()) {
-		// y (px), not yPercent: GSAP layers yPercent on top of the CSS translate3d
-		// and leaves the card a full height low.
-		gsap.fromTo(
-			card,
-			{ y: () => card.offsetHeight },
-			{
-				y: 0,
-				ease: 'none',
-				scrollTrigger: {
-					trigger: last,
-					start: () => `bottom bottom+=${card.offsetHeight}`,
-					// 'max' = the last scrollable pixel; 'bottom bottom' can resolve
-					// past it and park the card short of home.
-					end: 'max',
-					scrub: true,
-					invalidateOnRefresh: true
-				}
-			}
-		)
-
-		refreshOnFonts()
-	}
-</script>

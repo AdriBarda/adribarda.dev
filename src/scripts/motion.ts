@@ -11,6 +11,3 @@ export const motionOK = () => !window.matchMedia('(prefers-reduced-motion: reduc
 export const refreshOnFonts = () => {
   document.fonts?.ready.then(() => ScrollTrigger.refresh())
 }
-
-// ponytail: no registry, no teardown — one page, one load. If View Transitions
-// land, wrap each caller in gsap.context() and revert on astro:before-swap.

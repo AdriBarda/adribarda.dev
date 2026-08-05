@@ -2,6 +2,9 @@
 import { render } from 'astro:content'
 import type { SectionGroup } from '../../content/sections'
 import GithubIcon from '../../assets/tech-stack/github.svg'
+import SmileIcon from 'lucide-static/icons/smile.svg'
+import HeartIcon from 'lucide-static/icons/heart.svg'
+import CodeIcon from 'lucide-static/icons/code-xml.svg'
 
 const { group } = Astro.props as { group?: SectionGroup; index?: number }
 const entry = group?.entries[0]
@@ -18,8 +21,6 @@ const title = entry?.data.title ?? 'Missing presentation title.'
 const role = entry?.data.role ?? 'Frontend Engineer'
 const status = details.find((detail) => detail.label === 'Status')
 
-// Status is the pill and Location is already the meta line beside it — the
-// strip carries only what isn't stated elsewhere.
 const stripDetails = details.filter(
 	(detail) => detail.label !== 'Status' && detail.label !== 'Location'
 )
@@ -34,16 +35,8 @@ const ghostButton = [
 const labelClass = 'text-[0.7rem] uppercase text-app-muted'
 ---
 
-{/* One left spine. Checked in a real browser rather than from markup: Alan and
-    New Relic both run the hero content hard-left — headline, subhead and CTAs
-    stacked tight against the same edge — and centre only the media/container
-    around it. The single spine is the part worth keeping from them; nothing
-    competes alongside the pitch, and the supporting facts drop to a distinct
-    strip at the base so prose never runs next to prose.
-    Six direct children — the stagger in global.css cadences on nth-child, so
-    this order is the timing. */}
 <div class="flex w-full flex-col items-start text-left">
-	<div data-hero-part class="flex flex-wrap items-center gap-x-(--space-lg) gap-y-(--space-sm)">
+	<div class="flex flex-wrap items-center gap-x-(--space-lg) gap-y-(--space-sm)">
 		{status && (
 			<span class="inline-flex items-center gap-2.5 rounded-[var(--radius-pill)] border border-app-border bg-app-surface px-4 py-2.5 shadow-[0_0_0_4px_color-mix(in_oklab,var(--band)_10%,transparent)]">
 				<span class="relative flex size-2.5 shrink-0 items-center justify-center">
@@ -59,26 +52,50 @@ const labelClass = 'text-[0.7rem] uppercase text-app-muted'
 		)}
 	</div>
 
-	<p data-hero-part class="mt-(--gap-hero) text-[length:var(--text-lead)] leading-[1.3] font-medium text-app-text-2">
+	<p class="mt-(--gap-hero) text-[length:var(--text-lead)] leading-[1.3] font-medium text-app-text-2">
 		{title}
 	</p>
 
-	{/* The marquee still spans the whole shell — centred is not narrow. */}
-	<h1
-		data-hero-part
-		class="mt-(--gap-hero-tight) w-full whitespace-nowrap text-[length:var(--text-hero)] leading-[1.02] font-semibold text-app-text"
-	>
-		{role}
-	</h1>
+	<div class="mt-(--gap-hero-tight) w-full">
+		<h1 data-hero-role class="sr-only">{role}</h1>
+		<div
+			data-hero-role-anim
+			aria-hidden="true"
+			class="hero-role-anim pointer-events-none w-full whitespace-nowrap text-[length:var(--text-hero)] leading-[1.02] font-semibold text-app-text"
+		>
+			<span class="hero-word hero-word-front">
+				<span class="hero-letter f"><span class="clip"><span>F</span></span></span>
+				<span class="hero-letter r"><span class="clip"><span>r</span></span></span>
+				<span class="hero-letter o"><span>o</span></span>
+				<span class="hero-letter n"><span class="clip"><span><span>n</span><span>#</span></span></span></span>
+				<span class="hero-tend">
+					<span class="hero-letter t"><span class="clip"><span>t</span></span></span>
+					<span class="hero-letter e"><span class="clip"><span>e</span></span></span>
+					<span class="hero-letter n2"><span>n</span></span>
+					<span class="hero-letter d"><span class="clip"><span>d</span></span></span>
+					<span class="hero-icons"><span class="hero-icon"><SmileIcon /></span><span class="hero-icon"><HeartIcon /></span><span class="hero-icon"><CodeIcon /></span></span>
+				</span>
+			</span>
+			<span class="hero-space"> </span>
+			<span class="hero-word hero-word-engineer">
+				<span class="hero-letter cap-e"><span class="clip"><span><span>E</span><span>3</span></span></span></span>
+				<span class="hero-letter n3"><span class="clip"><span>n</span></span></span>
+				<span class="hero-letter g"><span>g</span></span>
+				<span class="hero-letter i"><span>i</span></span>
+				<span class="hero-letter n4"><span class="clip"><span>n</span></span></span>
+				<span class="hero-letter e2"><span class="clip"><span>e</span></span></span>
+				<span class="hero-letter e3"><span>e</span></span>
+				<span class="hero-letter r2"><span class="clip"><span>r</span></span></span>
+			</span>
+		</div>
+	</div>
 
-	<p data-hero-part class="mt-(--gap-hero) max-w-(--measure) text-[length:var(--text-lead)] leading-[1.45] text-app-text-2 text-pretty">
+	<p class="mt-(--gap-hero) max-w-(--measure) text-[length:var(--text-lead)] leading-[1.45] text-app-text-2 text-pretty">
 		{entry?.data.summary ?? 'Missing presentation summary.'}
 	</p>
 
-	{/* Immediately below the subhead, on the spine — the position all four
-	    references give their primary actions. */}
 	{(github || linkedin) && (
-		<div data-hero-part class="mt-(--gap-hero-cta) flex flex-wrap gap-(--space-sm)">
+		<div class="mt-(--gap-hero-cta) flex flex-wrap gap-(--space-sm)">
 			{github && (
 				<a href={normalizeUrl(github.url)} target="_blank" rel="noopener noreferrer" class={ghostButton}>
 					<GithubIcon aria-hidden="true" class="size-4.5 shrink-0 fill-current" />
@@ -94,11 +111,7 @@ const labelClass = 'text-[0.7rem] uppercase text-app-muted'
 		</div>
 	)}
 
-	{/* The proof/stats strip every one of the references lands under its core
-	    stack. Smaller, denser, left-read, mono-labelled — a different kind of
-	    thing from the pitch, which is why it doesn't compete with it. */}
 	<div
-		data-hero-part
 		class="mt-(--gap-hero-strip) grid w-full gap-(--space-xl) text-left md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] md:gap-(--space-2xl)"
 	>
 		<div>
@@ -124,3 +137,134 @@ const labelClass = 'text-[0.7rem] uppercase text-app-muted'
 		))}
 	</div>
 </div>
+
+<script>
+	import { gsap, motionOK } from '../../scripts/motion'
+
+	const animatedRole = document.querySelector<HTMLElement>('[data-hero-role-anim]')
+
+	if (animatedRole && motionOK()) {
+		const fontsSettled = Promise.race([
+			document.fonts?.ready ?? Promise.resolve(),
+			new Promise((resolve) => setTimeout(resolve, 1200))
+		])
+
+		let context: gsap.Context | undefined
+		let cleanedUp = false
+
+		const cleanup = () => {
+			cleanedUp = true
+			context?.revert()
+			window.removeEventListener('astro:before-swap', cleanup)
+		}
+
+		window.addEventListener('astro:before-swap', cleanup)
+
+		fontsSettled.then(() => {
+			if (cleanedUp) return
+
+			context = gsap.context(() => {
+				const select = gsap.utils.selector(animatedRole)
+				const letter = (name: string) => select(`.hero-letter.${name}`)
+				const glyph = (name: string) => select(`.hero-letter.${name} .clip > span:first-child`)
+
+				const defaults = { duration: 0.6, ease: 'power2.out' }
+
+				gsap.set(animatedRole, { autoAlpha: 1 })
+
+				const revealF = () => gsap.timeline({ defaults })
+					.set(select('.f .clip'), { transformOrigin: '50% 100%' })
+					.from(glyph('f'), { yPercent: 100 })
+					.from(select('.f .clip'), {
+						rotationX: -180,
+						ease: 'back.out(1.7)',
+						duration: 1
+					}, '-=0.4')
+
+				const slideR = () => gsap.from(glyph('r'), { xPercent: 100, ...defaults })
+
+				const sweepO = () => gsap.from(letter('o'), {
+					autoAlpha: 0,
+					xPercent: 110,
+					yPercent: -100,
+					rotationZ: 320,
+					scale: 0.6,
+					duration: 1.4,
+					ease: 'back.out(1.4)'
+				})
+
+				const flipN = () => gsap.timeline({ defaults })
+					.set(select('.n .clip > span > span:last-child'), { autoAlpha: 1 })
+					.from(select('.n .clip > span'), { yPercent: 100, duration: 0.4 })
+					.from(select('.n .clip > span > span:first-child'), { rotationY: -180, duration: 0.3 }, '+=0.4')
+					.to(select('.n .clip > span > span:last-child'), { rotationY: 180, duration: 0.3 }, '<')
+
+				const iconRun = () => gsap.timeline({ defaults })
+					.set(select('.hero-icons'), { autoAlpha: 1 })
+					.fromTo(select('.hero-icon'),
+						{ xPercent: 205 },
+						{ xPercent: -205, duration: 0.95, stagger: 0.3, ease: 'power1.inOut' })
+					.to(select('.hero-icon'), {
+						keyframes: { scale: [1, 1.32, 1], easeEach: 'sine.inOut' },
+						duration: 0.3,
+						stagger: 0.3
+					}, '<0.325')
+					.set(select('.hero-icons'), { autoAlpha: 0 })
+
+				const landT = () => gsap.from(select('.t .clip > span:first-child'),
+					{ yPercent: 100, duration: 0.65, ease: 'power2.out' })
+
+				const slideEnd = () => gsap.timeline({ defaults })
+					.from(glyph('e'), { yPercent: -100 })
+					.from(letter('n2'), { autoAlpha: 0, xPercent: -100 }, '-=0.35')
+					.from(glyph('d'), { xPercent: 100 }, '-=0.35')
+
+				const flipCapE = () => gsap.timeline({ defaults })
+					.set(select('.cap-e .clip > span > span:last-child'), { autoAlpha: 1 })
+					.from(select('.cap-e .clip > span'), { yPercent: 100, duration: 0.4 })
+					.from(select('.cap-e .clip > span > span:first-child'), { rotationY: -180, duration: 0.36 }, '+=0.22')
+					.to(select('.cap-e .clip > span > span:last-child'), { rotationY: 180, duration: 0.36 }, '<')
+
+				const buildNg = () => gsap.timeline({ defaults })
+					.from(glyph('n3'), { xPercent: -100 })
+					.from(letter('g'), {
+						autoAlpha: 0,
+						rotationZ: -120,
+						duration: 2,
+						ease: 'elastic.out(1, 0.4)'
+					}, '-=0.4')
+
+				const spinI = () => gsap.timeline({ defaults })
+					.from(select('.i > span'), { autoAlpha: 0, duration: 0.1 })
+					.from(select('.i > span'), { rotationX: -450, duration: 1.3 }, '<0.14')
+					.to(select('.i > span'), {
+						rotationX: 360,
+						duration: 1.2,
+						repeat: -1,
+						repeatDelay: 4,
+						ease: 'power2.inOut'
+					}, '+=2')
+
+				const finishEngineer = () => gsap.timeline({ defaults })
+					.from(glyph('n4'), { yPercent: 100 })
+					.from(glyph('e2'), { xPercent: -100 }, '-=0.35')
+					.from(letter('e3'), { autoAlpha: 0, scale: 0, duration: 0.9, ease: 'back.out(1.4)' }, '-=0.45')
+					.from(glyph('r2'), { xPercent: 100 }, '-=0.5')
+
+				gsap.timeline({ defaults })
+					.add(revealF(), 0)
+					.add(flipN(), 0.28)
+					.add(slideR(), 0.4)
+					.add(sweepO(), 0.5)
+					.add(iconRun(), 1.25)
+					.add(flipCapE(), 1.6)
+					.add(buildNg(), 2.05)
+					.add(spinI(), 2.6)
+					.add(landT(), 2.85)
+					.add(slideEnd(), 3.1)
+					.add(finishEngineer(), 3.2)
+					.timeScale(1.18)
+			}, animatedRole)
+		})
+	}
+</script>

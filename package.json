@@ -26,6 +26,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@phosphor-icons/core": "^2.1.1"
+    "@phosphor-icons/core": "^2.1.1",
+    "lucide-static": "^1.28.0"
   }
 }

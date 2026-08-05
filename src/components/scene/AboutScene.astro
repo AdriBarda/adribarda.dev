@@ -33,7 +33,7 @@ const labelClass = 'text-[length:var(--text-label)] uppercase text-app-muted'
 	<SectionHead title={'Outside work.'} lead={entry?.data.summary} />
 
 	
-	<div data-reveal class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
+	<div class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
 		<p data-label class={labelClass}>Off the clock</p>
 		<div
 			class="max-w-(--measure) text-[length:var(--text-body)] leading-[1.78] text-app-muted text-pretty [&_p+p]:mt-(--space-md)"
@@ -43,7 +43,7 @@ const labelClass = 'text-[length:var(--text-label)] uppercase text-app-muted'
 	</div>
 
 	{languageGroups.length > 0 && (
-		<div data-reveal class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
+		<div class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
 			<p data-label class={labelClass}>Languages</p>
 			<ul class="flex flex-wrap gap-x-(--space-3xl) gap-y-(--space-lg)">
 				{languageGroups.map((languageGroup) => (
@@ -59,7 +59,7 @@ const labelClass = 'text-[length:var(--text-label)] uppercase text-app-muted'
 	)}
 
 	{entry?.data.education && (
-		<div data-reveal class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
+		<div class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
 			<p data-label class={labelClass}>Education</p>
 			<div class="max-w-(--measure)">
 				<p class="text-[length:var(--text-lead)] leading-[1.3] font-medium text-app-text">

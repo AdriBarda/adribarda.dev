@@ -57,7 +57,6 @@ const structuredData = {
 
 		<title>{pageTitle}</title>
 		<script is:inline src={`${assetBase}theme-init.js`}></script>
-		{/* No JS, no attribute, nothing hidden — motion never gates content. */}
 		<script is:inline>
 			if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
 				document.documentElement.dataset.motion = ''
@@ -95,8 +94,6 @@ const structuredData = {
 					if (missed.length > 0) gsap.set(missed, { y: 0, opacity: 1 })
 				}
 
-				// batch() hands over everything crossing the line in one frame, so a row
-				// of cards cascades without grouping markup.
 				ScrollTrigger.batch('[data-reveal]', {
 					start: `top ${START * 100}%`,
 					once: true,
@@ -109,22 +106,6 @@ const structuredData = {
 							stagger: 0.08,
 							overwrite: true
 						})
-
-						// Meters ride their tile's entrance rather than owning a trigger.
-						const meters = batch.flatMap((el) =>
-							Array.from(el.querySelectorAll<HTMLElement>('[data-meter]'))
-						)
-
-						if (meters.length > 0) {
-							gsap.to(meters, {
-								scaleX: 1,
-								duration: 0.45,
-								ease: 'power2.out',
-								stagger: 0.04,
-								delay: 0.28,
-								overwrite: true
-							})
-						}
 					}
 				})
 

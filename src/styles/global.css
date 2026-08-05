@@ -28,10 +28,8 @@
   --app-text-2: oklch(32% 0.023 65);
   --app-text: oklch(16% 0.025 60);
 
-  /* One hue per section: a single arc from cool to warm. No violet — the paper
-     is warm cream and purple fights it. */
   --accent-1: oklch(48% 0.15 248);
-  --accent-2: oklch(50% 0.10 200);
+  --accent-2: oklch(50% 0.1 200);
   --accent-3: oklch(46% 0.09 168);
   --accent-4: oklch(56% 0.14 62);
   --accent-5: oklch(52% 0.15 32);
@@ -40,8 +38,6 @@
   --accent: var(--accent-1);
   --app-focus: var(--accent-2);
 
-  /* The bold block — deep pine with a sand accent. Used by the field section
-     and the footer card. */
   --field-bg: oklch(26% 0.052 178);
   --field-surface: oklch(31% 0.05 178);
   --field-border: oklch(43% 0.045 178);
@@ -50,10 +46,9 @@
   --field-text: oklch(98% 0.012 170);
   --field-accent: oklch(84% 0.12 80);
 
-  /* A separate register: these only ever appear as low-chroma fills. */
   --tile-1: oklch(62% 0.13 248);
   --tile-2: oklch(66% 0.13 62);
-  --tile-3: oklch(62% 0.10 178);
+  --tile-3: oklch(62% 0.1 178);
   --tile-4: oklch(62% 0.14 32);
   --tile-5: oklch(60% 0.12 200);
   --tile-6: oklch(62% 0.13 12);
@@ -81,7 +76,6 @@
   --accent: var(--accent-1);
   --app-focus: var(--accent-2);
 
-  /* In dark the field can't go darker than the paper, so it lifts instead. */
   --field-bg: oklch(24% 0.042 178);
   --field-surface: oklch(29% 0.04 178);
   --field-border: oklch(40% 0.04 178);
@@ -93,7 +87,7 @@
   --tile-mix: 20%;
   --tile-1: oklch(70% 0.13 248);
   --tile-2: oklch(74% 0.13 62);
-  --tile-3: oklch(72% 0.10 178);
+  --tile-3: oklch(72% 0.1 178);
   --tile-4: oklch(70% 0.14 32);
   --tile-5: oklch(70% 0.12 200);
   --tile-6: oklch(70% 0.13 12);
@@ -114,34 +108,13 @@
   --text-sm: 0.875rem;
   --text-body: 1.0625rem;
   --text-lead: clamp(1.25rem, 0.9rem + 1.2vw, 1.65rem);
-  /* Display sizes carry a vh bound for the same reason --text-hero does: a
-     width-only clamp lets a heading eat a third of a short screen. At 1512px
-     wide the h2 resolved to 99px and wrapped to two lines — 186px of heading
-     before a word of content. */
+
   --text-h3: min(clamp(1.5rem, 1.1rem + 1.4vw, 2.15rem), 4.5vh);
   --text-h2: min(clamp(2.6rem, 1.1rem + 5.4vw, 5rem), 9vh);
   --text-display: clamp(3.4rem, 0.6rem + 9.6vw, 9rem);
-  /* Fitted, not fluid-by-feel: the hero role is nowrap, so its size is derived
-     from the width it actually has rather than approximated from vw. Measured,
-     "Frontend Engineer" sets 8.04em wide in Space Grotesk 600 at
-     --track-display. Mirroring the shell's own min() keeps the fit exact where
-     the gutter caps (below 400px and above 1440px) instead of drifting.
 
-     The divisor is 8.9 rather than a snug 8.45 because 100vw counts the
-     classic desktop scrollbar but the h1's box doesn't — a fixed ~14px debt
-     that eats a *proportional* slack budget alive as the viewport narrows. At
-     8.45 the margin crossed zero around 329px and a nowrap headline would have
-     overflowed; 8.9 keeps it positive below 200px. Costs nothing at desktop,
-     where the 9.5rem cap binds anyway. Re-measure the em ratio if the role
-     string in presentation.md changes. */
   --hero-fit: calc(min(100vw - 2 * var(--page-gutter), var(--shell-max)) / 8.9);
 
-  /* Three bounds, smallest wins: fit the shell's width, never exceed the
-     9.5rem ceiling, and never eat more than 16vh of a short screen. The vh
-     term is what lets the rest of the hero stay on-screen at ~750px tall —
-     without it the headline holds 152px and pushes the base strip out of
-     view. Adding a bound to a min() can only shrink the result, so the
-     one-line width guarantee above still holds. */
   --text-hero: min(var(--hero-fit), 9.5rem, 16vh);
   --text-numeral: clamp(3rem, 1rem + 6vw, 6rem);
 
@@ -151,20 +124,11 @@
   --track-body: 0.005em;
   --track-label: 0.1em;
 
-  /* Hero vertical rhythm — measured in vh, not in fixed steps.
-     The hero has to hold every element inside one screen, so on a short
-     viewport height is the scarce axis and fixed spacing is what pushes the
-     base strip off-screen. Each gap scales with vh and clamps at both ends:
-     the floor keeps the composition legible when squeezed, the ceiling stops
-     it drifting apart on a tall display. */
   --gap-hero-tight: clamp(0.25rem, 0.6vh, 0.5rem);
   --gap-hero: clamp(0.75rem, 2vh, 1.5rem);
   --gap-hero-cta: clamp(1rem, 2.6vh, 2rem);
   --gap-hero-strip: clamp(1.5rem, 4.5vh, 7rem);
 
-  /* Section rhythm — same vh treatment, applied to the parts that decide how
-     many screens a section costs: the band's own padding, the gap under a
-     section head, and the bento's padding/gaps. */
   --band-pad: clamp(2.5rem, 7vh, 7rem);
   --gap-section: clamp(1.75rem, 5vh, 4.5rem);
   --gap-bento: clamp(0.75rem, 2vh, 1.5rem);
@@ -176,16 +140,9 @@
   --shell: min(100%, var(--shell-max));
   --measure: 62ch;
 
-  /* Bento lift. The card sits flat at rest — a resting shadow would read as
-     already-risen and there'd be nothing left for the hover to do.
-     The shadow offset runs just 2px past the lift, so the solid band is a
-     chunky 10px while reaching only 2px beyond the card's original box —
-     comfortably inside the 12px --gap-bento floor, so it never meets a
-     neighbour. Most of the band falls into the space the card just vacated,
-     which is what sells it as lifting off the page rather than sliding. */
   --card-lift: 8px;
   --card-shadow: 10px;
-  /* No lift under reduced motion, so the shadow must fit the gap on its own. */
+
   --card-shadow-flat: 4px;
 
   --radius-md: 14px;
@@ -196,14 +153,9 @@
   --dur-fast: 150ms;
   --dur-mid: 260ms;
   --dur-long: 420ms;
-  --stagger: 70ms;
 
-  /* Reveal travel. Below ~2rem the eye reads opacity only and it lands as a
-     plain fade. */
   --rise-reveal: 3.5rem;
-  --rise-hero: 1.5rem;
 
-  --footer-h: 26rem;
   --radius-xl: 40px;
   --nav-h: 3.5rem;
 }
@@ -214,7 +166,6 @@ body {
 }
 
 html {
-  /* Matches the final band, so no seam appears where the card travels. */
   background: var(--app-bg);
 }
 
@@ -238,9 +189,15 @@ h3 {
   margin: 0;
 }
 
-h1 { letter-spacing: var(--track-display); }
-h2 { letter-spacing: var(--track-h2); }
-h3 { letter-spacing: var(--track-h3); }
+h1 {
+  letter-spacing: var(--track-display);
+}
+h2 {
+  letter-spacing: var(--track-h2);
+}
+h3 {
+  letter-spacing: var(--track-h3);
+}
 
 [data-label],
 [data-meta] {
@@ -291,8 +248,6 @@ select {
   background-color: var(--app-paper-2);
 }
 
-/* Remapping the app tokens locally inverts every child with them — no
-   per-component dark variants. */
 [data-band='field'],
 .footer-card {
   --app-bg: var(--field-bg);
@@ -314,28 +269,17 @@ select {
   width: var(--shell);
 }
 
-/* The last section carries the card's runway as its own padding, so the card
-   never crosses a seam onto a second colour. */
 [data-band]:last-of-type {
   min-height: 100svh;
-  padding-bottom: calc(var(--footer-h) + var(--space-4xl));
+  padding-bottom: var(--space-4xl);
 }
 
-/* Padding here is only a floor for short viewports — anywhere taller, the
-   min-height below plus align-items:center decide the composition. Keeping it
-   tight is what lets a ~800px-tall laptop still fit the whole hero on one
-   screen; the old 4xl block put the natural height at 991px, past that mark. */
 [data-band-hero] {
   padding-block: calc(var(--nav-h) + var(--space-lg)) var(--space-lg);
   display: flex;
   align-items: center;
 }
 
-/* The hero owns exactly one screen, so the next band never peeks above the
-   fold on entry. svh, not dvh/lvh: svh is the viewport with browser chrome
-   showing, which is the state the page is actually entered in.
-   Phones are exempt on purpose — the stacked single column is too tall to
-   pin to a screen without squeezing it. */
 @media (min-width: 48rem) {
   [data-band-hero] {
     min-height: 100svh;
@@ -377,8 +321,6 @@ select {
   transition: color var(--dur-mid) var(--ease-out);
 }
 
-/* Each link carries its own section accent as --band inline; over the field it
-   takes the field accent instead. */
 .nav-link {
   color: var(--app-muted);
 }
@@ -434,8 +376,6 @@ select {
   grid-column: span 6;
 }
 
-/* Stacking context: GSAP's transform on .bento-item makes each wrapper its own
-   context, so the card's z-index can't escape it. Lift the wrapper instead. */
 .bento-item:hover,
 .bento-item:focus-within {
   z-index: 1;
@@ -463,25 +403,33 @@ select {
 }
 
 @media (min-width: 48rem) {
-  .bento-item { grid-column: span 3; }
-  .bento-item:nth-child(1) { grid-column: span 4; }
-  .bento-item:nth-child(2) { grid-column: span 2; }
-  .bento-item:nth-child(3) { grid-column: span 2; }
-  .bento-item:nth-child(4) { grid-column: span 4; }
-  .bento-item:nth-child(5) { grid-column: span 3; }
-  .bento-item:nth-child(6) { grid-column: span 3; }
+  .bento-item {
+    grid-column: span 3;
+  }
+  .bento-item:nth-child(1) {
+    grid-column: span 4;
+  }
+  .bento-item:nth-child(2) {
+    grid-column: span 2;
+  }
+  .bento-item:nth-child(3) {
+    grid-column: span 2;
+  }
+  .bento-item:nth-child(4) {
+    grid-column: span 4;
+  }
+  .bento-item:nth-child(5) {
+    grid-column: span 3;
+  }
+  .bento-item:nth-child(6) {
+    grid-column: span 3;
+  }
 }
 
 .bento-card:hover,
 .bento-card:focus-within {
-  /* Siblings later in the DOM would otherwise paint over the shadow. */
   z-index: 1;
-  /* Safe on .bento-card only because the reveal now animates .bento-item
-     instead. While the card was itself the [data-reveal] target, GSAP's inline
-     transform outranked this rule and the lift silently never applied — which
-     is exactly why the hover read as the shadow moving on its own.
-     (The independent `translate` property is not an escape hatch here: the
-     Tailwind base layer pins it to 0 on these elements.) */
+
   transform: translate3d(calc(-1 * var(--card-lift)), calc(-1 * var(--card-lift)), 0);
   border-color: color-mix(in oklab, var(--card) 55%, var(--app-border));
   background: color-mix(in oklab, var(--card) calc(var(--tile-mix, 16%) + 8%), var(--app-bg));
@@ -494,11 +442,6 @@ select {
     transition: none;
   }
 
-  /* `.bento-card { transform: none }` alone never won here — `:hover` outranks
-     it, so the card still jumped. Cancel it on the hover states themselves.
-     The shadow shrinks too: with no lift to absorb it, the full 10px would
-     nearly close a 12px gap. Hover still reads, via the smaller solid shadow
-     and the border. */
   .bento-card:hover,
   .bento-card:focus-within {
     transform: none;
@@ -520,58 +463,124 @@ select {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 
-  .stack-grid > * { grid-column: span 6; }
-  .stack-grid > *:nth-child(1) { grid-column: span 7; }
-  .stack-grid > *:nth-child(2) { grid-column: span 5; }
-  .stack-grid > *:nth-child(3) { grid-column: span 5; }
-  .stack-grid > *:nth-child(4) { grid-column: span 7; }
+  .stack-grid > * {
+    grid-column: span 6;
+  }
+  .stack-grid > *:nth-child(1) {
+    grid-column: span 7;
+  }
+  .stack-grid > *:nth-child(2) {
+    grid-column: span 5;
+  }
+  .stack-grid > *:nth-child(3) {
+    grid-column: span 5;
+  }
+  .stack-grid > *:nth-child(4) {
+    grid-column: span 7;
+  }
 }
 
 /* ---- Motion ------------------------------------------------------------ */
 
-/* CSS owns the resting (hidden) state, GSAP owns the move. Setting the start
-   state in JS would paint at full opacity for a frame first, and GSAP reads the
-   CSS translate as its base y so `y: 0` lands where the layout expects. */
-
-@keyframes rise {
-  to {
-    opacity: 1;
-    transform: none;
-  }
+[data-motion] [data-hero-role-anim] {
+  visibility: hidden;
 }
 
-/* Hero stagger — above the fold, so it runs on load rather than on
-   intersection. Order is the cadence, so nth-child beats a JS-set index. */
-[data-motion] [data-hero-part] {
-  opacity: 0;
-  transform: translateY(var(--rise-hero));
-  animation: rise var(--dur-long) var(--ease-out) forwards;
+.hero-role-anim span {
+  display: inline-block;
+  position: relative;
 }
 
-[data-motion] [data-hero-part]:nth-child(1) { animation-delay: calc(0 * var(--stagger)); }
-[data-motion] [data-hero-part]:nth-child(2) { animation-delay: calc(1 * var(--stagger)); }
-[data-motion] [data-hero-part]:nth-child(3) { animation-delay: calc(2 * var(--stagger)); }
-[data-motion] [data-hero-part]:nth-child(4) { animation-delay: calc(3 * var(--stagger)); }
-[data-motion] [data-hero-part]:nth-child(5) { animation-delay: calc(4 * var(--stagger)); }
-[data-motion] [data-hero-part]:nth-child(6) { animation-delay: calc(5 * var(--stagger)); }
+.hero-role-anim .hero-word {
+  display: inline-flex;
+}
 
-/* Scroll reveal — ScrollTrigger.batch staggers whatever enters together. */
+.hero-role-anim .hero-space {
+  width: 0.237em;
+}
+
+.hero-role-anim .clip {
+  overflow: hidden;
+}
+
+.hero-role-anim :is(.n, .cap-e) .clip > span,
+.hero-role-anim .i {
+  perspective: 750px;
+  transform-style: preserve-3d;
+}
+
+.hero-role-anim :is(.n, .cap-e) .clip > span > span {
+  backface-visibility: hidden;
+}
+
+.hero-role-anim :is(.n, .cap-e) .clip > span > span:last-child {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  visibility: hidden;
+}
+
+.hero-role-anim .hero-tend {
+  display: inline-flex;
+  position: relative;
+}
+
+.hero-role-anim .hero-icons {
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  visibility: hidden;
+}
+
+.hero-role-anim .hero-icon {
+  height: 0.7em;
+  left: 50%;
+  margin: -0.35em 0 0 -0.35em;
+  position: absolute;
+  top: 53%;
+  width: 0.7em;
+}
+
+.hero-role-anim .hero-icon:nth-child(1) {
+  color: oklch(76% 0.175 90);
+}
+
+.hero-role-anim .hero-icon:nth-child(2) {
+  color: oklch(55% 0.23 27);
+}
+
+.hero-role-anim .hero-icon:nth-child(3) {
+  color: oklch(58% 0.19 150);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-icon:nth-child(1) {
+  color: oklch(87% 0.175 95);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-icon:nth-child(2) {
+  color: oklch(66% 0.225 27);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-icon:nth-child(3) {
+  color: oklch(78% 0.19 152);
+}
+
+.hero-role-anim .hero-icon svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+  stroke-width: 2.5;
+}
+
 [data-motion] [data-reveal] {
   opacity: 0;
   transform: translateY(var(--rise-reveal));
 }
 
-/* Less travel on phones, where 3.5rem is most of a card height. */
 @media (max-width: 47.99rem) {
   :root {
     --rise-reveal: 1.75rem;
   }
-}
-
-/* Meter draw — only filled dashes carry the hook; the track is structure. */
-[data-motion] [data-meter] {
-  transform: scaleX(0);
-  transform-origin: left center;
 }
 
 /* Role pin — native sticky, not a JS pin. `align-self: start` is load-bearing:
@@ -586,10 +595,10 @@ select {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-motion] [data-hero-part],
-  [data-motion] [data-reveal],
-  [data-motion] [data-meter] {
+  [data-motion] [data-hero-role-anim],
+  [data-motion] [data-reveal] {
     opacity: 1;
+    visibility: visible;
     transform: none;
     animation: none;
   }
@@ -597,14 +606,7 @@ select {
 
 /* ---- Footer card ------------------------------------------------------- */
 
-/* Rides over the page, scrubbed up across the document's last stretch by the
-   script in SiteFooter.astro. */
 .footer-card {
-  position: fixed;
-  inset-inline: 0;
-  bottom: 0;
-  z-index: 30;
-  min-height: var(--footer-h);
   display: flex;
   align-items: center;
   padding-block: var(--space-3xl);
@@ -612,34 +614,9 @@ select {
   background: var(--app-bg);
   border-start-start-radius: var(--radius-xl);
   border-start-end-radius: var(--radius-xl);
-  transform: translate3d(0, 100%, 0);
-  will-change: transform;
-}
-
-/* The travelling card needs a tall viewport and real scroll. Below that — and
-   under reduced motion — it simply ends the document. */
-@media (max-width: 63.99rem), (max-height: 40rem) {
-  [data-band]:last-of-type {
-    padding-bottom: var(--space-4xl);
-  }
-
-  .footer-card {
-    position: static;
-    min-height: 0;
-    transform: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-band]:last-of-type {
-    padding-bottom: var(--space-4xl);
-  }
-
-  .footer-card {
-    position: static;
-    transform: none;
-  }
-
   *,
   *::before,
   *::after {

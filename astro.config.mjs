@@ -9,7 +9,6 @@ const githubPagesConfig = {
   base: '/adribarda.dev'
 }
 
-// https://astro.build/config
 export default defineConfig({
   ...(deployTarget === 'github' ? githubPagesConfig : {}),
 

@@ -32,7 +32,6 @@ const linkClass =
 			))}
 		</nav>
 
-		{/* Three icons; CSS shows the one matching [data-theme-preference]. */}
 		<button
 			type="button"
 			data-theme-toggle
@@ -59,10 +58,7 @@ const linkClass =
 	const shell = document.querySelector<HTMLElement>('[data-nav]')!
 	const links = Array.from(shell.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'))
 
-	// One rAF-throttled pass for both scroll-driven bits: retract going down and
-	// return going up, and flip the ink when a colour field passes under the nav.
 	const fields = Array.from(document.querySelectorAll<HTMLElement>('[data-band="field"]'))
-	// Roughly the vertical centre of the link row.
 	const NAV_MID = 30
 
 	let lastY = window.scrollY
@@ -74,7 +70,6 @@ const linkClass =
 		const y = window.scrollY
 		const delta = y - lastY
 
-		// Ignore jitter, and never hide near the top.
 		if (Math.abs(delta) > 6) {
 			shell.toggleAttribute('data-nav-hidden', delta > 0 && y > 160)
 			lastY = y

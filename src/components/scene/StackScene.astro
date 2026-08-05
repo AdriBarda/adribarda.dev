@@ -91,8 +91,6 @@ const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comforta
 									<span class="mt-1 flex gap-1" role="img" aria-label={`${technology.level} with ${technology.name}`}>
 										{Array.from({ length: 3 }).map((_, i) => (
 											<span
-												data-meter={i < filled(technology.level) ? '' : undefined}
-												style={`--i: ${i}`}
 												class:list={[
 													'block h-0.5 w-3 rounded-full',
 													i < filled(technology.level) ? 'bg-[var(--band)]' : 'bg-app-border'
