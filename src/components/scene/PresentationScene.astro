@@ -75,9 +75,7 @@ const labelClass = 'text-[0.7rem] uppercase text-app-muted'
 					<span class="hero-letter d"><span class="clip"><span>d</span></span></span>
 					<span class="hero-icons"><span class="hero-icon"><SmileIcon /></span><span class="hero-icon"><HeartIcon /></span><span class="hero-icon"><CodeIcon /></span></span>
 				</span>
-			</span>
-			<span class="hero-space"> </span>
-			<span class="hero-word hero-word-engineer">
+			</span><span class="hero-space"> </span><span class="hero-word hero-word-engineer">
 				<span class="hero-letter cap-e"><span class="clip"><span><span>E</span><span>3</span></span></span></span>
 				<span class="hero-letter n3"><span class="clip"><span>n</span></span></span>
 				<span class="hero-letter g"><span>g</span></span>
@@ -169,6 +167,7 @@ const labelClass = 'text-[0.7rem] uppercase text-app-muted'
 				const glyph = (name: string) => select(`.hero-letter.${name} .clip > span:first-child`)
 
 				const defaults = { duration: 0.6, ease: 'power2.out' }
+				const PACE = 1.18
 
 				gsap.set(animatedRole, { autoAlpha: 1 })
 
@@ -237,11 +236,13 @@ const labelClass = 'text-[0.7rem] uppercase text-app-muted'
 				const spinI = () => gsap.timeline({ defaults })
 					.from(select('.i > span'), { autoAlpha: 0, duration: 0.1 })
 					.from(select('.i > span'), { rotationX: -450, duration: 1.3 }, '<0.14')
+					// Pre-multiplied by PACE so the master timeScale cancels out: the
+					// intro speeds up with everything else, the idle loop does not.
 					.to(select('.i > span'), {
 						rotationX: 360,
-						duration: 1.2,
+						duration: 1.2 * PACE,
 						repeat: -1,
-						repeatDelay: 4,
+						repeatDelay: 4 * PACE,
 						ease: 'power2.inOut'
 					}, '+=2')
 
@@ -263,7 +264,7 @@ const labelClass = 'text-[0.7rem] uppercase text-app-muted'
 					.add(landT(), 2.85)
 					.add(slideEnd(), 3.1)
 					.add(finishEngineer(), 3.2)
-					.timeScale(1.18)
+					.timeScale(PACE)
 			}, animatedRole)
 		})
 	}
