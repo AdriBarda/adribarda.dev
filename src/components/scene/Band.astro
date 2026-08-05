@@ -1,0 +1,23 @@
+---
+interface Props {
+	id: string
+	/** 1-6 — which sibling accent owns this section. */
+	accent: number
+	variant?: 'plain' | 'paper' | 'field'
+	hero?: boolean
+}
+
+const { id, accent, variant = 'plain', hero = false } = Astro.props
+---
+
+<section
+	id={id}
+	data-band={variant}
+	data-section={id}
+	data-band-hero={hero ? '' : undefined}
+	style={`--band: var(--accent-${accent});`}
+>
+	<div class="shell">
+		<slot />
+	</div>
+</section>

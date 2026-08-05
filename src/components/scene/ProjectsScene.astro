@@ -1,0 +1,104 @@
+---
+import type { SectionGroup } from '../../content/sections'
+import SectionHead from './SectionHead.astro'
+import GithubIcon from '../../assets/tech-stack/github.svg'
+
+const { group, index = 0 } = Astro.props as { group?: SectionGroup; index?: number }
+const entry = group?.entries.find((item) => item.data.section === 'projects')
+const projects = entry?.data.projects ?? []
+
+// One tile hue per project, from the pastel register.
+const cardTiles = ['--tile-1', '--tile-2', '--tile-3', '--tile-4', '--tile-5', '--tile-6']
+
+const chipClass =
+	'rounded-[var(--radius-pill)] border border-app-border px-2.5 py-1 text-[length:var(--text-label)] leading-none text-app-muted'
+const linkClass =
+	'text-[length:var(--text-sm)] font-medium text-app-text underline decoration-app-border underline-offset-4 transition-colors duration-150 hover:decoration-app-text'
+
+const normalizeUrl = (url: string) => (url.startsWith('http') ? url : `https://${url}`)
+---
+
+<div class="flex w-full flex-col gap-(--gap-section)">
+	<SectionHead
+		title={entry?.data.title ?? 'Missing projects title.'}
+		lead={entry?.data.summary}
+	/>
+
+	{projects.length > 0 ? (
+		<div class="bento">
+			{projects.map((project, position) => (
+			<div data-reveal class="bento-item">
+				<article class="bento-card" style={`--card: var(${cardTiles[position % cardTiles.length]});`}>
+					<h3 class="text-[length:var(--text-h3)] leading-[1.05] text-app-text">{project.name}</h3>
+
+					<p class="text-[length:var(--text-body)] leading-[1.6] text-app-text-2 text-pretty">
+						{project.tagline}
+					</p>
+
+					{project.build && (
+						<div>
+							<p data-label class="text-app-muted">What I built</p>
+							<p class="mt-1.5 text-[length:var(--text-sm)] leading-[1.7] text-app-muted text-pretty">
+								{project.build}
+							</p>
+						</div>
+					)}
+
+					{project.highlights.length > 0 && (
+						<ul class="flex flex-col gap-1.5">
+							{project.highlights.map((highlight) => (
+								<li class="grid grid-cols-[auto_1fr] gap-2.5">
+									<span class="mt-[0.55rem] size-1 shrink-0 rounded-full bg-[var(--card)]"></span>
+									<p class="text-[length:var(--text-sm)] leading-[1.65] text-app-muted text-pretty">
+										{highlight}
+									</p>
+								</li>
+							))}
+						</ul>
+					)}
+
+					<div class="mt-auto flex flex-col gap-(--space-md) pt-(--space-sm)">
+						{project.stack.length > 0 && (
+							<div class="flex flex-wrap gap-1.5">
+								{project.stack.map((technology) => (
+									<span class={chipClass}>{technology}</span>
+								))}
+							</div>
+						)}
+
+						<div class="flex flex-wrap items-center justify-between gap-3">
+							<span data-meta class="text-app-muted">
+								{[project.status, project.year, project.source === 'private' ? 'Source private' : null]
+									.filter(Boolean)
+									.join('  ·  ')}
+							</span>
+
+							<div class="flex items-center gap-(--space-md)">
+								{project.url && (
+									<a href={normalizeUrl(project.url)} target="_blank" rel="noopener noreferrer" class={linkClass}>
+										Visit
+									</a>
+								)}
+								{project.repositoryUrl && (
+									<a
+										href={normalizeUrl(project.repositoryUrl)}
+										target="_blank"
+										rel="noopener noreferrer"
+										aria-label={`${project.name} on GitHub`}
+										class="inline-flex items-center gap-2"
+									>
+										<GithubIcon aria-hidden="true" class="size-4 shrink-0 fill-current text-app-muted" />
+										<span class={linkClass}>Source</span>
+									</a>
+								)}
+							</div>
+						</div>
+					</div>
+				</article>
+			</div>
+			))}
+		</div>
+	) : (
+		<p class="text-[length:var(--text-body)] text-app-muted">Missing projects.</p>
+	)}
+</div>

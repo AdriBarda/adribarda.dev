@@ -1,0 +1,145 @@
+---
+const { ids } = Astro.props as { ids: string[] }
+
+const NAV_LABELS: Record<string, string> = {
+	presentation: 'Intro',
+	experience: 'Experience',
+	stack: 'Stack',
+	projects: 'Projects',
+	'open-source': 'Open source',
+	'about-me': 'About'
+}
+
+const linkClass =
+	'nav-link px-2.5 py-1 text-[length:var(--text-sm)] transition-colors duration-150 ease-out active:translate-y-px'
+---
+
+<div
+	data-nav
+	class="nav-shell pointer-events-none fixed inset-x-0 top-0 z-40 flex justify-center px-(--page-gutter) pt-(--space-md)"
+>
+	<div class="nav-pill pointer-events-auto flex items-center gap-(--space-xs)">
+		<nav aria-label="Sections" class="hidden items-center gap-1 md:flex">
+			{ids.map((id, index) => (
+				<a
+					href={`#${id}`}
+					aria-current={index === 0 ? 'true' : 'false'}
+					style={`--band: var(--accent-${index + 1});`}
+					class={linkClass}
+				>
+					{NAV_LABELS[id] ?? id}
+				</a>
+			))}
+		</nav>
+
+		{/* Three icons; CSS shows the one matching [data-theme-preference]. */}
+		<button
+			type="button"
+			data-theme-toggle
+			title="Light theme"
+			aria-label="Light theme. Activate to change."
+			class="theme-toggle inline-flex size-8 cursor-pointer items-center justify-center rounded-[var(--radius-pill)] text-app-muted transition-colors duration-150 ease-out hover:text-app-text active:translate-y-px"
+		>
+			<svg data-icon="light" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+				<circle cx="12" cy="12" r="4" />
+				<path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+			</svg>
+			<svg data-icon="dark" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+				<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+			</svg>
+			<svg data-icon="system" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+				<rect width="20" height="14" x="2" y="3" rx="2" />
+				<path d="M8 21h8m-4-4v4" />
+			</svg>
+		</button>
+	</div>
+</div>
+
+<script>
+	const shell = document.querySelector<HTMLElement>('[data-nav]')!
+	const links = Array.from(shell.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'))
+
+	// One rAF-throttled pass for both scroll-driven bits: retract going down and
+	// return going up, and flip the ink when a colour field passes under the nav.
+	const fields = Array.from(document.querySelectorAll<HTMLElement>('[data-band="field"]'))
+	// Roughly the vertical centre of the link row.
+	const NAV_MID = 30
+
+	let lastY = window.scrollY
+	let frame = 0
+
+	const measure = () => {
+		frame = 0
+
+		const y = window.scrollY
+		const delta = y - lastY
+
+		// Ignore jitter, and never hide near the top.
+		if (Math.abs(delta) > 6) {
+			shell.toggleAttribute('data-nav-hidden', delta > 0 && y > 160)
+			lastY = y
+		}
+
+		shell.toggleAttribute(
+			'data-nav-field',
+			fields.some((field) => {
+				const box = field.getBoundingClientRect()
+				return box.top <= NAV_MID && box.bottom >= NAV_MID
+			})
+		)
+	}
+
+	const schedule = () => {
+		if (frame === 0) frame = requestAnimationFrame(measure)
+	}
+
+	measure()
+	window.addEventListener('scroll', schedule, { passive: true })
+	window.addEventListener('resize', schedule)
+
+	const observer = new IntersectionObserver(
+		(entries) => {
+			const visible = entries
+				.filter((entry) => entry.isIntersecting)
+				.sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+
+			if (!visible) return
+
+			const id = (visible.target as HTMLElement).dataset.section
+
+			links.forEach((link) => {
+				link.setAttribute('aria-current', link.hash === `#${id}` ? 'true' : 'false')
+			})
+		},
+		{ rootMargin: '-45% 0px -45% 0px', threshold: [0, 0.25, 0.5, 1] }
+	)
+
+	links.forEach((link) => {
+		const section = document.querySelector(`[data-section="${link.hash.slice(1)}"]`)
+		if (section) observer.observe(section)
+	})
+
+	// ---- Theme -------------------------------------------------------------
+	// public/theme-init.js owns the theme; this only advances the preference.
+	const NEXT = { light: 'dark', dark: 'system', system: 'light' } as const
+	const TITLES = { light: 'Light theme', dark: 'Dark theme', system: 'Match system' }
+
+	type Preference = keyof typeof NEXT
+
+	const toggle = shell.querySelector<HTMLButtonElement>('[data-theme-toggle]')!
+	const root = document.documentElement
+
+	const label = () => {
+		const title = TITLES[(root.dataset.themePreference as Preference) ?? 'system']
+
+		toggle.title = title
+		toggle.setAttribute('aria-label', `${title}. Activate to change.`)
+	}
+
+	label()
+
+	toggle.addEventListener('click', () => {
+		window.__setTheme(NEXT[(root.dataset.themePreference as Preference) ?? 'system'])
+		label()
+	})
+</script>

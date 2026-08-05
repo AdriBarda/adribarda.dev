@@ -1,161 +1,120 @@
 ---
-import { DESKTOP_SCENE_MEDIA_QUERY } from '../../config/mediaQueries'
-import { sceneToneAccentClasses, type SceneTone } from './sceneTheme'
 import type { SectionGroup } from '../../content/sections'
-import GlassCard from '../ui/GlassCard.astro'
-import { ExperienceTimelineAnimator } from './ExperienceTimelineAnimator'
+import SectionHead from './SectionHead.astro'
 
-const { group, accentTone } = Astro.props as { group?: SectionGroup; accentTone?: SceneTone }
+const { group, index = 0 } = Astro.props as { group?: SectionGroup; index?: number }
 const experience = group?.entries.find((entry) => entry.data.section === 'experience')
 const impact = group?.entries.find((entry) => entry.data.section === 'impact')
-const accentClass = accentTone ? sceneToneAccentClasses[accentTone] : ''
-const timelineDotBaseClass = 'absolute z-10 -left-[calc(1.625rem+0.5px)] top-1/2 -translate-y-1/2 size-3 sm:-left-[calc(1.875rem+0.5px)] desktop:-left-auto desktop:left-1/2 desktop:top-0 desktop:-translate-x-1/2'
-const timelineDotInactiveClass = 'bg-[color-mix(in_srgb,var(--app-text)_22%,var(--app-bg))]'
-const timelineDotPulseClass = 'absolute inset-[-0.18rem] rounded-full opacity-30 motion-reduce:hidden animate-ping'
-
 const timeline = experience?.data.items ?? []
-const timelineScrollHeight = `calc((100dvh - (var(--page-padding) * 2)) + ${Math.max(timeline.length - 1, 1) * 22}rem)`
 
 function getPeriodYear(period?: string) {
-	const years = period?.match(/\b\d{4}\b/g)
-
-	return years?.at(-1)
+	return period?.match(/\b\d{4}\b/g)?.at(-1)
 }
 
 const earliestYear = getPeriodYear(timeline.at(-1)?.period)
 const latestYear = getPeriodYear(timeline[0]?.period)
 const experienceMeta = [
-	earliestYear && latestYear ? `${earliestYear} - ${latestYear}` : undefined,
+	earliestYear && latestYear ? `${earliestYear}—${latestYear}` : undefined,
 	timeline.length > 0 ? `${timeline.length} roles` : undefined
 ]
 	.filter(Boolean)
-	.join(' · ')
+	.join('  ·  ')
 ---
 
-<div data-experience-section class="w-full desktop:min-h-(--experience-scroll-height)" style={`--experience-scroll-height: ${timelineScrollHeight};`}>
-	<ExperienceTimelineAnimator client:media={DESKTOP_SCENE_MEDIA_QUERY} />
-	<div data-experience-pin class="grid w-full gap-4 desktop:sticky desktop:top-[12vh] desktop:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] desktop:grid-rows-[auto_minmax(0,1fr)]">
-	<GlassCard class="p-6 sm:p-8 md:col-span-2 lg:p-9">
-		<div class:list={["pointer-events-none absolute inset-y-0 left-0 z-10 w-1", accentClass]}></div>
-		<div class="flex h-full flex-col justify-between gap-8">
-			<div>
-				{experience?.data.eyebrow && (
-					<p class="text-[0.78rem] uppercase tracking-[0.18em] text-app-text/68">{experience.data.eyebrow}</p>
-				)}
-				{experienceMeta && (
-					<p class="mt-3 text-[0.72rem] uppercase tracking-[0.16em] text-app-text/56">{experienceMeta}</p>
-				)}
-				<p class="mt-5 max-w-2xl text-[clamp(1.04rem,1.4vw,1.14rem)] leading-[1.7] text-app-text/78">
-					{experience?.data.summary ?? 'Missing experience summary.'}
-				</p>
-			</div>
+<div class="flex w-full flex-col gap-(--space-3xl)">
+	<SectionHead title={experience?.data.title ?? 'Missing experience title.'} lead={experience?.data.summary} />
 
-			<div class="flex flex-col gap-4 pt-1">
-				<p class="text-[0.72rem] uppercase tracking-[0.16em] text-app-text/58">Selected roles</p>
-				<div data-experience-timeline-viewport class="relative pl-3 desktop:overflow-hidden desktop:pl-0 desktop:pt-5">
-					<ol data-experience-timeline-track class="relative border-l border-app-border/80 desktop:flex desktop:w-max desktop:min-w-full desktop:border-l-0 desktop:border-t desktop:border-app-border/70 desktop:will-change-transform">
-					{timeline.length > 0 ? (
-						timeline.map((item, index) => (
-							<li data-experience-timeline-item class="relative ml-5 pb-5 last:pb-0 sm:ml-6 desktop:ml-0 desktop:w-(--experience-timeline-step-width) desktop:flex-none desktop:pb-0 desktop:pt-6">
-							<div class="relative mb-1.5 desktop:contents">
-								<time class="block text-[0.68rem] uppercase tracking-[0.14em] text-app-text/62 desktop:mb-2 desktop:text-center">
-									{item.period}
-								</time>
-							<span
-								data-experience-timeline-dot
-								class:list={['group/timeline-dot', timelineDotBaseClass]}
-							>
-									{index === 0 && (
-										<span
-											aria-hidden="true"
-											class:list={[
-												timelineDotPulseClass,
-												item.highlight ? accentClass : timelineDotInactiveClass
-											]}
-										></span>
-									)}
-									<span
-										aria-hidden="true"
-										class:list={[
-											'absolute inset-0 rounded-full',
-											item.highlight ? accentClass : timelineDotInactiveClass
-										]}
-									></span>
-								</span>
-							</div>
+	
+	{/* Space is the separator — the label rail already marks where each row
+	    starts, so a rule between them would be drawing what the layout says. */}
+	<ol class="flex flex-col gap-(--space-3xl)">
+		{timeline.length > 0 ? (
+			timeline.map((item) => (
+				<li
+					data-role-row
+					data-reveal
+					class="grid gap-(--space-md) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)"
+				>
+					<div data-role-meta>
+						<time data-meta class="block text-[length:var(--text-label)] uppercase text-app-muted">{item.period}</time>
+						<p class="mt-2 text-[length:var(--text-sm)] leading-[1.5] font-medium text-app-text">{item.company}</p>
+						{item.location && <p class="text-[length:var(--text-sm)] leading-[1.5] text-app-muted">{item.location}</p>}
+					</div>
 
-								<div class="min-w-0 px-1 py-1 text-left sm:px-2 sm:py-1.5 desktop:mx-auto desktop:w-full desktop:max-w-none desktop:px-8 desktop:py-0 desktop:pt-4 desktop:text-center">
-									<div class="mt-2 flex flex-col items-start gap-1 text-left desktop:items-center desktop:text-center">
-										<p class="text-pretty text-[1.08rem] font-medium leading-tight text-app-text md:text-[1.12rem]">
-											{item.role}
-										</p>
-									<p class="text-pretty text-[0.96rem] leading-[1.45] font-medium text-app-text/78">
-											<span>{item.company}</span>
-											{item.location && (
-												<>
-													<span class="text-app-text/48"> - </span>
-													<span class="text-app-text/68">{item.location}</span>
-												</>
-											)}
-										</p>
-									</div>
+					<div class="max-w-(--measure)">
+						<h3 class="text-[length:var(--text-h3)] leading-[1.15] font-semibold text-app-text">
+							{item.role}
+						</h3>
+						<p class="mt-(--space-sm) text-[length:var(--text-body)] leading-[1.72] text-app-muted text-pretty">{item.description}</p>
 
-									<p class="mt-2 text-pretty text-[1rem] leading-[1.65] text-app-text/74 desktop:mx-auto desktop:max-w-[78ch]">
-										{item.description}
-									</p>
-									<ul class="mt-2 flex flex-wrap justify-start gap-x-2.5 gap-y-1 text-[0.8rem] leading-[1.4] text-app-text/72 desktop:justify-center">
-										{item.highlights.map((highlight) => (
-											<li class="text-pretty">
-												<span>{highlight}</span>
-											</li>
-										))}
-									</ul>
-								</div>
-							</li>
-						))
-					) : (
-						<p class="text-sm leading-[1.7] text-app-muted">Missing experience timeline.</p>
-					)}
-					</ol>
-				</div>
-			</div>
-		</div>
-	</GlassCard>
+						{item.highlights.length > 0 && (
+							<ul class="mt-(--space-md) flex flex-col gap-2">
+								{item.highlights.map((highlight) => (
+									<li class="grid grid-cols-[auto_1fr] gap-3">
+										<span class="mt-[0.6rem] size-1 shrink-0 rounded-full bg-app-muted/70"></span>
+										<p class="text-[length:var(--text-sm)] leading-[1.68] text-app-muted text-pretty">{highlight}</p>
+									</li>
+								))}
+							</ul>
+						)}
+					</div>
+				</li>
+			))
+		) : (
+			<li class="text-[length:var(--text-body)] text-app-muted">Missing experience timeline.</li>
+		)}
+	</ol>
 
-	<GlassCard data-bento-role="left" class="h-full p-4 sm:p-5 lg:p-6">
-		<div class="flex h-full flex-col gap-4">
-			{impact?.data.eyebrow && (
-				<p class="text-[0.76rem] uppercase tracking-[0.18em] text-app-text/68">{impact.data.eyebrow}</p>
-			)}
-			<div class="flex flex-col gap-3 pt-1 sm:pt-2">
-				<ul class="space-y-3.5">
-					{impact?.data.highlights?.length ? (
-						impact.data.highlights.map((highlight) => (
-							<li class="grid grid-cols-[auto_1fr] gap-3">
-								<span class="mt-[0.42rem] size-1.5 rounded-full bg-app-text/48"></span>
-								<p class="text-[0.96rem] leading-[1.72] text-app-text/86">{highlight}</p>
-							</li>
-						))
-					) : (
-						<li class="text-sm leading-[1.7] text-app-muted">Missing impact highlights.</li>
-					)}
+	<div class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
+		<p data-label class="text-[length:var(--text-label)] uppercase text-app-muted">Impact</p>
+
+		<div class="max-w-(--measure)">
+			<p class="text-[length:var(--text-lead)] leading-[1.4] font-medium text-app-text text-pretty">
+				{impact?.data.title ?? 'Missing impact title.'}
+			</p>
+
+			{impact?.data.highlights?.length ? (
+				<ul class="mt-(--space-lg) flex flex-col gap-(--space-sm)">
+					{impact.data.highlights.map((highlight) => (
+						<li class="grid grid-cols-[auto_1fr] gap-3">
+							<span class="mt-[0.6rem] size-1 shrink-0 rounded-full bg-app-muted/70"></span>
+							<p class="text-[length:var(--text-body)] leading-[1.72] text-app-muted text-pretty">{highlight}</p>
+						</li>
+					))}
 				</ul>
-			</div>
+			) : null}
 		</div>
-	</GlassCard>
+	</div>
+</div>
 
-	<GlassCard data-bento-role="right" class="h-full p-4 sm:p-5 lg:p-6">
-		<div class="flex h-full flex-col gap-4">
-			<div>
-				<p class="text-[0.76rem] uppercase tracking-[0.14em] text-app-text/68">Approach</p>
-			</div>
-			<div class="flex flex-col gap-3 pt-1 sm:pt-2">
-				<p class="text-base leading-[1.62] text-app-text/92">
-					{impact?.data.title ?? 'Missing impact title.'}
-				</p>
-				<p class="text-[0.96rem] leading-[1.72] text-app-text/74">{impact?.body ?? 'Missing impact body.'}</p>
-			</div>
-		</div>
-	</GlassCard>
-</div>
-</div>
+<script>
+	import { gsap, ScrollTrigger, motionOK, refreshOnFonts } from '../../scripts/motion'
+
+	// The pin is native CSS sticky. GSAP only scrubs the meta column's opacity as
+	// its role scrolls out, so the pinned label matches what you're reading.
+	const rows = document.querySelectorAll<HTMLElement>('[data-role-row]')
+	const pinned = window.matchMedia('(min-width: 48rem)')
+
+	if (rows.length > 0 && pinned.matches && motionOK()) {
+		// Dim floor, not zero — the row is leaving, not gone.
+		const REST = 0.32
+
+		rows.forEach((row) => {
+			const meta = row.querySelector<HTMLElement>('[data-role-meta]')
+			if (!meta) return
+
+			const setOpacity = gsap.quickSetter(meta, 'opacity') as (v: number) => void
+
+			ScrollTrigger.create({
+				trigger: row,
+				start: 'bottom 55%',
+				end: 'bottom 25%',
+				scrub: true,
+				invalidateOnRefresh: true,
+				onUpdate: (self) => setOpacity(1 - self.progress * (1 - REST))
+			})
+		})
+
+		refreshOnFonts()
+	}
+</script>

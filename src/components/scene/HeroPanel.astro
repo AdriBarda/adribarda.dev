@@ -1,22 +1,35 @@
 ---
 import AboutScene from './AboutScene.astro'
-import CardSceneViewport from './CardSceneViewport.astro'
+import Band from './Band.astro'
 import ExperienceScene from './ExperienceScene.astro'
 import OpenSourceScene from './OpenSourceScene.astro'
 import PresentationScene from './PresentationScene.astro'
+import ProjectsScene from './ProjectsScene.astro'
 import StackScene from './StackScene.astro'
-import type { SceneTone } from './sceneTheme'
+import SiteNav from '../site/SiteNav.astro'
 import type { SectionGroup } from '../../content/sections'
 
 const { sectionGroups } = Astro.props as { sectionGroups: SectionGroup[] }
+const groupFor = (scene: number) => sectionGroups.find((group) => group.scene === scene)
 
-const slides = [
-	{ id: 'presentation', navTone: 'presentation' as SceneTone, Component: PresentationScene, props: { group: sectionGroups.find((group) => group.scene === 1), accentTone: 'presentation' as SceneTone } },
-	{ id: 'experience', navTone: 'experience' as SceneTone, Component: ExperienceScene, props: { group: sectionGroups.find((group) => group.scene === 2), accentTone: 'experience' as SceneTone } },
-	{ id: 'stack', navTone: 'stack' as SceneTone, Component: StackScene, props: { group: sectionGroups.find((group) => group.scene === 3), accentTone: 'stack' as SceneTone } },
-	{ id: 'open-source', navTone: 'open-source' as SceneTone, Component: OpenSourceScene, hugContent: true, props: { group: sectionGroups.find((group) => group.scene === 4), accentTone: 'open-source' as SceneTone } },
-	{ id: 'about-me', navTone: 'about-me' as SceneTone, Component: AboutScene, props: { group: sectionGroups.find((group) => group.scene === 5), accentTone: 'about-me' as SceneTone } }
-]
+// One background colour; each section owns an accent that shows on its marks
+// only. Two take a neutral paper step, and Stack is the single colour field.
+const bands = [
+	{ id: 'presentation', accent: 1, variant: 'plain', hero: true, Component: PresentationScene, scene: 1 },
+	{ id: 'experience', accent: 2, variant: 'paper', Component: ExperienceScene, scene: 2 },
+	{ id: 'stack', accent: 3, variant: 'field', Component: StackScene, scene: 3 },
+	{ id: 'projects', accent: 4, variant: 'plain', Component: ProjectsScene, scene: 4 },
+	{ id: 'open-source', accent: 5, variant: 'paper', Component: OpenSourceScene, scene: 5 },
+	{ id: 'about-me', accent: 6, variant: 'plain', Component: AboutScene, scene: 6 }
+] as const
 ---
 
-<CardSceneViewport slides={slides} />
+<SiteNav ids={bands.map(({ id }) => id)} />
+
+{
+	bands.map(({ id, accent, variant, hero, Component, scene }, index) => (
+		<Band id={id} accent={accent} variant={variant} hero={Boolean(hero)}>
+			<Component group={groupFor(scene)} index={index} />
+		</Band>
+	))
+}

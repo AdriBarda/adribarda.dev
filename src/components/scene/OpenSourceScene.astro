@@ -1,127 +1,82 @@
 ---
-import { sceneToneAccentClasses, type SceneTone } from './sceneTheme'
 import type { SectionGroup } from '../../content/sections'
+import SectionHead from './SectionHead.astro'
 import GithubIcon from '../../assets/tech-stack/github.svg'
 import StarIcon from '@phosphor-icons/core/assets/fill/star-fill.svg'
-import GlassCard from '../ui/GlassCard.astro'
 
-const { group, accentTone } = Astro.props as { group?: SectionGroup; accentTone?: SceneTone }
+const { group, index = 0 } = Astro.props as { group?: SectionGroup; index?: number }
 const entry = group?.entries.find((item) => item.data.section === 'open-source')
-const accentClass = accentTone ? sceneToneAccentClasses[accentTone] : ''
 const links = entry?.data.links ?? []
 
-const sceneEntryOffsetClass = 'md:pt-(--scene-entry-offset)'
-
-const cardLabelClass = 'text-[0.76rem] uppercase tracking-[0.18em] text-app-text/58'
-const factLabelClass = 'text-[0.72rem] uppercase tracking-[0.16em] text-app-text/56'
-const factValueClass = 'mt-1.5 text-[0.98rem] leading-[1.68] text-app-text/82 text-pretty'
-const repoLinkClass = 'text-[1.04rem] font-medium leading-tight text-app-text underline decoration-app-border underline-offset-4 transition-colors group-hover:decoration-app-text/70'
-const metaRowClass = 'mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.72rem] uppercase tracking-[0.14em] text-app-text/56'
-const linkCardClass = 'group block h-full p-6 transition-colors hover:border-app-border sm:p-7 lg:p-8'
+const labelClass = 'text-[length:var(--text-label)] uppercase text-app-muted'
+const linkClass = 'text-[length:var(--text-sm)] font-medium text-app-text underline decoration-app-border underline-offset-4 transition-colors hover:decoration-app-text/70'
 ---
 
-<div class:list={['grid w-full gap-4 md:grid-cols-2', sceneEntryOffsetClass]}>
-	<GlassCard data-bento-role="hero" class="p-6 sm:p-7 md:col-span-2 lg:p-8">
-		<div class:list={['pointer-events-none absolute inset-y-0 left-0 z-10 w-1', accentClass]}></div>
-		<div class="max-w-2xl">
-			{entry?.data.eyebrow && <p class="text-[0.78rem] uppercase tracking-[0.18em] text-app-text/58">{entry.data.eyebrow}</p>}
+<div class="flex w-full flex-col gap-(--space-3xl)">
+	<SectionHead title={entry?.data.title ?? 'Missing open-source title.'} lead={entry?.data.summary} />
 
-			<h2 class="mt-3 text-balance text-[clamp(2rem,3.9vw,3.6rem)] leading-[0.96] font-semibold tracking-[-0.05em] text-app-text">
-				{entry?.data.title ?? 'Missing open-source title.'}
-			</h2>
-
-			<p class="mt-3 text-[clamp(1rem,1.14vw,1.06rem)] leading-[1.66] text-app-text/74 text-pretty">
-				{entry?.data.summary ?? 'Missing open-source summary.'}
-			</p>
-		</div>
-	</GlassCard>
-
+	
 	{links.length > 0 ? (
-		links.map((link) => (
-			<Fragment>
-				<GlassCard
-					as="a"
-					data-bento-role="left"
-					href={link.repositoryUrl}
-					target="_blank"
-					rel="noopener noreferrer"
-					aria-label={`${link.repository} on GitHub, maintained by ${link.owner}`}
-					class={linkCardClass}
+		<div class="flex flex-col gap-(--space-4xl)">
+			{links.map((link) => (
+				<article
+					data-reveal
+					class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)"
 				>
-					<div class="flex h-full flex-col gap-6">
-						<p class={cardLabelClass}>The project</p>
+					<div class="flex flex-col gap-(--space-sm)">
+						<a
+							href={link.repositoryUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label={`${link.repository} on GitHub, maintained by ${link.owner}`}
+							class="inline-flex items-center gap-2.5"
+						>
+							<GithubIcon aria-hidden="true" class="size-4.5 shrink-0 fill-current text-app-muted" />
+							<span class="text-[1.02rem] font-semibold text-app-text">{link.repository}</span>
+						</a>
 
-						<p class="text-[0.98rem] leading-[1.68] text-app-text/82 text-pretty">{link.project}</p>
+						<p data-meta class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[length:var(--text-label)] uppercase text-app-muted">
+							{link.stars && (
+								<span class="inline-flex items-center gap-1.5">
+									<StarIcon aria-hidden="true" class="size-3 shrink-0 fill-current" />
+									{link.stars}
+								</span>
+							)}
+							{link.language && <span>{link.language}</span>}
+							{link.license && <span>{link.license}</span>}
+						</p>
 
-						<div class="mt-auto border-t border-app-border/70 pt-5">
-							<span class="inline-flex items-center gap-2.5">
-								<GithubIcon aria-hidden="true" class="size-4.5 shrink-0 fill-current text-app-text/70" />
-								<span class={repoLinkClass}>{link.repository}</span>
-							</span>
-
-							<div class={metaRowClass}>
-								{link.stars && (
-									<span class="inline-flex items-center gap-1.5">
-										<StarIcon aria-hidden="true" class="size-3.5 shrink-0 fill-current text-app-text/50" />
-										{link.stars}
-									</span>
-								)}
-								{link.language && <span>{link.language}</span>}
-								{link.license && <span>{link.license}</span>}
-							</div>
-
-							<p class="mt-2 text-[0.72rem] uppercase tracking-[0.14em] text-app-text/44">
-								Maintained by {link.owner}
-							</p>
-						</div>
+						<p class="text-[length:var(--text-sm)] leading-[1.55] text-app-muted">Maintained by {link.owner}</p>
 					</div>
-				</GlassCard>
 
-				<GlassCard
-					as="a"
-					data-bento-role="right"
-					href={link.pullRequestUrl}
-					target="_blank"
-					rel="noopener noreferrer"
-					aria-label={`Read my pull request on ${link.repository}`}
-					class={linkCardClass}
-				>
-					<div class="flex h-full flex-col gap-6">
-						<p class={cardLabelClass}>My contribution</p>
+					<div class="flex max-w-(--measure) flex-col gap-(--space-lg)">
+						<p class="text-[length:var(--text-lead)] leading-[1.5] text-app-text text-pretty">{link.project}</p>
 
 						<div>
-							<p class={factLabelClass}>What I added</p>
-							<p class={factValueClass}>{link.contribution}</p>
+							<p data-label class={labelClass}>What I added</p>
+							<p class="mt-2 text-[length:var(--text-body)] leading-[1.72] text-app-muted text-pretty">{link.contribution}</p>
 						</div>
 
 						{link.reason && (
 							<div>
-								<p class={factLabelClass}>Why</p>
-								<p class={factValueClass}>{link.reason}</p>
+								<p data-label class={labelClass}>Why</p>
+								<p class="mt-2 text-[length:var(--text-body)] leading-[1.72] text-app-muted text-pretty">{link.reason}</p>
 							</div>
 						)}
 
-						<div class="mt-auto border-t border-app-border/70 pt-5">
-							<span class="inline-flex items-center gap-2.5">
-								<GithubIcon aria-hidden="true" class="size-4.5 shrink-0 fill-current text-app-text/70" />
-								<span class={repoLinkClass}>Read the pull request</span>
-							</span>
-
+						<div class="flex flex-wrap items-center gap-x-(--space-lg) gap-y-2">
+							<a href={link.pullRequestUrl} target="_blank" rel="noopener noreferrer" class={linkClass}>
+								Read the pull request
+							</a>
 							{link.meta.length > 0 && (
-								<div class={metaRowClass}>
-									{link.meta.map((item) => (
-										<span>{item}</span>
-									))}
-								</div>
+								<p data-meta class="text-[length:var(--text-label)] uppercase text-app-muted">{link.meta.join('  ·  ')}</p>
 							)}
 						</div>
 					</div>
-				</GlassCard>
-			</Fragment>
-		))
+				</article>
+			))}
+		</div>
 	) : (
-		<GlassCard data-bento-role="left" class="h-full p-6 sm:p-7 md:col-span-2 lg:p-8">
-			<p class="text-[0.96rem] leading-[1.7] text-app-text/66">Missing open-source contributions.</p>
-		</GlassCard>
+		<p class="text-[length:var(--text-body)] text-app-muted">Missing open-source contributions.</p>
 	)}
 </div>

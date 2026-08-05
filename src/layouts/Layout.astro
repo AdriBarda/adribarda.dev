@@ -1,8 +1,6 @@
 ---
 import Analytics from '@vercel/analytics/astro'
-import { ThemeToggle } from '../components/theme/ThemeToggle'
 import '../styles/global.css'
-import { DESKTOP_SCENE_MEDIA_QUERY } from '../config/mediaQueries'
 
 const assetBase = import.meta.env.BASE_URL.endsWith('/')
 	? import.meta.env.BASE_URL
@@ -31,6 +29,13 @@ const structuredData = {
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href={`${assetBase}favicon.svg`} />
 		<meta name="generator" content={Astro.generator} />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap"
+		/>
 		<meta name="description" content={pageDescription} />
 		<meta name="robots" content={robotsContent} />
 		<link rel="canonical" href={siteUrl} />
@@ -52,63 +57,88 @@ const structuredData = {
 
 		<title>{pageTitle}</title>
 		<script is:inline src={`${assetBase}theme-init.js`}></script>
-		<script is:inline define:vars={{ desktopMQ: DESKTOP_SCENE_MEDIA_QUERY }}>
-			if (window.__desktopMQController) window.__desktopMQController.abort()
-			window.__desktopMQController = new AbortController()
-			var mq = window.matchMedia(desktopMQ)
-			document.documentElement.classList.toggle('is-desktop', mq.matches)
-			mq.addEventListener('change', function(e) {
-				document.documentElement.classList.toggle('is-desktop', e.matches)
-			}, { signal: window.__desktopMQController.signal })
+		{/* No JS, no attribute, nothing hidden — motion never gates content. */}
+		<script is:inline>
+			if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				document.documentElement.dataset.motion = ''
+			}
 		</script>
 		<script type="application/ld+json" set:html={JSON.stringify(structuredData)}></script>
 	</head>
-	<body class="bg-app-bg text-app-text">
-		<div class="pointer-events-none fixed top-[max(12px,calc(var(--page-padding)-32px))] right-[max(12px,calc(var(--page-padding)-4px))] z-30">
-			<div class="flex justify-end">
-				<ThemeToggle client:only="react" />
-			</div>
+	<body>
+		<div class="page">
+			<main>
+				<slot />
+			</main>
 		</div>
-		<main>
-			<slot />
-		</main>
 		<slot name="footer" />
 		{!isGithubPagesBuild && <Analytics />}
+		<script>
+			import { gsap, ScrollTrigger, refreshOnFonts } from '../scripts/motion'
+
+			if (document.documentElement.hasAttribute('data-motion')) {
+				const START = 0.75
+
+				// onEnter never fires for elements already past their start (mid-page
+				// reload, or a refresh re-resolving starts after webfonts land), and they
+				// never cross again — without this they stay at opacity 0 forever.
+				const catchUp = () => {
+					const missed = Array.from(
+						document.querySelectorAll<HTMLElement>('[data-reveal]')
+					).filter(
+						(el) =>
+							Number(gsap.getProperty(el, 'opacity')) < 1 &&
+							!gsap.isTweening(el) &&
+							el.getBoundingClientRect().top < window.innerHeight * START
+					)
+
+					if (missed.length > 0) gsap.set(missed, { y: 0, opacity: 1 })
+				}
+
+				// batch() hands over everything crossing the line in one frame, so a row
+				// of cards cascades without grouping markup.
+				ScrollTrigger.batch('[data-reveal]', {
+					start: `top ${START * 100}%`,
+					once: true,
+					onEnter: (batch) => {
+						gsap.to(batch, {
+							y: 0,
+							opacity: 1,
+							duration: 0.7,
+							ease: 'power3.out',
+							stagger: 0.08,
+							overwrite: true
+						})
+
+						// Meters ride their tile's entrance rather than owning a trigger.
+						const meters = batch.flatMap((el) =>
+							Array.from(el.querySelectorAll<HTMLElement>('[data-meter]'))
+						)
+
+						if (meters.length > 0) {
+							gsap.to(meters, {
+								scaleX: 1,
+								duration: 0.45,
+								ease: 'power2.out',
+								stagger: 0.04,
+								delay: 0.28,
+								overwrite: true
+							})
+						}
+					}
+				})
+
+				ScrollTrigger.addEventListener('refresh', catchUp)
+
+				refreshOnFonts()
+			}
+		</script>
 	</body>
 </html>
 
 <style>
 	html,
 	body {
-		margin: 0;
 		width: 100%;
-		height: 100dvh;
-	}
-
-	body {
-		--page-padding: clamp(16px, 4vw, 48px);
-		/* Height of a scrolled scene section, shared by the viewport and the scenes that fill it. */
-		--scene-height: min(calc(100dvh - (var(--page-padding) * 2)), 54rem);
-		--scene-entry-offset: 12vh;
-	}
-
-	main {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		min-height: 100dvh;
-		padding: var(--page-padding);
-		box-sizing: border-box;
-	}
-
-		@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
-			body {
-				overflow: hidden;
-			}
-
-		main {
-			height: 100dvh;
-		}
 	}
 </style>

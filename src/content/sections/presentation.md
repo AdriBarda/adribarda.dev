@@ -4,15 +4,15 @@ scene: 1
 cardSize: hero
 section: presentation
 role: Frontend Engineer
-title: Hi, I'm Adri 👋
-meta: [🇪🇸 Barcelona]
+title: Hi, I'm Adri.
+meta: [Barcelona, Spain]
 summary: Frontend engineer focused on building clean, scalable web applications with a strong preference for Vue, Vite, and thoughtful developer experience.
 profileLabel: Profile
 details:
   - label: Status
     value: Open To Work
   - label: Location
-    value: 📍 Barcelona, Spain
+    value: Barcelona, Spain
   - label: Focus
     value: Clean architecture, state management and scalable interfaces.
   - label: Open source
