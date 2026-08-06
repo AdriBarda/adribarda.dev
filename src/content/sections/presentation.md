@@ -6,7 +6,7 @@ section: presentation
 role: Frontend Engineer
 title: Hi, I'm Adri.
 meta: [Barcelona, Spain]
-summary: Frontend engineer focused on building clean, scalable web applications with a strong preference for Vue, Vite, and thoughtful developer experience.
+summary: Building scalable products with TypeScript, Vue, React, and modern frontend technologies.
 profileLabel: Profile
 details:
   - label: Status
@@ -14,7 +14,7 @@ details:
   - label: Location
     value: Barcelona, Spain
   - label: Focus
-    value: Clean architecture, state management and scalable interfaces.
+    value: Architecture, scalability, state management, developer experience, and user experience.
   - label: Open source
     value: Merged /notion-sync into ai-job-search
     url: https://github.com/MadsLorentzen/ai-job-search/pull/169
@@ -27,6 +27,6 @@ socials:
     url: linkedin.com/in/adriabardajicros/
 ---
 
-I build frontend applications with a strong focus on clean architecture, maintainability, and scalable UI systems.
+I build production-ready frontend applications with a strong focus on architecture, scalability, and maintainability.
 
-I’m particularly drawn to the **Vue** and **Vite** ecosystem, while also being experienced with **React**. Most recently at **Logbook**, I played a key role in building a SaaS platform for centralizing and managing logistics data, working across state management, API integration, TypeScript contracts, testing, and overall product quality.
+Over the past five years, I’ve built SaaS applications with **TypeScript**, **Vue**, **React**, **Vite**, **Tailwind CSS**, and **Playwright**. Most recently at **Logbook AG**, I owned key parts of the frontend, from state management and API integration to TypeScript contracts, reusable components, and automated testing.
