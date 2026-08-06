@@ -104,8 +104,6 @@
   --space-3xl: 4.5rem;
   --space-4xl: 7rem;
 
-  /* Labels are uppercase mono at 0.1em tracking — the worst case for small
-     sizes, so they sit a step above where a lowercase label could. */
   --text-label: 0.75rem;
   --text-sm: 0.9375rem;
   --text-body: 1.0625rem;
@@ -142,9 +140,6 @@
   --shell: min(100%, var(--shell-max));
   --measure: 62ch;
 
-  /* Stack scene — light cards laid over the pine `field` band. Theme-independent
-     on purpose: the band itself is pine in both themes, so the cards that sit on
-     it must be too. */
   --stack-cream: oklch(93.5% 0.033 78);
   --stack-white: oklch(98.6% 0.005 85);
   --stack-caramel: oklch(48% 0.115 62);
@@ -378,12 +373,6 @@ select {
   gap: var(--gap-bento);
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }
-
-/* The grid item and the reveal target — GSAP owns this element's transform.
-   It deliberately is NOT the hover target: GSAP zeroes the independent
-   `translate`/`rotate`/`scale` properties on anything it animates, so a lift
-   declared on the revealed element can never apply. Splitting them gives the
-   entrance and the hover one box each. */
 .bento-item {
   display: flex;
   grid-column: span 6;
@@ -465,19 +454,25 @@ select {
 
 /* ---- Stack grid --------------------------------------------------------- */
 
-/* Light cards on the pine field band. One cream card anchors the grid; the rest
-   are white, so the cream reads as an accent rather than half a checkerboard. */
 .stack-grid {
+  --panel-overhang: 1rem;
+  --panel-clearance: 5.25rem;
+  --panel-inset: 1.75rem;
+  --panel-clearance-narrow: 8rem;
+
   display: grid;
   gap: var(--space-lg);
   grid-template-columns: minmax(0, 1fr);
 }
 
 .stack-item {
+  position: relative;
   display: flex;
+  z-index: 1;
 }
 
 .stack-card {
+  position: relative;
   display: flex;
   width: 100%;
   flex-direction: column;
@@ -486,12 +481,114 @@ select {
   border-radius: var(--radius-lg);
   background: var(--stack-white);
   color: var(--stack-card-text);
-  /* Depth, not a divider — it lifts the light cards off the pine. */
   box-shadow: 0 16px 36px -14px color-mix(in oklab, var(--field-bg) 82%, transparent);
 }
 
-.stack-item:nth-child(1) .stack-card {
+.stack-head {
+  position: absolute;
+  z-index: 2;
+  width: max-content;
+  padding: var(--space-md) var(--space-xl);
+  border-radius: var(--radius-md);
+  border-top-left-radius: 0;
   background: var(--stack-cream);
+}
+
+@media (max-width: 47.99rem) {
+  .stack-grid {
+    --panel-overhang: 0.5rem;
+  }
+
+  .stack-head {
+    max-width: calc(100% - var(--space-xl));
+  }
+
+  .stack-item:nth-child(1) .stack-head {
+    top: var(--panel-inset);
+    left: calc(-1 * var(--panel-overhang));
+  }
+
+  .stack-item:nth-child(2) .stack-head {
+    bottom: calc(-1 * var(--panel-overhang));
+    right: calc(-1 * var(--panel-overhang));
+  }
+
+  .stack-item:nth-child(3) .stack-head {
+    top: calc(-1 * var(--panel-overhang));
+    right: calc(-1 * var(--panel-overhang));
+  }
+
+  .stack-item:nth-child(2) .stack-head,
+  .stack-item:nth-child(3) .stack-head {
+    min-width: 14rem;
+  }
+
+  .stack-item:nth-child(4) .stack-head {
+    bottom: calc(-1 * var(--panel-overhang));
+    left: 50%;
+    translate: -50% 0;
+  }
+
+  .stack-item:nth-child(1) .stack-card {
+    padding-top: var(--panel-clearance-narrow);
+  }
+
+  .stack-item:nth-child(3) .stack-card {
+    padding-top: 6rem;
+  }
+
+  .stack-item:nth-child(2) .stack-card,
+  .stack-item:nth-child(4) .stack-card {
+    padding-bottom: 6rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  .stack-head {
+    max-width: min(18rem, calc(100% - var(--pad-card)));
+  }
+
+  .stack-item:nth-child(1) .stack-head {
+    top: calc(-1 * var(--panel-overhang));
+    left: calc(-1.25 * var(--panel-overhang));
+    min-width: 19rem;
+    max-width: 22rem;
+    padding: var(--space-md) var(--space-2xl);
+  }
+
+  .stack-item:nth-child(1) .stack-card {
+    padding-top: 6rem;
+  }
+
+  .stack-item:nth-child(2) .stack-head {
+    top: calc(-1 * var(--panel-overhang));
+    right: calc(-1 * var(--panel-overhang));
+    padding: var(--space-xl);
+  }
+
+  .stack-item:nth-child(2) .stack-card {
+    padding-top: 7rem;
+  }
+
+  .stack-item:nth-child(3) .stack-head {
+    bottom: calc(-1.5 * var(--panel-overhang));
+    left: 50%;
+    translate: -50% 0;
+  }
+
+  .stack-item:nth-child(3) .stack-card {
+    padding-bottom: var(--panel-clearance);
+  }
+
+  .stack-item:nth-child(4) .stack-head {
+    top: 58%;
+    right: calc(-2.5 * var(--panel-overhang));
+    padding: var(--space-lg) var(--space-xl);
+  }
+
+  .stack-item:nth-child(4) .stack-card {
+    padding-right: 11rem;
+  }
 }
 
 .stack-title {
@@ -580,14 +677,9 @@ select {
 
 /* ---- Timeline ---------------------------------------------------------- */
 
-/* A single drawn spine with the roles hung off it, alternating sides. The spine
-   and its markers are the only strokes in the section — everything else is set
-   in space, not boxed. */
 .timeline {
   --spine: 2px;
   --marker-size: 0.75rem;
-  /* The marker's ring has to read as the band it sits on, so the dot sits ON
-     the spine rather than behind it. Bands override this where they differ. */
   --timeline-ring: var(--app-paper-2);
 
   position: relative;
@@ -606,7 +698,6 @@ select {
   width: var(--spine);
   border-radius: var(--radius-pill);
   background: color-mix(in oklab, var(--app-text) 16%, transparent);
-  /* Fades out rather than stopping dead under the last entry. */
   mask-image: linear-gradient(to bottom, #000 88%, transparent);
 }
 
@@ -650,9 +741,6 @@ select {
     max-width: 34rem;
   }
 
-  /* Most recent role starts on the left, then they alternate. Copy stays
-     left-aligned on both sides — the block hugs the spine instead, so the
-     symmetry reads without mirroring the rag or the bullet markers. */
   .timeline-row:nth-child(odd) .timeline-entry {
     grid-column: 1;
     margin-left: auto;
