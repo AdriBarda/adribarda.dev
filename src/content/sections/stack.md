@@ -3,9 +3,9 @@ order: 4
 scene: 3
 cardSize: large
 section: stack
+title: ''
+summary: ''
 eyebrow: Stack
-title: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-summary: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 highlights:
   - Astro
   - Tailwind CSS
