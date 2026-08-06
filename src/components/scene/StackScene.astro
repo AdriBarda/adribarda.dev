@@ -1,6 +1,7 @@
 ---
 import type { SectionGroup } from '../../content/sections'
 import SectionHead from './SectionHead.astro'
+import astroIcon from '../../assets/tech-stack/astro.svg'
 import vueIcon from '../../assets/tech-stack/vue.svg'
 import vitestIcon from '../../assets/tech-stack/vitest.svg'
 import viteIcon from '../../assets/tech-stack/vite.svg'
@@ -32,10 +33,11 @@ const stackGroups: Array<{ label: string; technologies: Tech[] }> = [
 		label: 'Frontend systems',
 		technologies: [
 			{ name: 'Vue', Icon: vueIcon, level: 'Advanced' },
+			{ name: 'React', Icon: reactIcon, level: 'Comfortable' },
 			{ name: 'TypeScript', Icon: typescriptIcon, level: 'Advanced' },
 			{ name: 'JavaScript', Icon: javascriptIcon, level: 'Advanced' },
+			{ name: 'Astro', Icon: astroIcon, level: 'Comfortable' },
 			{ name: 'Pinia', Icon: piniaIcon, level: 'Advanced' },
-			{ name: 'React', Icon: reactIcon, level: 'Comfortable' },
 			{ name: 'Vite', Icon: viteIcon, level: 'Comfortable' }
 		]
 	},
