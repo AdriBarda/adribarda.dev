@@ -13,11 +13,6 @@ details:
     value: Open To Work
   - label: Location
     value: Barcelona, Spain
-  - label: Focus
-    value: Architecture, scalability, state management, developer experience, and user experience.
-  - label: Open source
-    value: Merged /notion-sync into ai-job-search
-    url: https://github.com/MadsLorentzen/ai-job-search/pull/169
 socials:
   github:
     label: GitHub
