@@ -75,8 +75,16 @@ const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comforta
 
 ---
 
-<div class="flex w-full flex-col gap-(--space-3xl)">
-	<SectionHead title={'Technologies I ship with.'} lead={stack?.data.summary && !stack.data.summary.toLowerCase().startsWith('lorem') ? stack.data.summary : 'The tools I reach for most, the ones I work with confidently in production, and the ones I can step into when a project calls for them.'} />
+<div data-stack-scene class="flex w-full flex-col gap-(--space-3xl)">
+	<div class="flex flex-col items-start gap-(--space-xl)">
+		<SectionHead title={'Technologies I ship with.'} lead={stack?.data.summary && !stack.data.summary.toLowerCase().startsWith('lorem') ? stack.data.summary : 'The tools I reach for most, the ones I work with confidently in production, and the ones I can step into when a project calls for them.'} />
+
+		<button data-gravity-toggle type="button" aria-pressed="true" hidden class="gravity-toggle">
+			<span data-gravity-dot aria-hidden="true"></span>
+			<span data-label>Gravity</span>
+			<span data-gravity-state aria-hidden="true">on</span>
+		</button>
+	</div>
 
 	<ul class="stack-grid">
 		{stackGroups.map((stackGroup) => (
@@ -89,7 +97,7 @@ const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comforta
 
 					<ul class="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-(--space-lg)">
 						{stackGroup.technologies.map((technology) => (
-							<li class="flex items-center gap-2.5">
+							<li data-tool class="flex items-center gap-2.5">
 								<technology.Icon aria-hidden="true" class="size-7 shrink-0" />
 								<span class="min-w-0">
 									<span class="block text-[length:var(--text-body)] leading-tight font-medium text-[color:var(--stack-card-text)]">
@@ -116,3 +124,29 @@ const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comforta
 		))}
 	</ul>
 </div>
+
+<script>
+	import { motionOK } from '../../scripts/motion'
+	import { createPointerField } from '../../scripts/pointer-field'
+
+	const scene = document.querySelector<HTMLElement>('[data-stack-scene]')
+	const toggle = scene?.querySelector<HTMLButtonElement>('[data-gravity-toggle]')
+	const state = toggle?.querySelector('[data-gravity-state]')
+	const tools = [...(scene?.querySelectorAll<HTMLElement>('[data-tool]') ?? [])]
+
+	if (scene && toggle && state && tools.length > 0 && motionOK()) {
+		const field = createPointerField(scene, tools)
+
+		toggle.hidden = false
+
+		toggle.addEventListener('click', () => {
+			const on = toggle.getAttribute('aria-pressed') !== 'true'
+
+			toggle.setAttribute('aria-pressed', String(on))
+			state.textContent = on ? 'on' : 'off'
+
+			if (on) field.stop()
+			else field.start()
+		})
+	}
+</script>
