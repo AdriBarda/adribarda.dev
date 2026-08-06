@@ -20,34 +20,43 @@ import vite from '../assets/tech-stack/vite.svg?raw'
 import vitest from '../assets/tech-stack/vitest.svg?raw'
 import vue from '../assets/tech-stack/vue.svg?raw'
 
+const WHITE = '#f4f4f6'
+
+const whiteRoot = (source: string) => source.replace('<svg', `<svg fill="${WHITE}"`)
+
 /**
- * Every tech icon, as SVG source.
+ * Every tech icon, as SVG source, with the dark-theme variant beside it.
  *
  * This module exists to be `import()`ed, not imported. Inlining these into the
  * page cost ~47KB of markup on every visit, including the phones where the
  * easter egg never initialises. As one lazy chunk they are fetched once, when
  * someone is about to need them.
+ *
+ * Only the four icons that paint themselves black differ between themes. Every
+ * other logo keeps its brand colours in both.
  */
-export const confettiIcons = [
-  astro,
-  claudeCode,
-  codex,
-  copilot,
-  eslint,
-  express,
-  git,
-  github,
-  java,
-  javascript,
-  mysql,
-  node,
-  opencode,
-  pinia,
-  playwright,
-  postgresql,
-  react,
-  typescript,
-  vite,
-  vitest,
-  vue
+export const confettiIcons: Array<{ light: string; dark: string }> = [
+  { light: astro, dark: astro.replace(/#17191E/gi, WHITE) },
+  { light: codex, dark: codex.replace('#111', WHITE) },
+  { light: copilot, dark: whiteRoot(copilot) },
+  { light: express, dark: whiteRoot(express) },
+  ...[
+    claudeCode,
+    eslint,
+    git,
+    github,
+    java,
+    javascript,
+    mysql,
+    node,
+    opencode,
+    pinia,
+    playwright,
+    postgresql,
+    react,
+    typescript,
+    vite,
+    vitest,
+    vue
+  ].map((source) => ({ light: source, dark: source }))
 ]

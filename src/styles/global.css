@@ -1003,3 +1003,8 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+:root[data-theme='dark'] .tech-icon-mono,
+:root[data-theme='dark'] .tech-icon-mono path[fill='#17191E'] {
+  fill: var(--stack-card-text);
+}

@@ -73,6 +73,8 @@ const stackGroups: Array<{ label: string; technologies: Tech[] }> = [
 
 const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comfortable' ? 2 : 1)
 
+const MONO_ICONS = new Set(['Astro', 'Codex', 'Copilot', 'Express'])
+
 ---
 
 <div data-stack-scene class="flex w-full flex-col gap-(--space-3xl)">
@@ -98,7 +100,7 @@ const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comforta
 					<ul class="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-(--space-lg)">
 						{stackGroup.technologies.map((technology) => (
 							<li data-tool class="flex items-center gap-2.5">
-								<technology.Icon aria-hidden="true" class="size-7 shrink-0" />
+								<technology.Icon aria-hidden="true" class:list={['size-7 shrink-0', MONO_ICONS.has(technology.name) && 'tech-icon-mono']} />
 								<span class="min-w-0">
 									<span class="block text-(length:--text-body) leading-tight font-medium text-(--stack-card-text)">
 										{technology.name}

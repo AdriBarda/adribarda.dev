@@ -39,8 +39,13 @@ type Sprite = {
   ready: boolean
 }
 
+type Icon = {
+  light: Sprite
+  dark: Sprite
+}
+
 type Piece = {
-  sprite: Sprite
+  icon: Icon
   x: number
   y: number
   vx: number
@@ -103,8 +108,14 @@ function rasterise(source: string): Sprite {
   return sprite
 }
 
+function buildIcon({ light, dark }: { light: string; dark: string }): Icon {
+  const sprite = rasterise(light)
+
+  return { light: sprite, dark: dark === light ? sprite : rasterise(dark) }
+}
+
 /** One piece, launched from off-screen on `side` (-1 left, 1 right). */
-function spawn(sprite: Sprite, side: -1 | 1, now: number, angle: number, spread: number): Piece {
+function spawn(icon: Icon, side: -1 | 1, now: number, angle: number, spread: number): Piece {
   const size = Math.random() < 0.3 ? gsap.utils.random(48, 68) : gsap.utils.random(28, 44)
   const power = gsap.utils.random(820, 1850)
   // Both cannons aim across the screen: 90 is straight up, 0 is right.
@@ -112,7 +123,7 @@ function spawn(sprite: Sprite, side: -1 | 1, now: number, angle: number, spread:
   const rad = ((aim + gsap.utils.random(-spread / 2, spread / 2)) * Math.PI) / 180
 
   return {
-    sprite,
+    icon,
     x: side < 0 ? -size : window.innerWidth + size,
     y: (window.innerHeight * 5) / 7 + gsap.utils.random(-44, 44),
     vx: Math.cos(rad) * power,
@@ -197,8 +208,13 @@ function fadeOf(piece: Piece, now: number): number {
   return Math.max(0, (removeAt - now) / FADE_MS)
 }
 
-function drawPiece(context: CanvasRenderingContext2D, piece: Piece, opacity: number) {
-  const { sheet, aspect, ready } = piece.sprite
+function drawPiece(
+  context: CanvasRenderingContext2D,
+  piece: Piece,
+  opacity: number,
+  dark: boolean
+) {
+  const { sheet, aspect, ready } = dark ? piece.icon.dark : piece.icon.light
   const width = piece.size
   const height = piece.size / aspect
 
@@ -219,7 +235,7 @@ function drawPiece(context: CanvasRenderingContext2D, piece: Piece, opacity: num
 
 /**
  * A two-cannon confetti burst on a full-viewport canvas, using `icons` (SVG
- * source strings) as the pieces.
+ * source per theme) as the pieces.
  *
  * The canvas is only in the document while pieces exist, and the loop only runs
  * then too. No canvas shadows anywhere: `shadowBlur` forces an offscreen pass
@@ -231,12 +247,12 @@ function drawPiece(context: CanvasRenderingContext2D, piece: Piece, opacity: num
  */
 export function createConfetti(
   canvas: HTMLCanvasElement,
-  icons: string[],
+  icons: Array<{ light: string; dark: string }>,
   options: ConfettiOptions = {}
 ): Confetti {
   const { pieces, maxPieces, angle, spread, cooldown } = { ...DEFAULTS, ...options }
   const context = canvas.getContext('2d')
-  const sprites = icons.map(rasterise)
+  const built = icons.map(buildIcon)
   const live: Piece[] = []
 
   let lastFrame = window.performance.now()
@@ -269,6 +285,8 @@ export function createConfetti(
 
     context.clearRect(0, 0, window.innerWidth, window.innerHeight)
 
+    const dark = document.documentElement.dataset.theme === 'dark'
+
     for (let index = live.length - 1; index >= 0; index -= 1) {
       const piece = live[index]
       const opacity = fadeOf(piece, now)
@@ -278,7 +296,7 @@ export function createConfetti(
         continue
       }
 
-      drawPiece(context, piece, opacity)
+      drawPiece(context, piece, opacity, dark)
     }
 
     if (live.length === 0) stop()
@@ -313,7 +331,7 @@ export function createConfetti(
     lastFire = now
 
     // Fresh order each burst, so the same icons don't lead every time.
-    const deck = [...sprites].sort(() => Math.random() - 0.5)
+    const deck = [...built].sort(() => Math.random() - 0.5)
 
     for (let index = 0; index < pieces; index += 1) {
       const side = index % 2 === 0 ? -1 : 1
