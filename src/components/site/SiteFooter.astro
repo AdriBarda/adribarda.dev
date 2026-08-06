@@ -1,20 +1,5 @@
 ---
 import GithubIcon from '../../assets/tech-stack/github.svg'
-import AstroIcon from '../../assets/tech-stack/astro.svg'
-import ReactIcon from '../../assets/tech-stack/react.svg'
-import TypescriptIcon from '../../assets/tech-stack/typescript.svg'
-import JavascriptIcon from '../../assets/tech-stack/javascript.svg'
-import GitIcon from '../../assets/tech-stack/git.svg'
-import ViteIcon from '../../assets/tech-stack/vite.svg'
-import NodeIcon from '../../assets/tech-stack/node.svg'
-import CodexIcon from '../../assets/tech-stack/codex.svg'
-import VueIcon from '../../assets/tech-stack/vue.svg'
-import ExpressIcon from '../../assets/tech-stack/express.svg'
-import JavaIcon from '../../assets/tech-stack/java.svg'
-import EslintIcon from '../../assets/tech-stack/eslint.svg'
-import MysqlIcon from '../../assets/tech-stack/mysql.svg'
-import OpenCodeIcon from '../../assets/tech-stack/opencode.svg'
-import CopilotIcon from '../../assets/tech-stack/copilot.svg'
 
 interface FooterLink { label: string; url: string }
 
@@ -30,32 +15,10 @@ const linkClass = [
 	'transition-colors duration-150 ease-out hover:text-app-text'
 ].join(' ')
 
-const confettiIcons = [
-	{ label: 'Astro', Icon: AstroIcon },
-	{ label: 'React', Icon: ReactIcon },
-	{ label: 'TypeScript', Icon: TypescriptIcon },
-	{ label: 'JavaScript', Icon: JavascriptIcon },
-	{ label: 'Git', Icon: GitIcon },
-	{ label: 'Vite', Icon: ViteIcon },
-	{ label: 'Node.js', Icon: NodeIcon },
-	{ label: 'Codex', Icon: CodexIcon },
-	{ label: 'Vue', Icon: VueIcon },
-	{ label: 'Express', Icon: ExpressIcon },
-	{ label: 'Java', Icon: JavaIcon },
-	{ label: 'ESLint', Icon: EslintIcon },
-	{ label: 'MySQL', Icon: MysqlIcon },
-	{ label: 'OpenCode', Icon: OpenCodeIcon },
-	{ label: 'Copilot', Icon: CopilotIcon }
-]
 ---
 
 <footer class="footer-shell" data-footer-easter-egg>
 	<canvas class="footer-confetti-canvas" data-footer-confetti-canvas aria-hidden="true"></canvas>
-	<div hidden data-footer-confetti-icons>
-		{confettiIcons.map(({ label, Icon }) => (
-			<Icon data-footer-confetti-icon aria-label={label} />
-		))}
-	</div>
 	<div class="footer-egg-zone" data-footer-egg-zone aria-hidden="true"></div>
 	<div class="footer-easter-egg" data-footer-easter-egg-panel>
 		<button type="button" class="footer-red-button" data-footer-red-button aria-label="Do not press">
@@ -103,234 +66,57 @@ const confettiIcons = [
 
 <script>
 	import { gsap, motionOK } from '../../scripts/motion'
+	import { createConfetti, type Confetti } from '../../scripts/confetti'
 
 	const footer = document.querySelector<HTMLElement>('[data-footer-easter-egg]')
 	const panel = document.querySelector<HTMLElement>('[data-footer-easter-egg-panel]')
 	const zone = document.querySelector<HTMLElement>('[data-footer-egg-zone]')
 	const button = document.querySelector<HTMLButtonElement>('[data-footer-red-button]')
 	const canvas = document.querySelector<HTMLCanvasElement>('[data-footer-confetti-canvas]')
-	const iconTemplates = Array.from(document.querySelectorAll<SVGElement>('[data-footer-confetti-icon]'))
 
 	const eggSupported = window.matchMedia('(hover: hover) and (pointer: fine)').matches && motionOK()
 
-	if (footer && panel && button && canvas && iconTemplates.length > 0 && eggSupported) {
-		let isOpen = false
-		const context = canvas.getContext('2d')
-		const maxPieces = 120
-		const SPRITE_PX = 96
+	if (footer && panel && button && canvas && eggSupported) {
+		let confetti: Confetti | undefined
+		let pending: Promise<Confetti> | undefined
 
-		const sprites = iconTemplates.map((icon) => {
-			const svg = icon.cloneNode(true) as SVGElement
-			svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-			svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-
-			const [, , w = 24, h = 24] = (svg.getAttribute('viewBox') ?? '0 0 24 24')
-				.split(/[\s,]+/)
-				.map(Number)
-
-			svg.setAttribute('width', String(w))
-			svg.setAttribute('height', String(h))
-
-			const aspect = w / h
-			const sheet = document.createElement('canvas')
-			sheet.width = SPRITE_PX
-			sheet.height = Math.round(SPRITE_PX / aspect)
-
-			const sprite = { sheet, aspect, ready: false }
-			const image = new Image()
-			image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg.outerHTML)}`
-			image
-				.decode()
-				.then(() => {
-					sheet.getContext('2d')?.drawImage(image, 0, 0, sheet.width, sheet.height)
-					sprite.ready = true
-				})
-				.catch(() => {})
-
-			return sprite
-		})
-
-		type Particle = {
-			sprite: (typeof sprites)[number]
-			x: number
-			y: number
-			vx: number
-			vy: number
-			size: number
-			rotate: number
-			spin: number
-			gravity: number
-			bounces: number
-			stays: boolean
-			bounceBudget: number
-			createdAt: number
-			settledAt?: number
-			removeAfter: number
+		const load = async (): Promise<Confetti> => {
+			const { confettiIcons } = await import('../../scripts/confetti-icons')
+			return (confetti ??= createConfetti(canvas, confettiIcons))
 		}
 
-		const CANNON_ANGLE = 62
-		const CANNON_SPREAD = 50
-
-		const particles: Particle[] = []
-		let lastFrame = window.performance.now()
-		let isTicking = false
-		let lastFire = 0
-
-		const resizeCanvas = () => {
-			const dpr = Math.min(window.devicePixelRatio || 1, 2)
-			canvas.width = Math.ceil(window.innerWidth * dpr)
-			canvas.height = Math.ceil(window.innerHeight * dpr)
-			canvas.style.width = `${window.innerWidth}px`
-			canvas.style.height = `${window.innerHeight}px`
-			context?.setTransform(dpr, 0, 0, dpr, 0, 0)
+		const preload = () => {
+			pending ??= load()
 		}
 
-		const draw = (particle: Particle, opacity: number) => {
-			if (!context) return
-
-			const { sheet, aspect, ready } = particle.sprite
-			const w = particle.size
-			const h = particle.size / aspect
-
-			context.save()
-			context.globalAlpha = opacity
-			context.translate(particle.x, particle.y)
-			context.rotate((particle.rotate * Math.PI) / 180)
-
-			if (ready) {
-				context.drawImage(sheet, -w / 2, -h / 2, w, h)
-			} else {
-				context.fillStyle = 'oklch(74% 0.15 75)'
-				context.fillRect(-w / 2, -h / 2, w, h)
-			}
-
-			context.restore()
-		}
-
-		const tick = () => {
-			if (!context) return
-
-				const now = window.performance.now()
-			const dt = Math.min((now - lastFrame) / 1000, 0.033)
-			lastFrame = now
-
-			context.clearRect(0, 0, window.innerWidth, window.innerHeight)
-
-			for (let index = particles.length - 1; index >= 0; index -= 1) {
-					const particle = particles[index]
-					const floor = window.innerHeight - particle.size / 2
-					const minX = particle.size / 2
-					const maxX = window.innerWidth - particle.size / 2
-					const age = now - particle.createdAt
-					const fadeDuration = 700
-					const removeAt = particle.settledAt ? particle.settledAt + particle.removeAfter : Infinity
-					const opacity = now > removeAt - fadeDuration
-						? Math.max(0, (removeAt - now) / fadeDuration)
-						: 1
-
-					if (now >= removeAt) {
-						particles.splice(index, 1)
-						continue
-					}
-
-					const drag = Math.max(0, 1 - 0.42 * dt)
-					particle.vx *= drag
-					particle.spin *= drag
-					particle.vy += particle.gravity * dt
-					particle.x += particle.vx * dt
-					particle.y += particle.vy * dt
-				particle.rotate += particle.spin * dt
-
-				const intoWall =
-					(particle.x < minX && particle.vx < 0) || (particle.x > maxX && particle.vx > 0)
-
-				if (intoWall) {
-					particle.x = gsap.utils.clamp(minX, maxX, particle.x)
-					particle.vx *= -0.38
-					particle.spin *= 0.72
-				}
-
-					if (particle.y - particle.size > window.innerHeight) {
-						particles.splice(index, 1)
-						continue
-					}
-
-					if (particle.y > floor && (particle.stays || particle.bounces < particle.bounceBudget)) {
-						particle.y = floor
-						particle.vy *= -0.34
-						particle.vx *= 0.62
-						particle.spin *= 0.58
-						particle.bounces += 1
-
-						if (particle.stays && (Math.abs(particle.vy) < 90 || particle.bounces > 5)) {
-							particle.vy = 0
-							particle.vx *= 0.48
-							particle.spin *= 0.48
-						}
-					}
-
-					if (
-						!particle.settledAt &&
-						particle.stays &&
-						particle.y === floor &&
-						Math.abs(particle.vx) < 10 &&
-						Math.abs(particle.vy) < 1 &&
-						Math.abs(particle.spin) < 12 &&
-						age > 650
-					) {
-						particle.settledAt = now
-					}
-
-					draw(particle, opacity)
-				}
-
-			if (particles.length === 0) {
-				isTicking = false
-				gsap.ticker.remove(tick)
-				canvas.remove()
-			}
-		}
-
-		const startTicker = () => {
-			if (isTicking) return
-			if (!canvas.isConnected) {
-				resizeCanvas()
-				document.body.append(canvas)
-			}
-			lastFrame = window.performance.now()
-			isTicking = true
-			gsap.ticker.add(tick)
+		const fire = async () => {
+			preload()
+			await pending?.then((it) => it.fire())
 		}
 
 		const REST_Y = 68
 		const PEEK_Y = 26
 		const OPEN_Y = -80
+		const HINT_COOLDOWN = 2600
+
+		let isOpen = false
 		let lastHint = 0
 
 		gsap.set(panel, { x: 0, y: REST_Y })
 
-		const revealPanel = () => {
+		const reveal = () => {
 			isOpen = true
-			if (!motionOK()) return
-
-			gsap.to(panel, {
-				y: OPEN_Y,
-				duration: 0.42,
-				ease: 'back.out(1.6)',
-				overwrite: true
-			})
+			gsap.to(panel, { y: OPEN_Y, duration: 0.42, ease: 'back.out(1.6)', overwrite: true })
 		}
 
-		const hidePanel = () => {
+		const hide = () => {
 			isOpen = false
-			if (!motionOK()) return
-
 			gsap.to(panel, { y: REST_Y, duration: 0.5, ease: 'power3.inOut', overwrite: true })
 		}
 
-		const hintPanel = () => {
+		const hint = () => {
 			const now = window.performance.now()
-			if (isOpen || !motionOK() || now - lastHint < 2600) return
+			if (isOpen || now - lastHint < HINT_COOLDOWN) return
 			lastHint = now
 
 			gsap
@@ -339,55 +125,16 @@ const confettiIcons = [
 				.to(panel, { y: REST_Y, duration: 0.62, ease: 'power2.inOut' }, '+=0.35')
 		}
 
-		const fireConfetti = () => {
-			if (!motionOK()) return
+		footer.addEventListener('pointerenter', hint)
+		footer.addEventListener('pointerenter', preload)
+		footer.addEventListener('pointerleave', hide)
+		zone?.addEventListener('pointerenter', reveal)
+		panel.addEventListener('pointerenter', reveal)
+		button.addEventListener('focus', reveal)
+		button.addEventListener('focus', preload)
+		button.addEventListener('blur', hide)
+		button.addEventListener('click', fire)
 
-			const now = window.performance.now()
-
-			if (now - lastFire < 380) return
-			lastFire = now
-
-			const deck = [...sprites].sort(() => Math.random() - 0.5)
-
-			Array.from({ length: 24 }).forEach((_, index) => {
-				const side = index % 2 === 0 ? -1 : 1
-				const size = Math.random() < 0.3 ? gsap.utils.random(48, 68) : gsap.utils.random(28, 44)
-				const launchPower = gsap.utils.random(820, 1850)
-				const aim = side < 0 ? CANNON_ANGLE : 180 - CANNON_ANGLE
-				const rad = ((aim + gsap.utils.random(-CANNON_SPREAD / 2, CANNON_SPREAD / 2)) * Math.PI) / 180
-
-				particles.push({
-					sprite: deck[index % deck.length],
-					x: side < 0 ? -size : window.innerWidth + size,
-					y: (window.innerHeight * 5) / 7 + gsap.utils.random(-44, 44),
-					vx: Math.cos(rad) * launchPower,
-					vy: -Math.sin(rad) * launchPower,
-					size,
-					rotate: gsap.utils.random(-22, 22),
-					spin: gsap.utils.random(-520, 520),
-					gravity: gsap.utils.random(1350, 1750),
-					bounces: 0,
-					stays: Math.random() < 0.45,
-					bounceBudget: gsap.utils.random(1, 3, 1),
-					createdAt: now,
-					removeAfter: gsap.utils.random(3000, 5000)
-				})
-			})
-
-			while (particles.length > maxPieces) particles.shift()
-			startTicker()
-		}
-
-		canvas.remove()
-		window.addEventListener('resize', () => {
-			if (canvas.isConnected) resizeCanvas()
-		})
-		footer.addEventListener('pointerenter', hintPanel)
-		footer.addEventListener('pointerleave', hidePanel)
-		zone?.addEventListener('pointerenter', revealPanel)
-		panel.addEventListener('pointerenter', revealPanel)
-		button.addEventListener('focus', revealPanel)
-		button.addEventListener('blur', hidePanel)
-		button.addEventListener('click', fireConfetti)
+		window.addEventListener('astro:before-swap', () => confetti?.destroy(), { once: true })
 	}
 </script>
