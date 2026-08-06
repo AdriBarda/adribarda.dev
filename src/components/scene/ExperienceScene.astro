@@ -7,48 +7,65 @@ const experience = group?.entries.find((entry) => entry.data.section === 'experi
 const impact = group?.entries.find((entry) => entry.data.section === 'impact')
 const timeline = experience?.data.items ?? []
 
-function getPeriodYear(period?: string) {
-	return period?.match(/\b\d{4}\b/g)?.at(-1)
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+
+/** A period endpoint ("May 2024") as an absolute month index, so a span can be measured. */
+function toMonths(text?: string) {
+	const value = text?.trim().toLowerCase() ?? ''
+	const year = Number(value.match(/\d{4}/)?.[0])
+	if (!year) return undefined
+	const month = MONTHS.findIndex((name) => value.startsWith(name))
+	return year * 12 + (month < 0 ? 0 : month)
 }
 
-const earliestYear = getPeriodYear(timeline.at(-1)?.period)
-const latestYear = getPeriodYear(timeline[0]?.period)
-const experienceMeta = [
-	earliestYear && latestYear ? `${earliestYear}—${latestYear}` : undefined,
-	timeline.length > 0 ? `${timeline.length} roles` : undefined
-]
-	.filter(Boolean)
-	.join('  ·  ')
+const nowMonths = new Date().getFullYear() * 12 + new Date().getMonth()
+
+function toDuration(period?: string) {
+	const [from, to] = (period ?? '').split(/\s*[-–—]\s*/)
+	const start = toMonths(from)
+	const end = /present|now|current/i.test(to ?? '') ? nowMonths : toMonths(to)
+	if (start === undefined || end === undefined || end < start) return undefined
+
+	const months = end - start + 1
+	const years = Math.floor(months / 12)
+	const rest = months % 12
+	return [years > 0 ? `${years} yr` : null, rest > 0 ? `${rest} mo` : null].filter(Boolean).join(' ') || '1 mo'
+}
+
+const rows = timeline.map((item, position) => ({
+	item,
+	tile: `--tile-${(position % 6) + 1}`,
+	meta: [item.company, item.location, toDuration(item.period)].filter(Boolean).join('  ·  ')
+}))
 ---
 
-<div class="flex w-full flex-col gap-(--space-3xl)">
+<div class="flex w-full flex-col gap-(--gap-section)">
 	<SectionHead title={experience?.data.title ?? 'Missing experience title.'} lead={experience?.data.summary} />
 
-	<ol class="flex flex-col gap-(--space-3xl)">
-		{timeline.length > 0 ? (
-			timeline.map((item) => (
-				<li
-					data-role-row
-					data-reveal
-					class="grid gap-(--space-md) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)"
-				>
-					<div data-role-meta>
-						<time data-meta class="block text-[length:var(--text-label)] uppercase text-app-muted">{item.period}</time>
-						<p class="mt-2 text-[length:var(--text-sm)] leading-[1.5] font-medium text-app-text">{item.company}</p>
-						{item.location && <p class="text-[length:var(--text-sm)] leading-[1.5] text-app-muted">{item.location}</p>}
-					</div>
+	{rows.length > 0 ? (
+		<ol class="timeline">
+			{rows.map(({ item, tile, meta }) => (
+				<li data-reveal class="timeline-row" style={`--marker: var(${tile});`}>
+					<span class="timeline-marker" aria-hidden="true"></span>
 
-					<div class="max-w-(--measure)">
-						<h3 class="text-[length:var(--text-h3)] leading-[1.15] font-semibold text-app-text">
+					<div class="timeline-entry">
+						<time data-meta class="text-[color:var(--marker)]">{item.period}</time>
+
+						<h3 class="mt-(--space-xs) text-[length:var(--text-h3)] leading-[1.1] font-semibold text-app-text text-balance">
 							{item.role}
 						</h3>
-						<p class="mt-(--space-sm) text-[length:var(--text-body)] leading-[1.72] text-app-muted text-pretty">{item.description}</p>
+
+						<p data-meta class="mt-(--space-2xs) text-app-muted">{meta}</p>
+
+						<p class="mt-(--space-md) text-[length:var(--text-body)] leading-[1.72] text-app-text-2 text-pretty">
+							{item.description}
+						</p>
 
 						{item.highlights.length > 0 && (
-							<ul class="mt-(--space-md) flex flex-col gap-2">
+							<ul class="mt-(--space-md) flex flex-col gap-(--space-xs)">
 								{item.highlights.map((highlight) => (
 									<li class="grid grid-cols-[auto_1fr] gap-3">
-										<span class="mt-[0.6rem] size-1 shrink-0 rounded-full bg-app-muted/70"></span>
+										<span class="mt-[0.62rem] h-px w-3 shrink-0 bg-[color:var(--marker)]"></span>
 										<p class="text-[length:var(--text-sm)] leading-[1.68] text-app-muted text-pretty">{highlight}</p>
 									</li>
 								))}
@@ -56,59 +73,28 @@ const experienceMeta = [
 						)}
 					</div>
 				</li>
-			))
-		) : (
-			<li class="text-[length:var(--text-body)] text-app-muted">Missing experience timeline.</li>
-		)}
-	</ol>
+			))}
+		</ol>
+	) : (
+		<p class="text-[length:var(--text-body)] text-app-muted">Missing experience timeline.</p>
+	)}
 
-	<div class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
-		<p data-label class="text-[length:var(--text-label)] uppercase text-app-muted">Impact</p>
+	<div class="flex flex-col">
+		<p data-label class="text-app-muted">Impact</p>
 
-		<div class="max-w-(--measure)">
-			<p class="text-[length:var(--text-lead)] leading-[1.4] font-medium text-app-text text-pretty">
-				{impact?.data.title ?? 'Missing impact title.'}
-			</p>
+		<p class="mt-(--space-md) max-w-(--measure) text-[length:var(--text-lead)] leading-[1.4] font-medium text-app-text text-pretty">
+			{impact?.data.title ?? 'Missing impact title.'}
+		</p>
 
-			{impact?.data.highlights?.length ? (
-				<ul class="mt-(--space-lg) flex flex-col gap-(--space-sm)">
-					{impact.data.highlights.map((highlight) => (
-						<li class="grid grid-cols-[auto_1fr] gap-3">
-							<span class="mt-[0.6rem] size-1 shrink-0 rounded-full bg-app-muted/70"></span>
-							<p class="text-[length:var(--text-body)] leading-[1.72] text-app-muted text-pretty">{highlight}</p>
-						</li>
-					))}
-				</ul>
-			) : null}
-		</div>
+		{impact?.data.highlights?.length ? (
+			<ul class="mt-(--space-xl) grid gap-(--space-md) md:grid-cols-2 md:gap-x-(--space-2xl)">
+				{impact.data.highlights.map((highlight) => (
+					<li class="grid grid-cols-[auto_1fr] gap-3">
+						<span class="mt-[0.72rem] h-px w-3 shrink-0 bg-[color:var(--band)]"></span>
+						<p class="text-[length:var(--text-body)] leading-[1.72] text-app-muted text-pretty">{highlight}</p>
+					</li>
+				))}
+			</ul>
+		) : null}
 	</div>
 </div>
-
-<script>
-	import { gsap, ScrollTrigger, motionOK, refreshOnFonts } from '../../scripts/motion'
-
-	const rows = document.querySelectorAll<HTMLElement>('[data-role-row]')
-	const pinned = window.matchMedia('(min-width: 48rem)')
-
-	if (rows.length > 0 && pinned.matches && motionOK()) {
-		const REST = 0.32
-
-		rows.forEach((row) => {
-			const meta = row.querySelector<HTMLElement>('[data-role-meta]')
-			if (!meta) return
-
-			const setOpacity = gsap.quickSetter(meta, 'opacity') as (v: number) => void
-
-			ScrollTrigger.create({
-				trigger: row,
-				start: 'bottom 55%',
-				end: 'bottom 25%',
-				scrub: true,
-				invalidateOnRefresh: true,
-				onUpdate: (self) => setOpacity(1 - self.progress * (1 - REST))
-			})
-		})
-
-		refreshOnFonts()
-	}
-</script>

@@ -140,6 +140,17 @@
   --shell: min(100%, var(--shell-max));
   --measure: 62ch;
 
+  /* Stack scene — light cards laid over the pine `field` band. Theme-independent
+     on purpose: the band itself is pine in both themes, so the cards that sit on
+     it must be too. */
+  --stack-cream: oklch(93.5% 0.033 78);
+  --stack-white: oklch(98.6% 0.005 85);
+  --stack-caramel: oklch(48% 0.115 62);
+  --stack-card-text: oklch(20% 0.026 60);
+  --stack-card-text-2: oklch(40% 0.022 65);
+  --stack-card-line: oklch(86% 0.018 78);
+  --text-card-title: clamp(1.05rem, 0.95rem + 0.35vw, 1.3rem);
+
   --card-lift: 8px;
   --card-shadow: 10px;
 
@@ -452,10 +463,46 @@ select {
 
 /* ---- Stack grid --------------------------------------------------------- */
 
+/* Light cards on the pine field band. One cream card anchors the grid; the rest
+   are white, so the cream reads as an accent rather than half a checkerboard. */
 .stack-grid {
   display: grid;
   gap: var(--space-lg);
   grid-template-columns: minmax(0, 1fr);
+}
+
+.stack-item {
+  display: flex;
+}
+
+.stack-card {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--pad-card);
+  border-radius: var(--radius-lg);
+  background: var(--stack-white);
+  color: var(--stack-card-text);
+  /* Depth, not a divider — it lifts the light cards off the pine. */
+  box-shadow: 0 16px 36px -14px color-mix(in oklab, var(--field-bg) 82%, transparent);
+}
+
+.stack-item:nth-child(1) .stack-card {
+  background: var(--stack-cream);
+}
+
+.stack-title {
+  font-size: var(--text-card-title);
+  line-height: 1.15;
+  color: var(--stack-card-text);
+}
+
+.stack-count {
+  margin: 0.15rem 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.2;
+  color: var(--stack-card-text-2);
 }
 
 @media (min-width: 48rem) {
@@ -463,20 +510,98 @@ select {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 
-  .stack-grid > * {
-    grid-column: span 6;
-  }
-  .stack-grid > *:nth-child(1) {
+  .stack-item:nth-child(1) {
     grid-column: span 7;
   }
-  .stack-grid > *:nth-child(2) {
+  .stack-item:nth-child(2) {
     grid-column: span 5;
   }
-  .stack-grid > *:nth-child(3) {
+  .stack-item:nth-child(3) {
     grid-column: span 5;
   }
-  .stack-grid > *:nth-child(4) {
+  .stack-item:nth-child(4) {
     grid-column: span 7;
+  }
+}
+
+/* ---- Timeline ---------------------------------------------------------- */
+
+/* A single drawn spine with the roles hung off it, alternating sides. The spine
+   and its markers are the only strokes in the section — everything else is set
+   in space, not boxed. */
+.timeline {
+  --spine: 2px;
+  --marker-size: 0.75rem;
+  /* The marker's ring has to read as the band it sits on, so the dot sits ON
+     the spine rather than behind it. Bands override this where they differ. */
+  --timeline-ring: var(--app-paper-2);
+
+  position: relative;
+  display: grid;
+  gap: var(--space-3xl);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  inset-block: 0.55rem 0;
+  left: 0;
+  width: var(--spine);
+  border-radius: var(--radius-pill);
+  background: color-mix(in oklab, var(--app-text) 16%, transparent);
+  /* Fades out rather than stopping dead under the last entry. */
+  mask-image: linear-gradient(to bottom, #000 88%, transparent);
+}
+
+.timeline-row {
+  position: relative;
+  padding-left: var(--space-xl);
+}
+
+.timeline-marker {
+  position: absolute;
+  top: 0.35rem;
+  left: 0;
+  width: var(--marker-size);
+  height: var(--marker-size);
+  translate: calc(-50% + var(--spine) / 2) 0;
+  border-radius: 50%;
+  background: var(--marker);
+  box-shadow: 0 0 0 4px var(--timeline-ring);
+}
+
+@media (min-width: 48rem) {
+  .timeline::before {
+    left: 50%;
+    translate: -50% 0;
+  }
+
+  .timeline-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--space-3xl);
+    padding-left: 0;
+  }
+
+  .timeline-marker {
+    left: 50%;
+    translate: -50% 0;
+  }
+
+  .timeline-entry {
+    grid-column: 2;
+    max-width: 34rem;
+  }
+
+  /* Most recent role starts on the left, then they alternate. Copy stays
+     left-aligned on both sides — the block hugs the spine instead, so the
+     symmetry reads without mirroring the rag or the bullet markers. */
+  .timeline-row:nth-child(odd) .timeline-entry {
+    grid-column: 1;
+    margin-left: auto;
   }
 }
 
@@ -580,17 +705,6 @@ select {
 @media (max-width: 47.99rem) {
   :root {
     --rise-reveal: 1.75rem;
-  }
-}
-
-/* Role pin — native sticky, not a JS pin. `align-self: start` is load-bearing:
-   a stretched grid item fills the row and can never stick. Layout, not
-   animation, so it stays on under reduced motion. */
-@media (min-width: 48rem) {
-  [data-role-meta] {
-    position: sticky;
-    top: calc(var(--nav-h) + var(--space-xl));
-    align-self: start;
   }
 }
 

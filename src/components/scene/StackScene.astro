@@ -70,6 +70,7 @@ const stackGroups: Array<{ label: string; technologies: Tech[] }> = [
 ]
 
 const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comfortable' ? 2 : 1)
+
 ---
 
 <div class="flex w-full flex-col gap-(--space-3xl)">
@@ -77,15 +78,19 @@ const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comforta
 
 	<ul class="stack-grid">
 		{stackGroups.map((stackGroup) => (
-			<li data-reveal class="flex flex-col gap-(--space-xl) rounded-[var(--radius-lg)] border border-app-border bg-app-surface p-(--space-2xl)">
-					<p class="text-[length:var(--text-h3)] leading-[1.05] font-semibold tracking-[-0.024em] text-app-text">{stackGroup.label}</p>
+			<li data-reveal class="stack-item">
+				<div class="stack-card">
+					<div class="stack-head">
+						<h3 class="stack-title">{stackGroup.label}</h3>
+						<p class="stack-count">{stackGroup.technologies.length} tools</p>
+					</div>
 
 					<ul class="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-(--space-lg)">
 						{stackGroup.technologies.map((technology) => (
 							<li class="flex items-center gap-2.5">
 								<technology.Icon aria-hidden="true" class="size-7 shrink-0" />
 								<span class="min-w-0">
-									<span class="block text-[length:var(--text-body)] leading-tight font-medium text-app-text">
+									<span class="block text-[length:var(--text-body)] leading-tight font-medium text-[color:var(--stack-card-text)]">
 										{technology.name}
 									</span>
 									<span class="mt-1 flex gap-1" role="img" aria-label={`${technology.level} with ${technology.name}`}>
@@ -93,7 +98,9 @@ const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comforta
 											<span
 												class:list={[
 													'block h-0.5 w-3 rounded-full',
-													i < filled(technology.level) ? 'bg-[var(--band)]' : 'bg-app-border'
+													i < filled(technology.level)
+														? 'bg-[var(--stack-caramel)]'
+														: 'bg-[var(--stack-card-line)]'
 												]}
 											></span>
 										))}
@@ -102,6 +109,7 @@ const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comforta
 							</li>
 						))}
 					</ul>
+				</div>
 			</li>
 		))}
 	</ul>
