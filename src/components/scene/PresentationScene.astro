@@ -40,7 +40,7 @@ const labelClass = 'uppercase text-app-muted'
 <div class="flex w-full flex-col items-start text-left">
 	<div class="flex flex-wrap items-center gap-x-(--space-lg) gap-y-(--space-sm)">
 		{status && (
-			<span class="inline-flex items-center gap-2.5 rounded-[var(--radius-pill)] border border-app-border bg-app-surface px-4 py-2.5 shadow-[0_0_0_4px_color-mix(in_oklab,var(--band)_10%,transparent)]">
+			<span class="inline-flex items-center gap-2.5 rounded-(--radius-pill) border border-app-border bg-app-surface px-4 py-2.5 shadow-[0_0_0_4px_color-mix(in_oklab,var(--band)_10%,transparent)]">
 				<span class="relative flex size-2.5 shrink-0 items-center justify-center">
 					<span class="absolute inline-flex size-full rounded-full bg-emerald-400/70 animate-ping motion-reduce:hidden"></span>
 					<span class="relative inline-flex size-2 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
@@ -50,11 +50,11 @@ const labelClass = 'uppercase text-app-muted'
 		)}
 
 		{meta.length > 0 && (
-			<p data-meta class="text-[length:var(--text-label)] uppercase text-app-muted">{meta.join(' · ')}</p>
+			<p data-meta class="text-(length:--text-label) uppercase text-app-muted">{meta.join(' · ')}</p>
 		)}
 	</div>
 
-	<p class="mt-(--gap-hero) text-[length:var(--text-lead)] leading-[1.3] font-medium text-app-text-2">
+	<p class="mt-(--gap-hero) text-(length:--text-lead) leading-[1.3] font-medium text-app-text-2">
 		{title}
 	</p>
 
@@ -63,7 +63,7 @@ const labelClass = 'uppercase text-app-muted'
 		<div
 			data-hero-role-anim
 			aria-hidden="true"
-			class="hero-role-anim pointer-events-none w-full whitespace-nowrap text-[length:var(--text-hero)] leading-[1.02] font-semibold text-app-text"
+			class="hero-role-anim pointer-events-none w-full whitespace-nowrap text-(length:--text-hero) leading-[1.02] font-semibold text-app-text"
 		>
 			<span class="hero-word hero-word-front">
 				<span class="hero-letter f"><span class="clip"><span>F</span></span></span>
@@ -90,7 +90,7 @@ const labelClass = 'uppercase text-app-muted'
 		</div>
 	</div>
 
-	<p class="mt-(--gap-hero) max-w-(--measure) text-[length:var(--text-lead)] leading-[1.45] text-app-text-2 text-pretty">
+	<p class="mt-(--gap-hero) max-w-(--measure) text-(length:--text-lead) leading-[1.45] text-app-text-2 text-pretty">
 		{entry?.data.summary ?? 'Missing presentation summary.'}
 	</p>
 
@@ -116,7 +116,7 @@ const labelClass = 'uppercase text-app-muted'
 	>
 		<div>
 			<p data-label class={labelClass}>Background</p>
-			<div class="mt-(--space-sm) max-w-[54ch] text-[length:var(--text-body)] leading-[1.7] text-app-text-2 text-pretty [&_p+p]:mt-(--space-sm) [&_strong]:font-semibold [&_strong]:text-app-text">
+			<div class="mt-(--space-sm) max-w-[54ch] text-(length:--text-body) leading-[1.7] text-app-text-2 text-pretty [&_p+p]:mt-(--space-sm) [&_strong]:font-semibold [&_strong]:text-app-text">
 				{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing presentation body.</p>}
 			</div>
 		</div>
@@ -133,7 +133,7 @@ const labelClass = 'uppercase text-app-muted'
 					class="mt-(--space-sm) inline-flex items-center gap-2.5"
 				>
 					<GithubIcon aria-hidden="true" class="size-4.5 shrink-0 fill-current text-app-muted" />
-					<span class="text-[length:var(--text-body)] font-semibold text-app-text">{contribution.repository}</span>
+					<span class="text-(length:--text-body) font-semibold text-app-text">{contribution.repository}</span>
 					{contribution.stars && (
 						<span data-meta class="inline-flex items-center gap-1.5 text-app-muted">
 							<StarIcon aria-hidden="true" class="size-3 shrink-0 fill-current" />
@@ -142,7 +142,7 @@ const labelClass = 'uppercase text-app-muted'
 					)}
 				</a>
 
-				<p class="mt-(--space-sm) text-[length:var(--text-body)] leading-[1.7] text-app-text-2 text-pretty">
+				<p class="mt-(--space-sm) text-(length:--text-body) leading-[1.7] text-app-text-2 text-pretty">
 					{contribution.contribution}
 				</p>
 
@@ -151,7 +151,7 @@ const labelClass = 'uppercase text-app-muted'
 						href={contribution.pullRequestUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						class="mt-(--space-md) inline-block text-[length:var(--text-sm)] font-medium text-app-text underline decoration-app-border underline-offset-4 transition-colors hover:decoration-app-text/70"
+						class="mt-(--space-md) inline-block text-(length:--text-sm) font-medium text-app-text underline decoration-app-border underline-offset-4 transition-colors hover:decoration-app-text/70"
 					>
 						Read the pull request
 					</a>

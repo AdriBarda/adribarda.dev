@@ -29,8 +29,8 @@ const linkClass = [
 		<div class="mx-auto w-(--shell)">
 			<div class="grid gap-(--space-2xl) lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
 				<div>
-					<h2 class="max-w-[13ch] text-[length:var(--text-h2)] leading-[0.94] text-app-text text-balance">
-						Let&apos;s build something great together<span class="text-[color:var(--band)]">.</span>
+					<h2 class="max-w-[13ch] text-(length:--text-h2) leading-[0.94] text-app-text text-balance">
+						Let&apos;s build something great together<span class="text-(--band)">.</span>
 					</h2>
 				</div>
 
@@ -38,7 +38,7 @@ const linkClass = [
 					{footer?.location && (
 						<div>
 							<p data-label class="text-app-muted">Located in</p>
-							<p class="mt-1.5 text-[length:var(--text-lead)] text-app-text">{footer.location}</p>
+							<p class="mt-1.5 text-(length:--text-lead) text-app-text">{footer.location}</p>
 						</div>
 					)}
 

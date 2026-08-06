@@ -11,13 +11,13 @@ const body = match?.[1] ?? title
 const stop = match?.[2] ?? ''
 ---
 
-<div class="flex max-w-[52rem] flex-col">
-	<h2 class="text-[length:var(--text-h2)] leading-[0.94] text-app-text text-balance">
-		{body}{stop && <span class="text-[color:var(--band)]">{stop}</span>}
+<div class="flex max-w-208 flex-col">
+	<h2 class="text-(length:--text-h2) leading-[0.94] text-app-text text-balance">
+		{body}{stop && <span class="text-(--band)">{stop}</span>}
 	</h2>
 
 	{lead && (
-		<p class="mt-(--space-lg) max-w-(--measure) text-[length:var(--text-lead)] leading-[1.5] text-app-text-2 text-pretty">
+		<p class="mt-(--space-lg) max-w-(--measure) text-(length:--text-lead) leading-normal text-app-text-2 text-pretty">
 			{lead}
 		</p>
 	)}

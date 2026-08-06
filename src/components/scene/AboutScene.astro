@@ -36,7 +36,7 @@ const labelClass = 'text-[length:var(--text-label)] uppercase text-app-muted'
 	<div class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
 		<p data-label class={labelClass}>Off the clock</p>
 		<div
-			class="max-w-(--measure) text-[length:var(--text-body)] leading-[1.78] text-app-muted text-pretty [&_p+p]:mt-(--space-md)"
+			class="max-w-(--measure) text-(length:--text-body) leading-[1.78] text-app-muted text-pretty [&_p+p]:mt-(--space-md)"
 		>
 			{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing about body.</p>}
 		</div>
@@ -47,10 +47,10 @@ const labelClass = 'text-[length:var(--text-label)] uppercase text-app-muted'
 			<p data-label class={labelClass}>Languages</p>
 			<ul class="flex flex-wrap gap-x-(--space-3xl) gap-y-(--space-lg)">
 				{languageGroups.map((languageGroup) => (
-					<li class="min-w-[9rem]">
-						<p class="text-[length:var(--text-body)] font-medium text-app-text">{languageGroup.label}</p>
+					<li class="min-w-36">
+						<p class="text-(length:--text-body) font-medium text-app-text">{languageGroup.label}</p>
 						{languageGroup.details.map((detail) => (
-							<p class="mt-1 text-[length:var(--text-sm)] leading-[1.6] text-app-muted">{detail}</p>
+							<p class="mt-1 text-(length:--text-sm) leading-[1.6] text-app-muted">{detail}</p>
 						))}
 					</li>
 				))}
@@ -62,11 +62,11 @@ const labelClass = 'text-[length:var(--text-label)] uppercase text-app-muted'
 		<div class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
 			<p data-label class={labelClass}>Education</p>
 			<div class="max-w-(--measure)">
-				<p class="text-[length:var(--text-lead)] leading-[1.3] font-medium text-app-text">
+				<p class="text-(length:--text-lead) leading-[1.3] font-medium text-app-text">
 					{entry.data.education.institution}
 				</p>
-				<p class="mt-2 text-[length:var(--text-body)] leading-[1.7] text-app-muted text-pretty">{entry.data.education.program}</p>
-				<p data-meta class="mt-3 text-[length:var(--text-label)] uppercase text-app-muted">{entry.data.education.period}</p>
+				<p class="mt-2 text-(length:--text-body) leading-[1.7] text-app-muted text-pretty">{entry.data.education.program}</p>
+				<p data-meta class="mt-3 text-(length:--text-label) uppercase text-app-muted">{entry.data.education.period}</p>
 			</div>
 		</div>
 	)}

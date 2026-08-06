@@ -49,15 +49,15 @@ const rows = timeline.map((item, position) => ({
 					<span class="timeline-marker" aria-hidden="true"></span>
 
 					<div class="timeline-entry">
-						<time data-meta class="text-[color:var(--marker)]">{item.period}</time>
+						<time data-meta class="text-(--marker)">{item.period}</time>
 
-						<h3 class="mt-(--space-xs) text-[length:var(--text-h3)] leading-[1.1] font-semibold text-app-text text-balance">
+						<h3 class="mt-(--space-xs) text-(length:--text-h3) leading-[1.1] font-semibold text-app-text text-balance">
 							{item.role}
 						</h3>
 
 						<p data-meta class="mt-(--space-2xs) text-app-muted">{meta}</p>
 
-						<p class="mt-(--space-md) text-[length:var(--text-body)] leading-[1.72] text-app-text-2 text-pretty">
+						<p class="mt-(--space-md) text-(length:--text-body) leading-[1.72] text-app-text-2 text-pretty">
 							{item.description}
 						</p>
 
@@ -65,8 +65,8 @@ const rows = timeline.map((item, position) => ({
 							<ul class="mt-(--space-md) flex flex-col gap-(--space-xs)">
 								{item.highlights.map((highlight) => (
 									<li class="grid grid-cols-[auto_1fr] gap-3">
-										<span class="mt-[0.62rem] h-px w-3 shrink-0 bg-[color:var(--marker)]"></span>
-										<p class="text-[length:var(--text-sm)] leading-[1.68] text-app-muted text-pretty">{highlight}</p>
+										<span class="mt-[0.62rem] h-px w-3 shrink-0 bg-(--marker)"></span>
+										<p class="text-(length:--text-sm) leading-[1.68] text-app-muted text-pretty">{highlight}</p>
 									</li>
 								))}
 							</ul>
@@ -76,13 +76,13 @@ const rows = timeline.map((item, position) => ({
 			))}
 		</ol>
 	) : (
-		<p class="text-[length:var(--text-body)] text-app-muted">Missing experience timeline.</p>
+		<p class="text-(length:--text-body) text-app-muted">Missing experience timeline.</p>
 	)}
 
 	<div class="flex flex-col">
 		<p data-label class="text-app-muted">Impact</p>
 
-		<p class="mt-(--space-md) max-w-(--measure) text-[length:var(--text-lead)] leading-[1.4] font-medium text-app-text text-pretty">
+		<p class="mt-(--space-md) max-w-(--measure) text-(length:--text-lead) leading-[1.4] font-medium text-app-text text-pretty">
 			{impact?.data.title ?? 'Missing impact title.'}
 		</p>
 
@@ -90,8 +90,8 @@ const rows = timeline.map((item, position) => ({
 			<ul class="mt-(--space-xl) grid gap-(--space-md) md:grid-cols-2 md:gap-x-(--space-2xl)">
 				{impact.data.highlights.map((highlight) => (
 					<li class="grid grid-cols-[auto_1fr] gap-3">
-						<span class="mt-[0.72rem] h-px w-3 shrink-0 bg-[color:var(--band)]"></span>
-						<p class="text-[length:var(--text-body)] leading-[1.72] text-app-muted text-pretty">{highlight}</p>
+						<span class="mt-[0.72rem] h-px w-3 shrink-0 bg-(--band)"></span>
+						<p class="text-(length:--text-body) leading-[1.72] text-app-muted text-pretty">{highlight}</p>
 					</li>
 				))}
 			</ul>

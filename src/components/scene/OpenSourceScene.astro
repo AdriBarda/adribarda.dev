@@ -32,10 +32,10 @@ const linkClass = 'text-[length:var(--text-sm)] font-medium text-app-text underl
 							class="inline-flex items-center gap-2.5"
 						>
 							<GithubIcon aria-hidden="true" class="size-4.5 shrink-0 fill-current text-app-muted" />
-							<span class="text-[length:var(--text-body)] font-semibold text-app-text">{link.repository}</span>
+							<span class="text-(length:--text-body) font-semibold text-app-text">{link.repository}</span>
 						</a>
 
-						<p data-meta class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[length:var(--text-label)] uppercase text-app-muted">
+						<p data-meta class="flex flex-wrap items-center gap-x-3 gap-y-1 text-(length:--text-label) uppercase text-app-muted">
 							{link.stars && (
 								<span class="inline-flex items-center gap-1.5">
 									<StarIcon aria-hidden="true" class="size-3 shrink-0 fill-current" />
@@ -46,21 +46,21 @@ const linkClass = 'text-[length:var(--text-sm)] font-medium text-app-text underl
 							{link.license && <span>{link.license}</span>}
 						</p>
 
-						<p class="text-[length:var(--text-sm)] leading-[1.55] text-app-muted">Maintained by {link.owner}</p>
+						<p class="text-(length:--text-sm) leading-[1.55] text-app-muted">Maintained by {link.owner}</p>
 					</div>
 
 					<div class="flex max-w-(--measure) flex-col gap-(--space-lg)">
-						<p class="text-[length:var(--text-lead)] leading-[1.5] text-app-text text-pretty">{link.project}</p>
+						<p class="text-(length:--text-lead) leading-normal text-app-text text-pretty">{link.project}</p>
 
 						<div>
 							<p data-label class={labelClass}>What I added</p>
-							<p class="mt-2 text-[length:var(--text-body)] leading-[1.72] text-app-muted text-pretty">{link.contribution}</p>
+							<p class="mt-2 text-(length:--text-body) leading-[1.72] text-app-muted text-pretty">{link.contribution}</p>
 						</div>
 
 						{link.reason && (
 							<div>
 								<p data-label class={labelClass}>Why</p>
-								<p class="mt-2 text-[length:var(--text-body)] leading-[1.72] text-app-muted text-pretty">{link.reason}</p>
+								<p class="mt-2 text-(length:--text-body) leading-[1.72] text-app-muted text-pretty">{link.reason}</p>
 							</div>
 						)}
 
@@ -69,7 +69,7 @@ const linkClass = 'text-[length:var(--text-sm)] font-medium text-app-text underl
 								Read the pull request
 							</a>
 							{link.meta.length > 0 && (
-								<p data-meta class="text-[length:var(--text-label)] uppercase text-app-muted">{link.meta.join('  ·  ')}</p>
+								<p data-meta class="text-(length:--text-label) uppercase text-app-muted">{link.meta.join('  ·  ')}</p>
 							)}
 						</div>
 					</div>
@@ -77,6 +77,6 @@ const linkClass = 'text-[length:var(--text-sm)] font-medium text-app-text underl
 			))}
 		</div>
 	) : (
-		<p class="text-[length:var(--text-body)] text-app-muted">Missing open-source contributions.</p>
+		<p class="text-(length:--text-body) text-app-muted">Missing open-source contributions.</p>
 	)}
 </div>

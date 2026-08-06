@@ -28,16 +28,16 @@ const normalizeUrl = (url: string) => (url.startsWith('http') ? url : `https://$
 			{projects.map((project, position) => (
 			<div data-reveal class="bento-item">
 				<article class="bento-card" style={`--card: var(${cardTiles[position % cardTiles.length]});`}>
-					<h3 class="text-[length:var(--text-h3)] leading-[1.05] text-app-text">{project.name}</h3>
+					<h3 class="text-(length:--text-h3) leading-[1.05] text-app-text">{project.name}</h3>
 
-					<p class="text-[length:var(--text-body)] leading-[1.6] text-app-text-2 text-pretty">
+					<p class="text-(length:--text-body) leading-[1.6] text-app-text-2 text-pretty">
 						{project.tagline}
 					</p>
 
 					{project.build && (
 						<div>
 							<p data-label class="text-app-muted">What I built</p>
-							<p class="mt-1.5 text-[length:var(--text-sm)] leading-[1.7] text-app-muted text-pretty">
+							<p class="mt-1.5 text-(length:--text-sm) leading-[1.7] text-app-muted text-pretty">
 								{project.build}
 							</p>
 						</div>
@@ -47,8 +47,8 @@ const normalizeUrl = (url: string) => (url.startsWith('http') ? url : `https://$
 						<ul class="flex flex-col gap-1.5">
 							{project.highlights.map((highlight) => (
 								<li class="grid grid-cols-[auto_1fr] gap-2.5">
-									<span class="mt-[0.55rem] size-1 shrink-0 rounded-full bg-[var(--card)]"></span>
-									<p class="text-[length:var(--text-sm)] leading-[1.65] text-app-muted text-pretty">
+									<span class="mt-[0.55rem] size-1 shrink-0 rounded-full bg-(--card)"></span>
+									<p class="text-(length:--text-sm) leading-[1.65] text-app-muted text-pretty">
 										{highlight}
 									</p>
 								</li>
@@ -98,6 +98,6 @@ const normalizeUrl = (url: string) => (url.startsWith('http') ? url : `https://$
 			))}
 		</div>
 	) : (
-		<p class="text-[length:var(--text-body)] text-app-muted">Missing projects.</p>
+		<p class="text-(length:--text-body) text-app-muted">Missing projects.</p>
 	)}
 </div>

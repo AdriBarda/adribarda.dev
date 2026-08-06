@@ -100,7 +100,7 @@ const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comforta
 							<li data-tool class="flex items-center gap-2.5">
 								<technology.Icon aria-hidden="true" class="size-7 shrink-0" />
 								<span class="min-w-0">
-									<span class="block text-[length:var(--text-body)] leading-tight font-medium text-[color:var(--stack-card-text)]">
+									<span class="block text-(length:--text-body) leading-tight font-medium text-(--stack-card-text)">
 										{technology.name}
 									</span>
 									<span class="mt-1 flex gap-1" role="img" aria-label={`${technology.level} with ${technology.name}`}>
@@ -109,8 +109,8 @@ const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comforta
 												class:list={[
 													'block h-0.5 w-3 rounded-full',
 													i < filled(technology.level)
-														? 'bg-[var(--stack-caramel)]'
-														: 'bg-[var(--stack-card-line)]'
+														? 'bg-(--stack-caramel)'
+														: 'bg-(--stack-card-line)'
 												]}
 											></span>
 										))}
