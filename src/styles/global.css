@@ -45,6 +45,7 @@
   --field-text-2: oklch(91% 0.02 172);
   --field-text: oklch(98% 0.012 170);
   --field-accent: oklch(84% 0.12 80);
+  --footer-bg: var(--field-bg);
 
   --tile-1: oklch(62% 0.13 248);
   --tile-2: oklch(66% 0.13 62);
@@ -58,39 +59,47 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
 
-  --app-bg: oklch(14% 0.019 276);
-  --app-paper-2: oklch(18% 0.024 276);
-  --app-surface: oklch(21% 0.026 276);
-  --app-border: oklch(31% 0.028 276);
-  --app-muted: oklch(72% 0.026 276);
-  --app-text-2: oklch(86% 0.018 276);
-  --app-text: oklch(97% 0.009 276);
+  --app-bg: oklch(14.5% 0.006 265);
+  --app-paper-2: oklch(18.5% 0.008 265);
+  --app-surface: oklch(22.5% 0.009 265);
+  --app-border: oklch(32% 0.01 265);
+  --app-muted: oklch(76% 0.012 265);
+  --app-text-2: oklch(88% 0.008 265);
+  --app-text: oklch(97% 0.004 265);
 
-  --accent-1: oklch(76% 0.12 248);
-  --accent-2: oklch(80% 0.09 200);
-  --accent-3: oklch(80% 0.09 168);
-  --accent-4: oklch(84% 0.12 72);
-  --accent-5: oklch(78% 0.12 32);
-  --accent-6: oklch(76% 0.12 12);
+  --accent-1: oklch(78% 0.11 248);
+  --accent-2: oklch(82% 0.09 205);
+  --accent-3: oklch(82% 0.09 168);
+  --accent-4: oklch(84% 0.11 75);
+  --accent-5: oklch(80% 0.12 32);
+  --accent-6: oklch(78% 0.12 12);
 
   --accent: var(--accent-1);
   --app-focus: var(--accent-2);
 
-  --field-bg: oklch(24% 0.042 178);
-  --field-surface: oklch(29% 0.04 178);
-  --field-border: oklch(40% 0.04 178);
-  --field-muted: oklch(79% 0.028 172);
-  --field-text-2: oklch(90% 0.02 172);
-  --field-text: oklch(98% 0.012 170);
-  --field-accent: oklch(84% 0.12 80);
+  --field-bg: oklch(10% 0.008 265);
+  --field-surface: oklch(14% 0.009 265);
+  --field-border: oklch(26% 0.011 265);
+  --field-muted: oklch(72% 0.012 265);
+  --field-text-2: oklch(88% 0.008 265);
+  --field-text: oklch(97% 0.004 265);
+  --field-accent: oklch(82% 0.09 205);
+  --footer-bg: oklch(21% 0.01 265);
 
-  --tile-mix: 20%;
-  --tile-1: oklch(70% 0.13 248);
-  --tile-2: oklch(74% 0.13 62);
-  --tile-3: oklch(72% 0.1 178);
-  --tile-4: oklch(70% 0.14 32);
-  --tile-5: oklch(70% 0.12 200);
-  --tile-6: oklch(70% 0.13 12);
+  --stack-white: oklch(19% 0.009 265);
+  --stack-cream: oklch(25% 0.012 265);
+  --stack-caramel: oklch(80% 0.1 175);
+  --stack-card-text: oklch(96% 0.004 265);
+  --stack-card-text-2: oklch(74% 0.01 265);
+  --stack-card-line: oklch(32% 0.01 265);
+
+  --tile-mix: 33%;
+  --tile-1: oklch(68% 0.16 248);
+  --tile-2: oklch(74% 0.15 75);
+  --tile-3: oklch(72% 0.12 178);
+  --tile-4: oklch(68% 0.17 32);
+  --tile-5: oklch(70% 0.13 205);
+  --tile-6: oklch(68% 0.16 12);
 }
 
 :root {
@@ -152,6 +161,7 @@
   --card-shadow: 10px;
 
   --card-shadow-flat: 4px;
+  --card-shadow-mix: 62%;
 
   --radius-md: 14px;
   --radius-lg: 30px;
@@ -249,7 +259,6 @@ select {
   position: relative;
   padding-block: var(--band-pad);
   padding-inline: var(--page-gutter);
-  background-color: var(--app-bg);
 }
 
 [data-band='paper'] {
@@ -258,7 +267,6 @@ select {
 
 [data-band='field'],
 .footer-card {
-  --app-bg: var(--field-bg);
   --app-paper-2: var(--field-surface);
   --app-surface: var(--field-surface);
   --app-border: var(--field-border);
@@ -269,6 +277,10 @@ select {
   --app-focus: var(--field-accent);
 
   color: var(--app-text);
+}
+
+[data-band='field'] {
+  --app-bg: var(--field-bg);
   background-color: var(--app-bg);
 }
 
@@ -374,6 +386,8 @@ select {
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 .bento-item {
+  position: relative;
+  z-index: 0;
   display: flex;
   grid-column: span 6;
 }
@@ -394,9 +408,8 @@ select {
   background: color-mix(in oklab, var(--card) var(--tile-mix, 16%), var(--app-bg));
   border: 1px solid color-mix(in oklab, var(--card) 24%, var(--app-border));
   color: var(--app-text);
-  /* Flat at rest, but declared as a zero-offset transparent shadow rather than
-     `none` so the hover interpolates offset and colour instead of popping. */
   box-shadow: 0 0 0 0 transparent;
+  will-change: transform;
   transition:
     transform var(--dur-mid) var(--ease-out),
     box-shadow var(--dur-mid) var(--ease-out),
@@ -428,15 +441,13 @@ select {
   }
 }
 
-.bento-card:hover,
+.bento-item:hover .bento-card,
 .bento-card:focus-within {
-  z-index: 1;
-
-  transform: translate3d(calc(-1 * var(--card-lift)), calc(-1 * var(--card-lift)), 0);
+  transform: translate(calc(-1 * var(--card-lift)), calc(-1 * var(--card-lift)));
   border-color: color-mix(in oklab, var(--card) 55%, var(--app-border));
   background: color-mix(in oklab, var(--card) calc(var(--tile-mix, 16%) + 8%), var(--app-bg));
   box-shadow: var(--card-shadow) var(--card-shadow) 0 0
-    color-mix(in oklab, var(--card) 62%, var(--app-bg));
+    color-mix(in oklab, var(--card) var(--card-shadow-mix), var(--app-bg));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -444,11 +455,11 @@ select {
     transition: none;
   }
 
-  .bento-card:hover,
+  .bento-item:hover .bento-card,
   .bento-card:focus-within {
     transform: none;
     box-shadow: var(--card-shadow-flat) var(--card-shadow-flat) 0 0
-      color-mix(in oklab, var(--card) 62%, var(--app-bg));
+      color-mix(in oklab, var(--card) var(--card-shadow-mix), var(--app-bg));
   }
 }
 
@@ -867,6 +878,7 @@ select {
   align-items: center;
   padding-block: var(--space-3xl);
   padding-inline: var(--page-gutter);
+  --app-bg: var(--footer-bg);
   background: var(--app-bg);
   border-start-start-radius: var(--radius-xl);
   border-start-end-radius: var(--radius-xl);
