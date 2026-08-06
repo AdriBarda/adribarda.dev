@@ -1,12 +1,18 @@
 ---
 import type { SectionGroup } from '../../content/sections'
+import { starsFor } from '../../content/stars'
 import SectionHead from './SectionHead.astro'
 import GithubIcon from '../../assets/tech-stack/github.svg'
 import StarIcon from '@phosphor-icons/core/assets/fill/star-fill.svg'
 
 const { group, index = 0 } = Astro.props as { group?: SectionGroup; index?: number }
 const entry = group?.entries.find((item) => item.data.section === 'open-source')
-const links = entry?.data.links ?? []
+const links = await Promise.all(
+	(entry?.data.links ?? []).map(async (link) => ({
+		...link,
+		stars: await starsFor(link.owner, link.repository, link.stars)
+	}))
+)
 
 const labelClass = 'text-[length:var(--text-label)] uppercase text-app-muted'
 const linkClass = 'text-[length:var(--text-sm)] font-medium text-app-text underline decoration-app-border underline-offset-4 transition-colors hover:decoration-app-text/70'

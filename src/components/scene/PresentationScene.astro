@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content'
 import type { SectionGroup } from '../../content/sections'
+import { starsFor } from '../../content/stars'
 import GithubIcon from '../../assets/tech-stack/github.svg'
 import StarIcon from '@phosphor-icons/core/assets/fill/star-fill.svg'
 import SmileIcon from 'lucide-static/icons/smile.svg'
@@ -12,9 +13,10 @@ const entry = group?.entries[0]
 const renderedEntry = entry ? await render(entry) : undefined
 
 const sections = await getCollection('sections')
-const contribution = sections
-	.find((item) => item.data.section === 'open-source')
-	?.data.links?.at(0)
+const link = sections.find((item) => item.data.section === 'open-source')?.data.links?.at(0)
+const contribution = link
+	? { ...link, stars: await starsFor(link.owner, link.repository, link.stars) }
+	: undefined
 
 const normalizeUrl = (url?: string) =>
 	!url ? '#' : url.startsWith('http') ? url : `https://${url}`
