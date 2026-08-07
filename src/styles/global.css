@@ -183,7 +183,8 @@
 
   --band-pad: clamp(2.5rem, 7vh, 7rem);
   --gap-section: clamp(1.75rem, 5vh, 4.5rem);
-  --gap-bento: clamp(0.75rem, 2vh, 1.5rem);
+  /* Floor clears the 8px a raised tile throws past its resting bounds, with room left. */
+  --gap-bento: clamp(1.25rem, 2vh, 1.75rem);
   --gap-card: clamp(0.5rem, 1.5vh, 1rem);
   --pad-card: clamp(1rem, 2.6vh, 2rem);
 
@@ -444,12 +445,15 @@ select {
 }
 
 .bento-card {
-  /* The risen slab, its inked edge, and the rim it sits in — declared here, not on
-     :root, because a custom property substitutes its var()s where it is declared and
-     --card only exists once you are on the tile. */
+  /* Slab face, its inked edge, the rim it sits in. Declared here because --card only
+     exists on the tile, and a custom property resolves where it is declared. */
   --card-shadow-color: color-mix(in oklab, var(--card) var(--card-shadow-mix), var(--app-bg));
   --card-shadow-line: color-mix(in oklab, black 62%, var(--card));
   --card-shadow-edge: color-mix(in oklab, var(--accent-4) 20%, var(--app-bg));
+  /* Depth of the hole the tile sits in; the offset carries the lift so it stays put. */
+  --card-sink: 5px;
+  --card-raise: 0px;
+  --card-rise: calc(var(--card-sink) + var(--card-raise));
 
   position: relative;
   display: flex;
@@ -461,7 +465,22 @@ select {
   background: color-mix(in oklab, var(--card) var(--tile-mix, 16%), var(--app-bg));
   border: 1px solid color-mix(in oklab, var(--card) 24%, var(--app-border));
   color: var(--app-text);
-  box-shadow: 0 0 0 0 transparent;
+  transform: translate(calc(-1 * var(--card-raise)), calc(-1 * var(--card-raise)));
+  /* Silhouette swept in 1px steps — one offset copy pinches where the corner arcs cross. */
+  box-shadow:
+    calc(var(--card-rise) * 0.1) calc(var(--card-rise) * 0.1) 0 0 var(--card-shadow-color),
+    calc(var(--card-rise) * 0.2) calc(var(--card-rise) * 0.2) 0 0 var(--card-shadow-color),
+    calc(var(--card-rise) * 0.3) calc(var(--card-rise) * 0.3) 0 0 var(--card-shadow-color),
+    calc(var(--card-rise) * 0.4) calc(var(--card-rise) * 0.4) 0 0 var(--card-shadow-color),
+    calc(var(--card-rise) * 0.5) calc(var(--card-rise) * 0.5) 0 0 var(--card-shadow-color),
+    calc(var(--card-rise) * 0.6) calc(var(--card-rise) * 0.6) 0 0 var(--card-shadow-color),
+    calc(var(--card-rise) * 0.7) calc(var(--card-rise) * 0.7) 0 0 var(--card-shadow-color),
+    calc(var(--card-rise) * 0.8) calc(var(--card-rise) * 0.8) 0 0 var(--card-shadow-color),
+    calc(var(--card-rise) * 0.9) calc(var(--card-rise) * 0.9) 0 0 var(--card-shadow-color),
+    var(--card-rise) var(--card-rise) 0 0 var(--card-shadow-color),
+    calc(var(--card-rise) + 1px) calc(var(--card-rise) + 1px) 0 0 var(--card-shadow-line),
+    calc(var(--card-rise) + 2px) calc(var(--card-rise) + 2px) 0 0 var(--card-shadow-edge),
+    calc(var(--card-rise) + 3px) calc(var(--card-rise) + 3px) 0 0 var(--card-shadow-edge);
   will-change: transform;
   transition:
     transform var(--dur-mid) var(--ease-out),
@@ -496,25 +515,11 @@ select {
 
 .bento-item:hover .bento-card,
 .bento-card:focus-within {
-  transform: translate(calc(-1 * var(--card-lift)), calc(-1 * var(--card-lift)));
+  /* Only the tile moves. The hole it came out of stays exactly where it was. */
+  --card-raise: var(--card-lift);
+
   border-color: color-mix(in oklab, var(--card) 55%, var(--app-border));
   background: color-mix(in oklab, var(--card) calc(var(--tile-mix, 16%) + 8%), var(--app-bg));
-  /* The card's silhouette swept along the offset in 1px steps — a single offset copy
-     would pinch to a beak where the corner arcs cross — then the line and the rim. */
-  box-shadow:
-    calc(var(--card-shadow) * 0.1) calc(var(--card-shadow) * 0.1) 0 0 var(--card-shadow-color),
-    calc(var(--card-shadow) * 0.2) calc(var(--card-shadow) * 0.2) 0 0 var(--card-shadow-color),
-    calc(var(--card-shadow) * 0.3) calc(var(--card-shadow) * 0.3) 0 0 var(--card-shadow-color),
-    calc(var(--card-shadow) * 0.4) calc(var(--card-shadow) * 0.4) 0 0 var(--card-shadow-color),
-    calc(var(--card-shadow) * 0.5) calc(var(--card-shadow) * 0.5) 0 0 var(--card-shadow-color),
-    calc(var(--card-shadow) * 0.6) calc(var(--card-shadow) * 0.6) 0 0 var(--card-shadow-color),
-    calc(var(--card-shadow) * 0.7) calc(var(--card-shadow) * 0.7) 0 0 var(--card-shadow-color),
-    calc(var(--card-shadow) * 0.8) calc(var(--card-shadow) * 0.8) 0 0 var(--card-shadow-color),
-    calc(var(--card-shadow) * 0.9) calc(var(--card-shadow) * 0.9) 0 0 var(--card-shadow-color),
-    var(--card-shadow) var(--card-shadow) 0 0 var(--card-shadow-color),
-    calc(var(--card-shadow) + 1px) calc(var(--card-shadow) + 1px) 0 0 var(--card-shadow-line),
-    calc(var(--card-shadow) + 2px) calc(var(--card-shadow) + 2px) 0 0 var(--card-shadow-edge),
-    calc(var(--card-shadow) + 3px) calc(var(--card-shadow) + 3px) 0 0 var(--card-shadow-edge);
 }
 
 /* A touch screen has no hover, so the card just sits risen, stacked straight down. */
@@ -540,9 +545,7 @@ select {
 
   .bento-item:hover .bento-card,
   .bento-card:focus-within {
-    transform: none;
-    box-shadow: var(--card-shadow-flat) var(--card-shadow-flat) 0 0
-      color-mix(in oklab, var(--card) var(--card-shadow-mix), var(--app-bg));
+    --card-raise: 0px;
   }
 }
 
