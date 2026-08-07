@@ -4,7 +4,7 @@ scene: 4
 cardSize: hero
 section: projects
 eyebrow: Projects
-title: Things I build on my own time.
+title: Things I build in my own time.
 summary: Products I design, build, and ship end to end, plus a few smaller things I keep in the open.
 projects:
   - name: Archie
