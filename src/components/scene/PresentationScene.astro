@@ -1,9 +1,7 @@
 ---
-import { getCollection, render } from 'astro:content'
+import { render } from 'astro:content'
 import type { SectionGroup } from '../../content/sections'
-import { starsFor } from '../../content/stars'
 import GithubIcon from '../../assets/tech-stack/github.svg'
-import StarIcon from '@phosphor-icons/core/assets/fill/star-fill.svg'
 import SmileIcon from 'lucide-static/icons/smile.svg'
 import HeartIcon from 'lucide-static/icons/heart.svg'
 import CodeIcon from 'lucide-static/icons/code-xml.svg'
@@ -11,12 +9,6 @@ import CodeIcon from 'lucide-static/icons/code-xml.svg'
 const { group } = Astro.props as { group?: SectionGroup; index?: number }
 const entry = group?.entries[0]
 const renderedEntry = entry ? await render(entry) : undefined
-
-const sections = await getCollection('sections')
-const link = sections.find((item) => item.data.section === 'open-source')?.data.links?.at(0)
-const contribution = link
-	? { ...link, stars: await starsFor(link.owner, link.repository, link.stars) }
-	: undefined
 
 const normalizeUrl = (url?: string) =>
 	!url ? '#' : url.startsWith('http') ? url : `https://${url}`
@@ -35,12 +27,10 @@ const ghostButton = [
 	'transition-[background-color,border-color] duration-200 ease-out',
 	'hover:border-[var(--band)] hover:text-[var(--band)] active:translate-y-px'
 ].join(' ')
-
-const labelClass = 'uppercase text-app-muted'
 ---
 
-<div class="flex w-full flex-col items-start text-left">
-	<div class="flex flex-wrap items-center gap-x-(--space-lg) gap-y-(--space-sm)">
+<div class="flex w-full flex-col items-center text-center">
+	<div class="flex flex-wrap items-center gap-x-(--space-lg) gap-y-(--space-sm) self-end text-right">
 		{status && (
 			<span class="inline-flex items-center gap-2.5 rounded-(--radius-pill) border border-app-border bg-app-surface px-4 py-2.5 shadow-[0_0_0_4px_color-mix(in_oklab,var(--band)_10%,transparent)]">
 				<span class="relative flex size-2.5 shrink-0 items-center justify-center">
@@ -97,7 +87,7 @@ const labelClass = 'uppercase text-app-muted'
 	</p>
 
 	{(github || linkedin) && (
-		<div class="mt-(--gap-hero-cta) flex flex-wrap gap-(--space-sm)">
+		<div class="mt-(--gap-hero-cta) flex flex-wrap justify-center gap-(--space-sm)">
 			{github && (
 				<a href={normalizeUrl(github.url)} target="_blank" rel="noopener noreferrer" class={ghostButton}>
 					<GithubIcon aria-hidden="true" class="size-4.5 shrink-0 fill-current" />
@@ -113,53 +103,8 @@ const labelClass = 'uppercase text-app-muted'
 		</div>
 	)}
 
-	<div
-		class="mt-(--gap-hero-strip) grid w-full gap-(--space-xl) text-left md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] md:gap-(--space-4xl)"
-	>
-		<div>
-			<p data-label class={labelClass}>Background</p>
-			<div class="mt-(--space-sm) max-w-[54ch] text-(length:--text-body) leading-[1.7] text-app-text-2 text-pretty [&_p+p]:mt-(--space-sm) [&_strong]:font-semibold [&_strong]:text-app-text">
-				{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing presentation body.</p>}
-			</div>
-		</div>
-
-		{contribution && (
-			<div class="max-w-[46ch]">
-				<p data-label class={labelClass}>Open source</p>
-
-				<a
-					href={contribution.repositoryUrl}
-					target="_blank"
-					rel="noopener noreferrer"
-					aria-label={`${contribution.repository} on GitHub, maintained by ${contribution.owner}`}
-					class="mt-(--space-sm) inline-flex items-center gap-2.5"
-				>
-					<GithubIcon aria-hidden="true" class="size-4.5 shrink-0 fill-current text-app-muted" />
-					<span class="text-(length:--text-body) font-semibold text-app-text">{contribution.repository}</span>
-					{contribution.stars && (
-						<span data-meta class="inline-flex items-center gap-1.5 text-app-muted">
-							<StarIcon aria-hidden="true" class="size-3 shrink-0 fill-current" />
-							{contribution.stars}
-						</span>
-					)}
-				</a>
-
-				<p class="mt-(--space-sm) text-(length:--text-body) leading-[1.7] text-app-text-2 text-pretty">
-					{contribution.contribution}
-				</p>
-
-				{contribution.pullRequestUrl && (
-					<a
-						href={contribution.pullRequestUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						class="mt-(--space-md) inline-block text-(length:--text-sm) font-medium text-app-text underline decoration-app-border underline-offset-4 transition-colors hover:decoration-app-text/70"
-					>
-						Read the pull request
-					</a>
-				)}
-			</div>
-		)}
+	<div class="mt-(--gap-hero-strip) mx-auto w-full max-w-[66rem] text-center text-(length:--text-body) leading-[1.7] text-app-text-2 text-pretty [&_p+p]:mt-(--space-sm) [&_strong]:font-semibold [&_strong]:text-app-text">
+		{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing presentation body.</p>}
 	</div>
 </div>
 
