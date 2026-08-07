@@ -444,6 +444,13 @@ select {
 }
 
 .bento-card {
+  /* The risen slab, its inked edge, and the rim it sits in — declared here, not on
+     :root, because a custom property substitutes its var()s where it is declared and
+     --card only exists once you are on the tile. */
+  --card-shadow-color: color-mix(in oklab, var(--card) var(--card-shadow-mix), var(--app-bg));
+  --card-shadow-line: color-mix(in oklab, black 62%, var(--card));
+  --card-shadow-edge: color-mix(in oklab, var(--accent-4) 20%, var(--app-bg));
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -492,8 +499,38 @@ select {
   transform: translate(calc(-1 * var(--card-lift)), calc(-1 * var(--card-lift)));
   border-color: color-mix(in oklab, var(--card) 55%, var(--app-border));
   background: color-mix(in oklab, var(--card) calc(var(--tile-mix, 16%) + 8%), var(--app-bg));
-  box-shadow: var(--card-shadow) var(--card-shadow) 0 0
-    color-mix(in oklab, var(--card) var(--card-shadow-mix), var(--app-bg));
+  /* The card's silhouette swept along the offset in 1px steps — a single offset copy
+     would pinch to a beak where the corner arcs cross — then the line and the rim. */
+  box-shadow:
+    calc(var(--card-shadow) * 0.1) calc(var(--card-shadow) * 0.1) 0 0 var(--card-shadow-color),
+    calc(var(--card-shadow) * 0.2) calc(var(--card-shadow) * 0.2) 0 0 var(--card-shadow-color),
+    calc(var(--card-shadow) * 0.3) calc(var(--card-shadow) * 0.3) 0 0 var(--card-shadow-color),
+    calc(var(--card-shadow) * 0.4) calc(var(--card-shadow) * 0.4) 0 0 var(--card-shadow-color),
+    calc(var(--card-shadow) * 0.5) calc(var(--card-shadow) * 0.5) 0 0 var(--card-shadow-color),
+    calc(var(--card-shadow) * 0.6) calc(var(--card-shadow) * 0.6) 0 0 var(--card-shadow-color),
+    calc(var(--card-shadow) * 0.7) calc(var(--card-shadow) * 0.7) 0 0 var(--card-shadow-color),
+    calc(var(--card-shadow) * 0.8) calc(var(--card-shadow) * 0.8) 0 0 var(--card-shadow-color),
+    calc(var(--card-shadow) * 0.9) calc(var(--card-shadow) * 0.9) 0 0 var(--card-shadow-color),
+    var(--card-shadow) var(--card-shadow) 0 0 var(--card-shadow-color),
+    calc(var(--card-shadow) + 1px) calc(var(--card-shadow) + 1px) 0 0 var(--card-shadow-line),
+    calc(var(--card-shadow) + 2px) calc(var(--card-shadow) + 2px) 0 0 var(--card-shadow-edge),
+    calc(var(--card-shadow) + 3px) calc(var(--card-shadow) + 3px) 0 0 var(--card-shadow-edge);
+}
+
+/* A touch screen has no hover, so the card just sits risen, stacked straight down. */
+@media (hover: none) {
+  .bento-card,
+  .bento-item:hover .bento-card,
+  .bento-card:focus-within {
+    transform: translateY(-4px);
+    border-color: color-mix(in oklab, var(--card) 55%, var(--app-border));
+    background: color-mix(in oklab, var(--card) calc(var(--tile-mix, 16%) + 8%), var(--app-bg));
+    box-shadow:
+      0 calc(var(--card-lift) * 1.5) 0 0 var(--card-shadow-color),
+      0 calc(var(--card-lift) * 1.5 + 1px) 0 0 var(--card-shadow-line),
+      0 calc(var(--card-lift) * 1.5 + 2px) 0 0 var(--card-shadow-edge),
+      0 calc(var(--card-lift) * 1.5 + 3px) 0 0 var(--card-shadow-edge);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

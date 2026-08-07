@@ -136,7 +136,10 @@ const MONO_ICONS = new Set(['Astro', 'Codex', 'Copilot', 'Express'])
 	const state = toggle?.querySelector('[data-gravity-state]')
 	const tools = [...(scene?.querySelectorAll<HTMLElement>('[data-tool]') ?? [])]
 
-	if (scene && toggle && state && tools.length > 0 && motionOK()) {
+	// A pointer field needs a pointer: on a touch screen there is nothing to follow.
+	const pointerOK = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
+	if (scene && toggle && state && tools.length > 0 && motionOK() && pointerOK) {
 		const field = createPointerField(scene, tools)
 
 		toggle.hidden = false
