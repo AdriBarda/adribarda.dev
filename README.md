@@ -1,125 +1,85 @@
-# Adri Portfolio
+# adribarda.dev
 
-Personal portfolio built with Astro, React islands, Tailwind CSS v4, and GSAP-driven scene interactions.
+Personal portfolio. A static single-page site built with Astro, styled with Tailwind CSS v4, and animated with GSAP.
 
 [![Astro](https://img.shields.io/badge/Astro-6.1.1-FF5D01?logo=astro&logoColor=white)](https://astro.build/)
-[![React](https://img.shields.io/badge/React-19.2.5-61DAFB?logo=react&logoColor=0A0A0A)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.2.2-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![GSAP](https://img.shields.io/badge/GSAP-3.14.2-88CE02?logo=greensock&logoColor=0A0A0A)](https://gsap.com/)
 [![Vite](https://img.shields.io/badge/Vite-7.3.2-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-10-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![Node](https://img.shields.io/badge/Node-%3E%3D22.12.0-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org/)
 
-## Overview
+The page is one Astro route composed of scene components. Copy lives in markdown
+collections rather than in the components, and the only client-side JavaScript is a
+handful of plain TypeScript modules for motion — there is no UI framework.
 
-This repo contains a static one-page portfolio with a scene-based layout, animated transitions, content-driven sections, and a small React control layer for client-side interactions.
+## Stack
 
-## Tech Stack
+| | |
+| --- | --- |
+| Astro 6 | Routing, components, static output |
+| Tailwind CSS v4 | Styling, via the `@tailwindcss/vite` plugin |
+| GSAP | Pointer field, confetti, scroll motion |
+| Zod | Schema for the content collections |
+| TypeScript | Strict, through `astro/tsconfigs/strict` |
 
-- Astro 6 for page structure and static output
-- React 19 for interactive islands and controllers
-- Tailwind CSS v4 for styling
-- GSAP for motion and viewport behavior
-- Zod-backed Astro content collections for section content
-- TypeScript with strict Astro config
-- pnpm for package management
+Fonts are self-hosted from `@fontsource-variable`, and `@vercel/analytics` is loaded
+from the layout.
 
-## Features
+## Getting started
 
-- Scene-based portfolio layout
-- Animated viewport and timeline interactions
-- Theme toggle with persisted preference
-- Content-driven sections powered by markdown entries
-- Static build output suitable for GitHub Pages and other static hosts
-
-## Getting Started
-
-### Requirements
-
-- Node `>=22.12.0`
-- pnpm
-
-### Install
+Requires Node `>=22.12.0` and pnpm 10.
 
 ```sh
 pnpm install
-```
-
-### Run Locally
-
-```sh
 pnpm dev
 ```
 
-### Production Build
+The dev server prints its URL, which includes the `/adribarda.dev` base path.
 
-```sh
-pnpm build
-```
+## Commands
 
-### Preview The Build
+| Command | Description |
+| --- | --- |
+| `pnpm dev` | Start the dev server |
+| `pnpm build` | Build to `dist/` |
+| `pnpm preview` | Serve the built output |
+| `pnpm astro -- --help` | Astro CLI help |
 
-```sh
-pnpm preview
-```
+There is no test or lint script; `pnpm build` is the check.
 
-## Available Commands
-
-| Command                | Description                          |
-| ---------------------- | ------------------------------------ |
-| `pnpm install`         | Install dependencies                 |
-| `pnpm dev`             | Start the Astro dev server           |
-| `pnpm build`           | Create a production build in `dist/` |
-| `pnpm preview`         | Preview the built site locally       |
-| `pnpm astro -- --help` | Show Astro CLI help                  |
-
-## Project Structure
+## Structure
 
 ```text
 .
-├── .github/
-├── public/
+├── public/                        Copied verbatim into the build
 ├── src/
-│   ├── assets/
-│   │   └── tech-stack/
+│   ├── assets/                    Images, plus tech-stack icons
 │   ├── components/
-│   │   ├── maze/
-│   │   ├── scene/
-│   │   ├── site/
-│   │   ├── theme/
-│   │   └── ui/
-│   ├── config/
+│   │   ├── scene/                 One component per section of the page
+│   │   └── site/                  Nav and footer
 │   ├── content/
-│   │   └── sections/
-│   ├── content.config.ts
-│   ├── hooks/
-│   ├── layouts/
-│   ├── maze/
-│   ├── pages/
-│   └── styles/
+│   │   ├── sections/              Markdown copy, one file per section
+│   │   ├── sections.ts            Loads and orders the entries
+│   │   └── stars.ts               GitHub star count, read at build time
+│   ├── content.config.ts          Zod schema for the section frontmatter
+│   ├── layouts/Layout.astro       Document shell, theme script
+│   ├── pages/index.astro          The only route
+│   ├── scripts/                   Client-side motion modules
+│   └── styles/global.css          Design tokens and all component styles
 ├── astro.config.mjs
-├── package.json
-├── pnpm-lock.yaml
 └── tsconfig.json
 ```
 
-## Content Model
+## Content
 
-Portfolio copy is stored in `src/content/sections/` and validated through `src/content.config.ts`.
+Section copy is markdown in `src/content/sections/`, validated by the Zod schema in
+`src/content.config.ts`. Frontmatter drives the order, scene number, and card size;
+the body is the prose.
 
-When changing content-driven UI, keep these in sync:
-
-- `src/content.config.ts`
-- the relevant markdown entry in `src/content/sections/`
-- the consuming component(s)
-
-## Verification
-
-Use the production build as the main verification step:
-
-```sh
-pnpm build
-```
+Changing a content-driven section means touching three places: the schema, the
+markdown entry, and the component that reads it.
 
 ## Author
 
