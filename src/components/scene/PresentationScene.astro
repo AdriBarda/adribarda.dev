@@ -30,12 +30,12 @@ const ghostButton = [
 ---
 
 <div class="flex w-full flex-col items-center text-center">
-	<div class="flex flex-wrap items-center gap-x-(--space-lg) gap-y-(--space-sm) self-end text-right">
+	<div class="flex flex-wrap items-center gap-x-(--space-md) gap-y-(--space-sm) justify-center self-center text-center [--text-label:0.6875rem] md:gap-x-(--space-lg) md:justify-start md:self-end md:text-right md:[--text-label:0.75rem]">
 		{status && (
-			<span class="inline-flex items-center gap-2.5 rounded-(--radius-pill) border border-app-border bg-app-surface px-4 py-2.5 shadow-[0_0_0_4px_color-mix(in_oklab,var(--band)_10%,transparent)]">
-				<span class="relative flex size-2.5 shrink-0 items-center justify-center">
+			<span class="inline-flex items-center gap-2 rounded-(--radius-pill) border border-app-border bg-app-surface px-3 py-2 shadow-[0_0_0_4px_color-mix(in_oklab,var(--band)_10%,transparent)] md:gap-2.5 md:px-4 md:py-2.5">
+				<span class="relative flex size-2 shrink-0 items-center justify-center md:size-2.5">
 					<span class="absolute inline-flex size-full rounded-full bg-emerald-400/70 animate-ping motion-reduce:hidden"></span>
-					<span class="relative inline-flex size-2 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
+					<span class="relative inline-flex size-1.5 rounded-full bg-emerald-500 md:size-2 dark:bg-emerald-400"></span>
 				</span>
 				<span data-label class="uppercase text-app-text">{status.value}</span>
 			</span>
