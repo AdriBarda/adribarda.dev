@@ -197,8 +197,7 @@
 
   --band-pad: clamp(2.5rem, 7vh, 7rem);
   --gap-section: clamp(1.75rem, 5vh, 4.5rem);
-  --card-edge: 8px;
-  --gap-bento: calc(var(--space-lg) + var(--card-edge));
+  --gap-bento: calc(var(--space-lg) + 0.25rem);
   --gap-card: clamp(0.5rem, 1.5vh, 1rem);
   --pad-card: clamp(1rem, 2.6vh, 2rem);
 
