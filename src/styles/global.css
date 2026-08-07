@@ -82,6 +82,13 @@
   --egg-shadow: oklch(20% 0.026 60);
   --egg-rise: 7px;
 
+  --diff-add: oklch(46% 0.12 150);
+  --diff-cut: oklch(50% 0.16 25);
+
+  --plate-shadow:
+    0 1px 2px 0 oklch(16% 0.025 60 / 0.07),
+    0 24px 48px -32px oklch(16% 0.025 60 / 0.42);
+
   --tile-1: oklch(62% 0.13 248);
   --tile-2: oklch(66% 0.13 62);
   --tile-3: oklch(62% 0.1 178);
@@ -135,6 +142,13 @@
   --stack-card-text: oklch(96% 0.004 265);
   --stack-card-text-2: oklch(74% 0.01 265);
   --stack-card-line: oklch(32% 0.01 265);
+
+  --diff-add: oklch(80% 0.13 150);
+  --diff-cut: oklch(78% 0.13 25);
+
+  --plate-shadow:
+    0 1px 2px 0 oklch(6% 0.006 265 / 0.5),
+    0 24px 48px -32px oklch(6% 0.006 265 / 0.85);
 
   --tile-mix: 33%;
   --tile-1: oklch(68% 0.16 248);
@@ -203,6 +217,7 @@
   --stack-card-text-2: oklch(40% 0.022 65);
   --stack-card-line: oklch(86% 0.018 78);
   --text-card-title: clamp(1.05rem, 0.95rem + 0.35vw, 1.3rem);
+  --text-figure: clamp(1.25rem, 0.85rem + 1.1vw, 1.85rem);
 
   --card-lift: 8px;
   --card-shadow: 10px;
@@ -841,6 +856,184 @@ select {
   .timeline-row:nth-child(odd) .timeline-entry {
     grid-column: 1;
     margin-left: auto;
+  }
+}
+
+/* ---- Contribution plate ------------------------------------------------ */
+.oss-list {
+  display: grid;
+  gap: var(--space-2xl);
+  width: min(100%, 68rem);
+  margin-inline: auto;
+}
+
+.oss-plate {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding: clamp(1.25rem, 3vh, 2.5rem);
+  border-radius: var(--radius-lg);
+  background: var(--app-surface);
+  box-shadow: var(--plate-shadow);
+}
+
+.oss-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm) var(--space-lg);
+}
+
+.oss-repo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-card-title);
+  font-weight: 600;
+  letter-spacing: var(--track-h3);
+  color: var(--app-text);
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 5px;
+  transition: text-decoration-color var(--dur-fast) var(--ease-out);
+}
+
+.oss-repo:hover {
+  text-decoration-color: color-mix(in oklab, var(--app-text) 45%, transparent);
+}
+
+.oss-figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  gap: var(--space-lg);
+  margin: 0;
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--band) 7%, var(--app-paper-2));
+}
+
+:root[data-theme='dark'] .oss-figures {
+  padding: 0;
+  background: none;
+}
+
+.oss-figure {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.oss-figure dd {
+  margin: 0;
+}
+
+.oss-value {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+  font-family: var(--font-mono);
+  font-size: var(--text-figure);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--app-text);
+}
+
+.oss-value[data-tone='add'] {
+  color: var(--diff-add);
+}
+
+.oss-value[data-tone='cut'] {
+  color: var(--diff-cut);
+}
+
+.oss-body {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.oss-foot {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.oss-cta {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-pill);
+  padding: 0.6rem 1.1rem;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--app-text);
+  background: transparent;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.oss-cta:hover {
+  border-color: color-mix(in oklab, var(--app-text) 45%, var(--app-border));
+  background: color-mix(in oklab, var(--band) 8%, transparent);
+}
+
+.oss-cta:active {
+  background: color-mix(in oklab, var(--band) 14%, transparent);
+}
+
+@media (min-width: 48rem) {
+  .oss-body {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-3xl);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .oss-plate {
+    gap: var(--space-lg);
+  }
+
+  .oss-figures {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-lg);
+    padding: var(--space-md);
+  }
+
+  .oss-figure {
+    flex-direction: row-reverse;
+    align-items: baseline;
+    gap: 0.45rem;
+  }
+
+  .oss-foot {
+    justify-content: center;
+  }
+
+  .oss-value {
+    font-size: var(--text-body);
+  }
+
+  .oss-lede {
+    font-size: var(--text-body);
+  }
+
+  .oss-body p:not([data-label]) {
+    font-size: var(--text-sm);
+    line-height: 1.65;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oss-repo,
+  .oss-cta {
+    transition: none;
   }
 }
 

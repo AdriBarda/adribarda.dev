@@ -7,77 +7,100 @@ import StarIcon from '@phosphor-icons/core/assets/fill/star-fill.svg'
 
 const { group, index = 0 } = Astro.props as { group?: SectionGroup; index?: number }
 const entry = group?.entries.find((item) => item.data.section === 'open-source')
+
+const figuresFor = (link: { additions?: number; deletions?: number; filesChanged?: number; merged?: string }) =>
+	[
+		link.additions !== undefined && { label: 'Added', value: `+${link.additions}`, tone: 'add' },
+		link.deletions !== undefined && { label: 'Removed', value: `−${link.deletions}`, tone: 'cut' },
+		link.filesChanged !== undefined && { label: link.filesChanged === 1 ? 'File' : 'Files', value: String(link.filesChanged) },
+		link.merged && { label: 'Merged', value: link.merged }
+	].filter(Boolean) as { label: string; value: string; tone?: string }[]
+
 const links = await Promise.all(
 	(entry?.data.links ?? []).map(async (link) => ({
 		...link,
-		stars: await starsFor(link.owner, link.repository, link.stars)
+		stars: await starsFor(link.owner, link.repository, link.stars),
+		figures: figuresFor(link)
 	}))
 )
 
-const labelClass = 'text-[length:var(--text-label)] uppercase text-app-muted'
-const linkClass = 'text-[length:var(--text-sm)] font-medium text-app-text underline decoration-app-border underline-offset-4 transition-colors hover:decoration-app-text/70'
+const labelClass = 'text-app-muted'
 ---
 
-<div class="flex w-full flex-col gap-(--space-3xl)">
+<div class="flex w-full flex-col gap-(--gap-section)">
 	<SectionHead title={entry?.data.title ?? 'Missing open-source title.'} lead={entry?.data.summary} />
 
-	
 	{links.length > 0 ? (
-		<div class="flex flex-col gap-(--space-4xl)">
+		<div class="oss-list">
 			{links.map((link) => (
-				<article
-					data-reveal
-					class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)"
-				>
-					<div class="flex flex-col gap-(--space-sm)">
+				<article data-reveal class="oss-plate">
+					<div class="oss-head">
 						<a
 							href={link.repositoryUrl}
 							target="_blank"
 							rel="noopener noreferrer"
-							aria-label={`${link.repository} on GitHub, maintained by ${link.owner}`}
-							class="inline-flex items-center gap-2.5"
+							aria-label={`${link.owner}/${link.repository} on GitHub`}
+							class="oss-repo"
 						>
-							<GithubIcon aria-hidden="true" class="size-4.5 shrink-0 fill-current text-app-muted" />
-							<span class="text-(length:--text-body) font-semibold text-app-text">{link.repository}</span>
+							<GithubIcon aria-hidden="true" class="size-5 shrink-0 fill-current text-app-muted" />
+							<span><span class="text-app-muted">{link.owner}/</span>{link.repository}</span>
 						</a>
 
-						<p data-meta class="flex flex-wrap items-center gap-x-3 gap-y-1 text-(length:--text-label) uppercase text-app-muted">
-							{link.stars && (
-								<span class="inline-flex items-center gap-1.5">
-									<StarIcon aria-hidden="true" class="size-3 shrink-0 fill-current" />
-									{link.stars}
-								</span>
-							)}
-							{link.language && <span>{link.language}</span>}
-							{link.license && <span>{link.license}</span>}
-						</p>
-
-						<p class="text-(length:--text-sm) leading-[1.55] text-app-muted">Maintained by {link.owner}</p>
+						{(link.language || link.license) && (
+							<p data-meta class="flex flex-wrap items-center gap-x-3 gap-y-1 text-app-muted">
+								{link.language && <span>{link.language}</span>}
+								{link.license && <span>{link.license}</span>}
+							</p>
+						)}
 					</div>
 
-					<div class="flex max-w-(--measure) flex-col gap-(--space-lg)">
-						<p class="text-(length:--text-lead) leading-normal text-app-text text-pretty">{link.project}</p>
+					<p class="oss-lede max-w-(--measure) text-(length:--text-lead) leading-normal text-app-text text-pretty">
+						{link.project}
+					</p>
 
+					{(link.stars || link.figures.length > 0) && (
+						<dl class="oss-figures">
+							{link.stars && (
+								<div class="oss-figure">
+									<dt data-label class={labelClass}>Stars</dt>
+									<dd data-figures class="oss-value">
+										<StarIcon aria-hidden="true" class="size-[0.7em] shrink-0 fill-current text-app-muted" />
+										{link.stars}
+									</dd>
+								</div>
+							)}
+
+							{link.figures.map((figure) => (
+								<div class="oss-figure">
+									<dt data-label class={labelClass}>{figure.label}</dt>
+									<dd data-figures class="oss-value" data-tone={figure.tone}>{figure.value}</dd>
+								</div>
+							))}
+						</dl>
+					)}
+
+					<div class="oss-body">
 						<div>
 							<p data-label class={labelClass}>What I added</p>
-							<p class="mt-2 text-(length:--text-body) leading-[1.72] text-app-muted text-pretty">{link.contribution}</p>
+							<p class="mt-2 text-(length:--text-body) leading-[1.72] text-app-text-2 text-pretty">
+								{link.contribution}
+							</p>
 						</div>
 
 						{link.reason && (
 							<div>
 								<p data-label class={labelClass}>Why</p>
-								<p class="mt-2 text-(length:--text-body) leading-[1.72] text-app-muted text-pretty">{link.reason}</p>
+								<p class="mt-2 text-(length:--text-body) leading-[1.72] text-app-text-2 text-pretty">
+									{link.reason}
+								</p>
 							</div>
 						)}
+					</div>
 
-						<div class="flex flex-wrap items-center gap-x-(--space-lg) gap-y-2">
-							<a href={link.pullRequestUrl} target="_blank" rel="noopener noreferrer" class={linkClass}>
-								Read the pull request
-							</a>
-							{link.meta.length > 0 && (
-								<p data-meta class="text-(length:--text-label) uppercase text-app-muted">{link.meta.join('  ·  ')}</p>
-							)}
-						</div>
+					<div class="oss-foot">
+						<a href={link.pullRequestUrl} target="_blank" rel="noopener noreferrer" class="oss-cta">
+							Read the pull request
+						</a>
 					</div>
 				</article>
 			))}
