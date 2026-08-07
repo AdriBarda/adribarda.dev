@@ -4,7 +4,7 @@ scene: 5
 cardSize: hero
 section: open-source
 eyebrow: Open source
-title: Open Source Contributions
+title: Open source contributions.
 summary: Features I have contributed to projects built and maintained by other people.
 links:
   - repository: ai-job-search
@@ -17,8 +17,8 @@ links:
     contribution: A /notion-sync command that pushes ranked jobs and applications to a Notion database.
     reason: Pipeline state lived only in local files, with no way to check the job search from anywhere else.
     pullRequestUrl: https://github.com/MadsLorentzen/ai-job-search/pull/169
-    meta:
-      - Merged Jul 2026
-      - +220 / −1
-      - 4 files changed
+    merged: Jul 2026
+    additions: 220
+    deletions: 1
+    filesChanged: 4
 ---

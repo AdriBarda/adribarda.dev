@@ -71,7 +71,10 @@ const sections = defineCollection({
           contribution: z.string(),
           reason: z.string().optional(),
           pullRequestUrl: z.string(),
-          meta: z.array(z.string()).default([])
+          merged: z.string().optional(),
+          additions: z.number().int().nonnegative().optional(),
+          deletions: z.number().int().nonnegative().optional(),
+          filesChanged: z.number().int().nonnegative().optional()
         })
       )
       .default([]),
