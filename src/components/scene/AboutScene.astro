@@ -7,67 +7,49 @@ const { group, index = 0 } = Astro.props as { group?: SectionGroup; index?: numb
 const entry = group?.entries[0]
 const renderedEntry = entry ? await render(entry) : undefined
 
-const languageGroups = (entry?.data.languages ?? []).reduce<Array<{ label: string; details: string[] }>>(
-	(groups, item) => {
-		const separatorIndex = item.indexOf(':')
-		const label = separatorIndex >= 0 ? item.slice(0, separatorIndex).trim() : item.trim()
-		const detail = separatorIndex >= 0 ? item.slice(separatorIndex + 1).trim() : ''
-		const previous = groups.at(-1)
-
-		if (previous?.label === label && detail) {
-			previous.details.push(detail)
-			return groups
-		}
-
-		groups.push({ label, details: detail ? [detail] : [] })
-
-		return groups
-	},
-	[]
-)
-
-const labelClass = 'text-[length:var(--text-label)] uppercase text-app-muted'
+const languages = entry?.data.languages ?? []
+const education = entry?.data.education
 ---
 
-<div class="flex w-full flex-col gap-(--space-3xl)">
-	<SectionHead title={'Outside work.'} lead={entry?.data.summary} />
+<div class="flex w-full flex-col gap-(--gap-section)">
+	<SectionHead title={entry?.data.title ?? 'Missing about title.'} lead={entry?.data.summary} />
 
-	
-	<div class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
-		<p data-label class={labelClass}>Off the clock</p>
-		<div
-			class="max-w-(--measure) text-(length:--text-body) leading-[1.78] text-app-muted text-pretty [&_p+p]:mt-(--space-md)"
-		>
-			{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing about body.</p>}
-		</div>
-	</div>
-
-	{languageGroups.length > 0 && (
-		<div class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
-			<p data-label class={labelClass}>Languages</p>
-			<ul class="flex flex-wrap gap-x-(--space-3xl) gap-y-(--space-lg)">
-				{languageGroups.map((languageGroup) => (
-					<li class="min-w-36">
-						<p class="text-(length:--text-body) font-medium text-app-text">{languageGroup.label}</p>
-						{languageGroup.details.map((detail) => (
-							<p class="mt-1 text-(length:--text-sm) leading-[1.6] text-app-muted">{detail}</p>
-						))}
-					</li>
-				))}
-			</ul>
-		</div>
-	)}
-
-	{entry?.data.education && (
-		<div class="grid gap-(--space-lg) md:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] md:gap-(--space-2xl)">
-			<p data-label class={labelClass}>Education</p>
-			<div class="max-w-(--measure)">
-				<p class="text-(length:--text-lead) leading-[1.3] font-medium text-app-text">
-					{entry.data.education.institution}
-				</p>
-				<p class="mt-2 text-(length:--text-body) leading-[1.7] text-app-muted text-pretty">{entry.data.education.program}</p>
-				<p data-meta class="mt-3 text-(length:--text-label) uppercase text-app-muted">{entry.data.education.period}</p>
+	<div class="about-bento">
+		<div data-reveal data-cell="statement" class="about-cell">
+			<p data-label class="text-app-muted">Off the clock</p>
+			<div class="about-statement">
+				{renderedEntry?.Content ? <renderedEntry.Content /> : <p>Missing about body.</p>}
 			</div>
 		</div>
-	)}
+
+		{languages.length > 0 && (
+			<div data-reveal data-cell="languages" class="about-cell">
+				<p data-label class="text-app-muted">Languages</p>
+				<ul class="about-langs">
+					{languages.map((item) => (
+						<li>
+							<p class="about-line">
+								<span class="text-(length:--text-body) font-medium text-app-text">{item.language}</span>
+								<span class="text-(length:--text-body) text-app-muted">{item.level}</span>
+							</p>
+							{item.note && (
+								<p class="mt-1 text-(length:--text-sm) leading-[1.6] text-app-muted text-pretty">{item.note}</p>
+							)}
+						</li>
+					))}
+				</ul>
+			</div>
+		)}
+
+		{education && (
+			<div data-reveal data-cell="education" class="about-cell">
+				<p data-label class="text-app-muted">Education</p>
+				<div>
+					<p class="text-(length:--text-body) font-medium text-app-text">{education.institution}</p>
+					<p class="mt-1.5 text-(length:--text-sm) leading-[1.65] text-app-muted text-pretty">{education.program}</p>
+					<p data-meta class="mt-2.5 text-app-muted">{education.period}</p>
+				</div>
+			</div>
+		)}
+	</div>
 </div>

@@ -218,6 +218,8 @@
   --stack-card-line: oklch(86% 0.018 78);
   --text-card-title: clamp(1.05rem, 0.95rem + 0.35vw, 1.3rem);
   --text-figure: clamp(1.25rem, 0.85rem + 1.1vw, 1.85rem);
+  --text-statement: clamp(1.1rem, 1rem + 0.5vw, 1.4rem);
+  --measure-statement: 50rem;
 
   --card-lift: 8px;
   --card-shadow: 10px;
@@ -1034,6 +1036,69 @@ select {
   .oss-repo,
   .oss-cta {
     transition: none;
+  }
+}
+
+/* ---- About -------------------------------------------------------------- */
+
+[data-band][data-section='about-me'] {
+  min-height: auto;
+}
+
+.about-bento {
+  display: grid;
+  gap: var(--gap-bento);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  width: min(100%, 84rem);
+  margin-inline: auto;
+}
+
+.about-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  grid-column: span 12;
+  min-width: 0;
+  padding: var(--pad-card);
+  border: 2px solid var(--app-border);
+  border-radius: var(--radius-lg);
+}
+
+.about-statement {
+  font-size: var(--text-statement);
+  line-height: 1.62;
+  color: var(--app-text);
+  text-wrap: pretty;
+}
+
+.about-statement p + p {
+  margin-top: var(--space-lg);
+}
+
+.about-langs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.about-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem var(--space-md);
+}
+
+@media (min-width: 48rem) {
+  .about-cell[data-cell='statement'] {
+    grid-column: span 6;
+  }
+
+  .about-cell[data-cell='languages'],
+  .about-cell[data-cell='education'] {
+    grid-column: span 3;
   }
 }
 
