@@ -1040,7 +1040,7 @@ select {
 
 .about-bento {
   display: grid;
-  gap: var(--gap-bento);
+  gap: var(--space-lg);
   grid-template-columns: repeat(12, minmax(0, 1fr));
   width: min(100%, 84rem);
   margin-inline: auto;
