@@ -64,25 +64,10 @@ type Piece = {
   removeAfter: number
 }
 
-/**
- * Draws an SVG once into a canvas, and hands back that canvas to blit from.
- *
- * Two things are going on. The icons ship a viewBox and nothing else, and an
- * `<img>` whose SVG has no intrinsic size renders at the UA default or not at
- * all — hence the stamped width/height, and the aspect kept so the draw doesn't
- * square them off. Then the raster: drawing an SVG-backed `<img>` re-rasterises
- * whenever the destination size changes, and every piece draws at its own random
- * size, so it would miss that cache on nearly every draw. A canvas source is a
- * plain bitmap.
- */
 function rasterise(source: string): Sprite {
-  const svg = new DOMParser().parseFromString(source, 'image/svg+xml')
-    .documentElement as unknown as SVGElement
-  svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
-  // Some icons use <use xlink:href>, invalid standalone without this.
-  svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-
+  const svg = new DOMParser().parseFromString(source, 'text/html').querySelector('svg')!
   const [, , width = 24, height = 24] = (svg.getAttribute('viewBox') ?? '0 0 24 24')
+    .trim()
     .split(/[\s,]+/)
     .map(Number)
 
@@ -96,14 +81,13 @@ function rasterise(source: string): Sprite {
 
   const sprite: Sprite = { sheet, aspect, ready: false }
   const image = new Image()
-  image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg.outerHTML)}`
-  image
-    .decode()
-    .then(() => {
-      sheet.getContext('2d')?.drawImage(image, 0, 0, sheet.width, sheet.height)
-      sprite.ready = true
-    })
-    .catch(() => {})
+  image.onload = () => {
+    sheet.getContext('2d')?.drawImage(image, 0, 0, sheet.width, sheet.height)
+    sprite.ready = true
+  }
+  image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+    new XMLSerializer().serializeToString(svg)
+  )}`
 
   return sprite
 }
