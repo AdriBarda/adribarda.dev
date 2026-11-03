@@ -13,6 +13,10 @@ export type PointerFieldOptions = {
   drift?: number
   /** Seconds a node takes to settle back when the field is stopped. */
   settle?: number
+  /** Max random offset from rest while running, in px (re-rolled on each start). */
+  scatter?: number
+  /** Max random tilt while running, in degrees. */
+  tilt?: number
 }
 
 export type PointerField = {
@@ -27,7 +31,9 @@ const DEFAULTS = {
   easing: 0.03,
   pointerEasing: 0.12,
   drift: 8,
-  settle: 0.7
+  settle: 0.7,
+  scatter: 0,
+  tilt: 0
 } satisfies Required<PointerFieldOptions>
 
 /** Far enough outside any radius that no node is influenced. */
@@ -40,6 +46,7 @@ const MAX_FRAME_MS = 100
 type Node = {
   setX: (value: number) => void
   setY: (value: number) => void
+  setRotation: (value: number) => void
   /** Rest centre, in container coordinates. */
   restX: number
   restY: number
@@ -50,6 +57,11 @@ type Node = {
   phase: number
   amplitude: number
   rate: number
+  /** Where the node loosely sits while the field runs, so the grid breaks up. */
+  scatterX: number
+  scatterY: number
+  tilt: number
+  rotation: number
 }
 
 /**
@@ -101,19 +113,38 @@ export function createPointerField(
   elements: HTMLElement[],
   options: PointerFieldOptions = {}
 ): PointerField {
-  const { radius, pull, easing, pointerEasing, drift, settle } = { ...DEFAULTS, ...options }
+  const { radius, pull, easing, pointerEasing, drift, settle, scatter, tilt } = {
+    ...DEFAULTS,
+    ...options
+  }
+
+  const spread = (max: number) => (Math.random() * 2 - 1) * max
 
   const nodes: Node[] = elements.map((el) => ({
     setX: gsap.quickSetter(el, 'x', 'px') as (value: number) => void,
     setY: gsap.quickSetter(el, 'y', 'px') as (value: number) => void,
+    setRotation: gsap.quickSetter(el, 'rotation', 'deg') as (value: number) => void,
     restX: 0,
     restY: 0,
     x: 0,
     y: 0,
     phase: Math.random() * Math.PI * 2,
     amplitude: drift * (0.4 + Math.random() * 0.6),
-    rate: 0.12 + Math.random() * 0.12
+    rate: 0.12 + Math.random() * 0.12,
+    scatterX: 0,
+    scatterY: 0,
+    tilt: 0,
+    rotation: 0
   }))
+
+  /** Rolls a fresh loose layout, so each time the field starts it lands differently. */
+  function scatterNodes() {
+    nodes.forEach((node) => {
+      node.scatterX = spread(scatter)
+      node.scatterY = spread(scatter * 0.6)
+      node.tilt = spread(tilt)
+    })
+  }
 
   // Raw cursor, and the smoothed cursor the field actually reads.
   let pointerX = AWAY
@@ -175,12 +206,14 @@ export function createPointerField(
       const wander = wanderOf(node, seconds)
       const attraction = attractionOf(node, pointer.x, pointer.y, radius, pull)
 
-      node.x += (wander.x + attraction.x - node.x) * ease
-      node.y += (wander.y + attraction.y - node.y) * ease
+      node.x += (node.scatterX + wander.x + attraction.x - node.x) * ease
+      node.y += (node.scatterY + wander.y + attraction.y - node.y) * ease
+      node.rotation += (node.tilt - node.rotation) * ease
       // Rounded to 1/100px: identical on screen, but it keeps the setter from
       // writing a fresh string every frame once a node has settled.
       node.setX(Math.round(node.x * 100) / 100)
       node.setY(Math.round(node.y * 100) / 100)
+      node.setRotation(Math.round(node.rotation * 100) / 100)
     })
   }
 
@@ -203,6 +236,7 @@ export function createPointerField(
 
     gsap.killTweensOf(nodes)
     measure()
+    scatterNodes()
     easedX = AWAY
     easedY = AWAY
     running = true
@@ -229,11 +263,13 @@ export function createPointerField(
       gsap.to(node, {
         x: 0,
         y: 0,
+        rotation: 0,
         duration: settle,
         ease: 'power3.out',
         onUpdate: () => {
           node.setX(node.x)
           node.setY(node.y)
+          node.setRotation(node.rotation)
         }
       })
     })
