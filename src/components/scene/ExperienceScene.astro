@@ -79,22 +79,25 @@ const rows = timeline.map((item, position) => ({
 		<p class="text-(length:--text-body) text-app-muted">Missing experience timeline.</p>
 	)}
 
-	<div class="flex flex-col">
+	<section
+		aria-label="Impact"
+		class="flex w-full flex-col pt-(--gap-section)"
+	>
 		<p data-label class="text-app-muted">Impact</p>
 
-		<p class="mt-(--space-md) max-w-(--measure) text-(length:--text-lead) leading-[1.4] font-medium text-app-text text-pretty">
+		<p class="mt-(--space-md) max-w-[38rem] text-(length:--text-h3) leading-[1.2] font-semibold text-app-text text-balance">
 			{impact?.data.title ?? 'Missing impact title.'}
 		</p>
 
 		{impact?.data.highlights?.length ? (
-			<ul class="mt-(--space-xl) grid gap-(--space-md) md:grid-cols-2 md:gap-x-(--space-2xl)">
-				{impact.data.highlights.map((highlight) => (
-					<li class="grid grid-cols-[auto_1fr] gap-3">
-						<span class="mt-[0.72rem] h-px w-3 shrink-0 bg-(--band)"></span>
+			<ol class="mt-(--space-xl) grid gap-(--space-xl) md:mt-(--space-2xl) md:grid-cols-3 md:gap-x-(--space-2xl)">
+				{impact.data.highlights.map((highlight, index) => (
+					<li class="flex flex-col gap-(--space-sm)">
+						<span data-label class="text-(--band)">{String(index + 1).padStart(2, '0')}</span>
 						<p class="text-(length:--text-body) leading-[1.72] text-app-muted text-pretty">{highlight}</p>
 					</li>
 				))}
-			</ul>
+			</ol>
 		) : null}
-	</div>
+	</section>
 </div>
