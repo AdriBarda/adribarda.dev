@@ -1109,6 +1109,7 @@ select {
 
 .hero-role-anim .hero-word {
   display: inline-flex;
+  vertical-align: top;
 }
 
 .hero-role-anim .hero-space {
@@ -1119,66 +1120,236 @@ select {
   overflow: hidden;
 }
 
-.hero-role-anim :is(.n, .cap-e) .clip > span,
+.hero-role-anim :is(.t, .cap-e) .clip > span,
 .hero-role-anim .i {
   perspective: 750px;
   transform-style: preserve-3d;
 }
 
-.hero-role-anim :is(.n, .cap-e) .clip > span > span {
+.hero-role-anim :is(.t, .cap-e) .clip > span > span {
   backface-visibility: hidden;
 }
 
-.hero-role-anim :is(.n, .cap-e) .clip > span > span:last-child {
+/* Swap glyphs (#, 3) are wider than their letter: clip only vertically. */
+.hero-role-anim :is(.t, .cap-e) .clip {
+  clip-path: inset(0 -0.5em);
+  overflow: visible;
+}
+
+.hero-role-anim :is(.t, .cap-e) .clip > span > span:last-child {
   bottom: 0;
-  left: 0;
+  left: 50%;
+  margin-left: -0.5em;
   position: absolute;
+  text-align: center;
   visibility: hidden;
-}
-
-.hero-role-anim .hero-tend {
-  display: inline-flex;
-  position: relative;
-}
-
-.hero-role-anim .hero-icons {
-  inset: 0;
-  overflow: hidden;
-  position: absolute;
-  visibility: hidden;
+  width: 1em;
 }
 
 .hero-role-anim .hero-icon {
-  height: 0.7em;
+  height: 0.62em;
   left: 50%;
-  margin: -0.35em 0 0 -0.35em;
+  margin: -0.31em 0 0 -0.31em;
   position: absolute;
-  top: 53%;
-  width: 0.7em;
+  top: 55%;
+  visibility: hidden;
+  width: 0.62em;
 }
 
-.hero-role-anim .hero-icon:nth-child(1) {
+.hero-role-anim .hero-icon-smile {
   color: oklch(76% 0.175 90);
 }
 
-.hero-role-anim .hero-icon:nth-child(2) {
+.hero-role-anim .hero-icon-heart {
   color: oklch(55% 0.23 27);
 }
 
-.hero-role-anim .hero-icon:nth-child(3) {
+.hero-role-anim .hero-icon-code {
   color: oklch(58% 0.19 150);
 }
 
-:root[data-theme='dark'] .hero-role-anim .hero-icon:nth-child(1) {
+:root[data-theme='dark'] .hero-role-anim .hero-icon-smile {
   color: oklch(87% 0.175 95);
 }
 
-:root[data-theme='dark'] .hero-role-anim .hero-icon:nth-child(2) {
+:root[data-theme='dark'] .hero-role-anim .hero-icon-heart {
   color: oklch(66% 0.225 27);
 }
 
-:root[data-theme='dark'] .hero-role-anim .hero-icon:nth-child(3) {
+:root[data-theme='dark'] .hero-role-anim .hero-icon-code {
   color: oklch(78% 0.19 152);
+}
+
+.hero-role-anim .hero-deco {
+  position: absolute;
+  visibility: hidden;
+}
+
+.hero-role-anim .hero-deco svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+  stroke-width: 2.25;
+}
+
+.hero-role-anim .hero-deco-component {
+  color: oklch(60% 0.2 290);
+  height: 0.5em;
+  left: -0.5em;
+  top: -0.08em;
+  width: 0.5em;
+}
+
+.hero-role-anim .hero-deco-merge {
+  bottom: -0.1em;
+  color: oklch(55% 0.23 27);
+  height: 0.24em;
+  left: 50%;
+  width: 0.24em;
+}
+
+.hero-role-anim .hero-deco-json {
+  color: oklch(76% 0.175 90);
+  height: 0.2em;
+  right: -0.16em;
+  top: -0.04em;
+  width: 0.2em;
+}
+
+.hero-role-anim .hero-deco-device {
+  color: oklch(58% 0.19 150);
+  height: 0.4em;
+  right: 18%;
+  top: -0.22em;
+  width: 0.4em;
+}
+
+.hero-role-anim .hero-deco-flask {
+  bottom: 0.04em;
+  color: oklch(60% 0.2 290);
+  height: 0.3em;
+  right: -0.4em;
+  width: 0.3em;
+}
+
+.hero-role-anim .hero-deco-database {
+  color: oklch(58% 0.19 150);
+}
+
+.hero-role-anim .hero-deco-webhook {
+  color: oklch(76% 0.175 90);
+}
+
+.hero-role-anim .hero-deco-gauge {
+  color: oklch(55% 0.23 27);
+}
+
+/* Phones keep five small icons hugging the title; desktop spreads eight. */
+@media (max-width: 47.99rem) {
+  .hero-role-anim :is(.hero-deco-database, .hero-deco-webhook, .hero-deco-gauge) {
+    display: none;
+  }
+}
+
+@media (min-width: 48rem) {
+  .hero-role-anim .hero-deco-component {
+    height: 0.72em;
+    left: -1.15em;
+    top: -0.42em;
+    width: 0.72em;
+  }
+
+  .hero-role-anim .hero-deco-database {
+    bottom: -0.62em;
+    height: 0.46em;
+    left: -0.8em;
+    width: 0.46em;
+  }
+
+  .hero-role-anim .hero-deco-json {
+    height: 0.34em;
+    left: 30%;
+    right: auto;
+    top: -0.5em;
+    width: 0.34em;
+  }
+
+  .hero-role-anim .hero-deco-merge {
+    bottom: -0.7em;
+    height: 0.4em;
+    left: 14%;
+    width: 0.4em;
+  }
+
+  .hero-role-anim .hero-deco-device {
+    height: 0.6em;
+    right: -1.05em;
+    top: -0.38em;
+    width: 0.6em;
+  }
+
+  .hero-role-anim .hero-deco-webhook {
+    height: 0.4em;
+    left: 24%;
+    top: -0.5em;
+    width: 0.4em;
+  }
+
+  .hero-role-anim .hero-deco-flask {
+    bottom: -0.56em;
+    height: 0.48em;
+    right: -0.72em;
+    width: 0.48em;
+  }
+
+  .hero-role-anim .hero-deco-gauge {
+    bottom: -0.8em;
+    height: 0.42em;
+    right: 12%;
+    width: 0.42em;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .hero-role-anim .hero-deco-component {
+    left: -0.4em;
+  }
+
+  .hero-role-anim .hero-deco-flask {
+    right: -0.32em;
+  }
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-database {
+  color: oklch(78% 0.19 152);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-webhook {
+  color: oklch(87% 0.175 95);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-gauge {
+  color: oklch(66% 0.225 27);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-component {
+  color: oklch(74% 0.17 290);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-merge {
+  color: oklch(66% 0.225 27);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-json {
+  color: oklch(87% 0.175 95);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-device {
+  color: oklch(78% 0.19 152);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-flask {
+  color: oklch(74% 0.17 290);
 }
 
 .hero-role-anim .hero-icon svg {

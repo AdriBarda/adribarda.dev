@@ -3,10 +3,10 @@ order: 1
 scene: 1
 cardSize: hero
 section: presentation
-role: Frontend Engineer
+role: Software Engineer
 title: Hi, I'm Adri.
 meta: [Barcelona, Spain]
-summary: Building scalable products with TypeScript, Vue, React, and modern frontend technologies.
+summary: 4+ years of experience building web applications, with a strong frontend background and experience across the stack.
 profileLabel: Profile
 details:
   - label: Status
@@ -22,6 +22,6 @@ socials:
     url: linkedin.com/in/adriabardajicros/
 ---
 
-I build production-ready frontend applications with a strong focus on architecture, scalability, and maintainability.
+I’m a Software Engineer with a **strong frontend background**, focused on architecture, maintainability, and understanding **how the whole system fits together**.
 
-Over the past five years, I’ve built SaaS applications with **TypeScript**, **Vue**, **React**, **Vite**, **Tailwind CSS**, and **Playwright**. Most recently at **Logbook AG**, I owned key parts of the frontend, from state management and API integration to TypeScript contracts, reusable components, and automated testing.
+Over the past four years, I’ve built SaaS applications with **TypeScript**, **Vue**, and **React**. Most recently at **Logbook AG**, I **proposed a frontend rebuild**, agreed on its need with the team, and **took ownership of its implementation** alongside developing new product features. My work spanned technical design, API integration, implementation, and automated testing. In my own projects, I also work across **backend and data**, building products end to end.
