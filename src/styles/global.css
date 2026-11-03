@@ -522,6 +522,10 @@ select {
   .bento-item:nth-child(4) {
     grid-column: span 5;
   }
+  /* Smaller public repos after the four featured products share one row. */
+  .bento-item:nth-child(n + 5) {
+    grid-column: span 4;
+  }
 }
 
 .bento-item:hover .bento-card,
