@@ -877,6 +877,27 @@ select {
   box-shadow: var(--plate-shadow);
 }
 
+.oss-skeleton {
+  display: inline-block;
+  width: 2.4em;
+  height: 0.62em;
+  border-radius: var(--radius-pill);
+  background: color-mix(in oklab, var(--app-text) 14%, transparent);
+  animation: oss-skeleton-pulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes oss-skeleton-pulse {
+  to {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oss-skeleton {
+    animation: none;
+  }
+}
+
 .oss-head {
   display: flex;
   flex-wrap: wrap;
