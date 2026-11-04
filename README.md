@@ -36,8 +36,6 @@ pnpm install
 pnpm dev
 ```
 
-The dev server prints its URL, which includes the `/adribarda.dev` base path.
-
 ## Commands
 
 | Command | Description |
@@ -45,9 +43,16 @@ The dev server prints its URL, which includes the `/adribarda.dev` base path.
 | `pnpm dev` | Start the dev server |
 | `pnpm build` | Build to `dist/` |
 | `pnpm preview` | Serve the built output |
+| `pnpm check` | Type-check `.astro` and `.ts` files |
+| `pnpm test` | Run the Vitest suite once |
+| `pnpm test:watch` | Run Vitest in watch mode |
 | `pnpm astro -- --help` | Astro CLI help |
 
-There is no test or lint script; `pnpm build` is the check.
+## Deployment
+
+Production is Vercel, deployed only by `.github/workflows/deploy.yml` after the CI
+checks pass. `vercel.json` turns off Vercel's own deploys from `main`; other branches
+still get preview deployments.
 
 ## Structure
 
