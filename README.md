@@ -2,13 +2,13 @@
 
 Personal portfolio. A static single-page site built with Astro, styled with Tailwind CSS v4, and animated with GSAP.
 
-[![Astro](https://img.shields.io/badge/Astro-6.1.1-FF5D01?logo=astro&logoColor=white)](https://astro.build/)
+[![Astro](https://img.shields.io/badge/Astro-7.4.5-FF5D01?logo=astro&logoColor=white)](https://astro.build/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.2.2-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![GSAP](https://img.shields.io/badge/GSAP-3.14.2-88CE02?logo=greensock&logoColor=0A0A0A)](https://gsap.com/)
-[![Vite](https://img.shields.io/badge/Vite-7.3.2-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8.3.5-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-10-F69220?logo=pnpm&logoColor=white)](https://pnpm.io/)
-[![Node](https://img.shields.io/badge/Node-%3E%3D22.12.0-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Node](https://img.shields.io/badge/Node-%3E%3D22.23.4-5FA04E?logo=node.js&logoColor=white)](https://nodejs.org/)
 
 The page is one Astro route composed of scene components. Copy lives in markdown
 collections rather than in the components, and the only client-side JavaScript is a
@@ -18,7 +18,7 @@ handful of plain TypeScript modules for motion — there is no UI framework.
 
 | | |
 | --- | --- |
-| Astro 6 | Routing, components, static output |
+| Astro 7 | Routing, components, static output |
 | Tailwind CSS v4 | Styling, via the `@tailwindcss/vite` plugin |
 | GSAP | Pointer field, confetti, scroll motion |
 | Zod | Schema for the content collections |
@@ -29,7 +29,7 @@ from the layout.
 
 ## Getting started
 
-Requires Node `>=22.12.0` and pnpm 10.
+Requires Node `>=22.23.4` and pnpm 10.
 
 ```sh
 pnpm install
