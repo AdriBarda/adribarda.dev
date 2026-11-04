@@ -89,6 +89,8 @@
   --diff-add: oklch(46% 0.12 150);
   --diff-cut: oklch(50% 0.16 25);
 
+  /* Same in both themes: Material keeps shadows unchanged in dark theme and
+     adds height there with a surface overlay instead (see --plate-overlay). */
   --plate-shadow:
     0 1px 2px 0 oklch(16% 0.025 60 / 0.07),
     0 24px 48px -32px oklch(16% 0.025 60 / 0.42);
@@ -154,9 +156,11 @@
   --diff-add: oklch(80% 0.13 150);
   --diff-cut: oklch(78% 0.13 25);
 
-  --plate-shadow:
-    0 1px 2px 0 oklch(6% 0.006 265 / 0.5),
-    0 24px 48px -32px oklch(6% 0.006 265 / 0.85);
+  /* Material dark-theme elevation (m2.material.io/design/color/dark-theme):
+     the shadow is shared with light theme (--plate-shadow in :root); height is
+     added by lightening the surface with a white overlay, which also gives the
+     shadow contrast to read against. */
+  --plate-overlay: oklch(100% 0 0 / 0.08);
 
   --tile-mix: 33%;
   --tile-1: oklch(68% 0.16 248);
@@ -885,6 +889,12 @@ select {
   border-radius: var(--radius-lg);
   background: var(--app-surface);
   box-shadow: var(--plate-shadow);
+}
+
+:root[data-theme='dark'] .oss-plate {
+  background:
+    linear-gradient(var(--plate-overlay), var(--plate-overlay)),
+    var(--app-paper-2);
 }
 
 .oss-skeleton {
