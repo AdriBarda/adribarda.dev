@@ -5,7 +5,7 @@ cardSize: hero
 section: about-me
 eyebrow: About me
 title: Outside work.
-summary: A few details beyond day-to-day frontend work.
+summary: A few details beyond software engineering.
 languages:
   - language: Spanish
     level: Native

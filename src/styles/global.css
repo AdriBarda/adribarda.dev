@@ -80,11 +80,17 @@
   --egg-red-deep: oklch(36% 0.15 27);
   --egg-label: oklch(97% 0.008 80);
   --egg-shadow: oklch(20% 0.026 60);
+  /* Hand-inked hatching tile: diagonal strokes, each slightly bowed
+     so it reads as pen work, not a CSS stripe. */
+  --egg-hatch-ink: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><g fill='none' stroke='%231e1a16' stroke-width='0.6' stroke-linecap='round'><path d='M-24 24Q-11.65 12.35 0 0'/><path d='M0 24Q12.35 12.35 24 0'/><path d='M24 24Q36.35 12.35 48 0'/><path d='M-17.8 24Q-6.1 11.7 6.2 0'/><path d='M6.2 24Q17.9 11.7 30.2 0'/><path d='M30.2 24Q41.9 11.7 54.2 0'/><path d='M-12.2 24Q0.1 12.3 11.8 0'/><path d='M11.8 24Q24.1 12.3 35.8 0'/><path d='M35.8 24Q48.1 12.3 59.8 0'/><path d='M-5.9 24Q5.75 11.65 18.1 0'/><path d='M18.1 24Q29.75 11.65 42.1 0'/><path d='M42.1 24Q53.75 11.65 66.1 0'/></g></svg>");
   --egg-rise: 7px;
+  --egg-hazard: oklch(84% 0.165 88);
 
   --diff-add: oklch(46% 0.12 150);
   --diff-cut: oklch(50% 0.16 25);
 
+  /* Same in both themes: Material keeps shadows unchanged in dark theme and
+     adds height there with a surface overlay instead (see --plate-overlay). */
   --plate-shadow:
     0 1px 2px 0 oklch(16% 0.025 60 / 0.07),
     0 24px 48px -32px oklch(16% 0.025 60 / 0.42);
@@ -134,7 +140,11 @@
   --egg-red-deep: oklch(38% 0.15 27);
   --egg-label: oklch(97% 0.008 80);
   --egg-shadow: oklch(96% 0.012 80);
+  /* Same hatching in pure white for dark theme. Crisp edges keep a hairline
+     on whole device pixels, so it stays white instead of smearing to grey. */
+  --egg-hatch-ink: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><g fill='none' stroke='%23ffffff' stroke-width='0.5' shape-rendering='crispEdges' stroke-linecap='round'><path d='M-24 24Q-11.65 12.35 0 0'/><path d='M0 24Q12.35 12.35 24 0'/><path d='M24 24Q36.35 12.35 48 0'/><path d='M-17.8 24Q-6.1 11.7 6.2 0'/><path d='M6.2 24Q17.9 11.7 30.2 0'/><path d='M30.2 24Q41.9 11.7 54.2 0'/><path d='M-12.2 24Q0.1 12.3 11.8 0'/><path d='M11.8 24Q24.1 12.3 35.8 0'/><path d='M35.8 24Q48.1 12.3 59.8 0'/><path d='M-5.9 24Q5.75 11.65 18.1 0'/><path d='M18.1 24Q29.75 11.65 42.1 0'/><path d='M42.1 24Q53.75 11.65 66.1 0'/></g></svg>");
   --egg-rise: 7px;
+  --egg-hazard: oklch(84% 0.165 88);
 
   --stack-white: oklch(19% 0.009 265);
   --stack-cream: oklch(25% 0.012 265);
@@ -146,9 +156,11 @@
   --diff-add: oklch(80% 0.13 150);
   --diff-cut: oklch(78% 0.13 25);
 
-  --plate-shadow:
-    0 1px 2px 0 oklch(6% 0.006 265 / 0.5),
-    0 24px 48px -32px oklch(6% 0.006 265 / 0.85);
+  /* Material dark-theme elevation (m2.material.io/design/color/dark-theme):
+     the shadow is shared with light theme (--plate-shadow in :root); height is
+     added by lightening the surface with a white overlay, which also gives the
+     shadow contrast to read against. */
+  --plate-overlay: oklch(100% 0 0 / 0.08);
 
   --tile-mix: 33%;
   --tile-1: oklch(68% 0.16 248);
@@ -311,10 +323,12 @@ select {
 
 /* ---- Page shell -------------------------------------------------------- */
 
+/* No background of its own: the page colour comes from html alone. Painting the
+   same colour on two layers can rasterise a shade apart, which showed as a hard
+   seam above the footer in dark theme. */
 .page {
   position: relative;
   z-index: 1;
-  background: var(--app-bg);
 }
 
 /* ---- Bands ------------------------------------------------------------- */
@@ -521,6 +535,10 @@ select {
   }
   .bento-item:nth-child(4) {
     grid-column: span 5;
+  }
+  /* Smaller public repos after the four featured products share one row. */
+  .bento-item:nth-child(n + 5) {
+    grid-column: span 4;
   }
 }
 
@@ -873,6 +891,33 @@ select {
   box-shadow: var(--plate-shadow);
 }
 
+:root[data-theme='dark'] .oss-plate {
+  background:
+    linear-gradient(var(--plate-overlay), var(--plate-overlay)),
+    var(--app-paper-2);
+}
+
+.oss-skeleton {
+  display: inline-block;
+  width: 2.4em;
+  height: 0.62em;
+  border-radius: var(--radius-pill);
+  background: color-mix(in oklab, var(--app-text) 14%, transparent);
+  animation: oss-skeleton-pulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes oss-skeleton-pulse {
+  to {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oss-skeleton {
+    animation: none;
+  }
+}
+
 .oss-head {
   display: flex;
   flex-wrap: wrap;
@@ -1109,6 +1154,7 @@ select {
 
 .hero-role-anim .hero-word {
   display: inline-flex;
+  vertical-align: top;
 }
 
 .hero-role-anim .hero-space {
@@ -1119,66 +1165,236 @@ select {
   overflow: hidden;
 }
 
-.hero-role-anim :is(.n, .cap-e) .clip > span,
+.hero-role-anim :is(.t, .cap-e) .clip > span,
 .hero-role-anim .i {
   perspective: 750px;
   transform-style: preserve-3d;
 }
 
-.hero-role-anim :is(.n, .cap-e) .clip > span > span {
+.hero-role-anim :is(.t, .cap-e) .clip > span > span {
   backface-visibility: hidden;
 }
 
-.hero-role-anim :is(.n, .cap-e) .clip > span > span:last-child {
+/* Swap glyphs (#, 3) are wider than their letter: clip only vertically. */
+.hero-role-anim :is(.t, .cap-e) .clip {
+  clip-path: inset(0 -0.5em);
+  overflow: visible;
+}
+
+.hero-role-anim :is(.t, .cap-e) .clip > span > span:last-child {
   bottom: 0;
-  left: 0;
+  left: 50%;
+  margin-left: -0.5em;
   position: absolute;
+  text-align: center;
   visibility: hidden;
-}
-
-.hero-role-anim .hero-tend {
-  display: inline-flex;
-  position: relative;
-}
-
-.hero-role-anim .hero-icons {
-  inset: 0;
-  overflow: hidden;
-  position: absolute;
-  visibility: hidden;
+  width: 1em;
 }
 
 .hero-role-anim .hero-icon {
-  height: 0.7em;
+  height: 0.62em;
   left: 50%;
-  margin: -0.35em 0 0 -0.35em;
+  margin: -0.31em 0 0 -0.31em;
   position: absolute;
-  top: 53%;
-  width: 0.7em;
+  top: 55%;
+  visibility: hidden;
+  width: 0.62em;
 }
 
-.hero-role-anim .hero-icon:nth-child(1) {
+.hero-role-anim .hero-icon-smile {
   color: oklch(76% 0.175 90);
 }
 
-.hero-role-anim .hero-icon:nth-child(2) {
+.hero-role-anim .hero-icon-heart {
   color: oklch(55% 0.23 27);
 }
 
-.hero-role-anim .hero-icon:nth-child(3) {
+.hero-role-anim .hero-icon-code {
   color: oklch(58% 0.19 150);
 }
 
-:root[data-theme='dark'] .hero-role-anim .hero-icon:nth-child(1) {
+:root[data-theme='dark'] .hero-role-anim .hero-icon-smile {
   color: oklch(87% 0.175 95);
 }
 
-:root[data-theme='dark'] .hero-role-anim .hero-icon:nth-child(2) {
+:root[data-theme='dark'] .hero-role-anim .hero-icon-heart {
   color: oklch(66% 0.225 27);
 }
 
-:root[data-theme='dark'] .hero-role-anim .hero-icon:nth-child(3) {
+:root[data-theme='dark'] .hero-role-anim .hero-icon-code {
   color: oklch(78% 0.19 152);
+}
+
+.hero-role-anim .hero-deco {
+  position: absolute;
+  visibility: hidden;
+}
+
+.hero-role-anim .hero-deco svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+  stroke-width: 2.25;
+}
+
+.hero-role-anim .hero-deco-component {
+  color: oklch(60% 0.2 290);
+  height: 0.5em;
+  left: -0.5em;
+  top: -0.08em;
+  width: 0.5em;
+}
+
+.hero-role-anim .hero-deco-merge {
+  bottom: -0.1em;
+  color: oklch(55% 0.23 27);
+  height: 0.24em;
+  left: 50%;
+  width: 0.24em;
+}
+
+.hero-role-anim .hero-deco-json {
+  color: oklch(76% 0.175 90);
+  height: 0.2em;
+  right: -0.16em;
+  top: -0.04em;
+  width: 0.2em;
+}
+
+.hero-role-anim .hero-deco-device {
+  color: oklch(58% 0.19 150);
+  height: 0.4em;
+  right: 18%;
+  top: -0.22em;
+  width: 0.4em;
+}
+
+.hero-role-anim .hero-deco-flask {
+  bottom: 0.04em;
+  color: oklch(60% 0.2 290);
+  height: 0.3em;
+  right: -0.4em;
+  width: 0.3em;
+}
+
+.hero-role-anim .hero-deco-database {
+  color: oklch(58% 0.19 150);
+}
+
+.hero-role-anim .hero-deco-webhook {
+  color: oklch(76% 0.175 90);
+}
+
+.hero-role-anim .hero-deco-gauge {
+  color: oklch(55% 0.23 27);
+}
+
+/* Phones keep five small icons hugging the title; desktop spreads eight. */
+@media (max-width: 47.99rem) {
+  .hero-role-anim :is(.hero-deco-database, .hero-deco-webhook, .hero-deco-gauge) {
+    display: none;
+  }
+}
+
+@media (min-width: 48rem) {
+  .hero-role-anim .hero-deco-component {
+    height: 0.72em;
+    left: -1.15em;
+    top: -0.42em;
+    width: 0.72em;
+  }
+
+  .hero-role-anim .hero-deco-database {
+    bottom: -0.62em;
+    height: 0.46em;
+    left: -0.8em;
+    width: 0.46em;
+  }
+
+  .hero-role-anim .hero-deco-json {
+    height: 0.34em;
+    left: 30%;
+    right: auto;
+    top: -0.5em;
+    width: 0.34em;
+  }
+
+  .hero-role-anim .hero-deco-merge {
+    bottom: -0.7em;
+    height: 0.4em;
+    left: 14%;
+    width: 0.4em;
+  }
+
+  .hero-role-anim .hero-deco-device {
+    height: 0.6em;
+    right: -1.05em;
+    top: -0.38em;
+    width: 0.6em;
+  }
+
+  .hero-role-anim .hero-deco-webhook {
+    height: 0.4em;
+    left: 24%;
+    top: -0.5em;
+    width: 0.4em;
+  }
+
+  .hero-role-anim .hero-deco-flask {
+    bottom: -0.56em;
+    height: 0.48em;
+    right: -0.72em;
+    width: 0.48em;
+  }
+
+  .hero-role-anim .hero-deco-gauge {
+    bottom: -0.8em;
+    height: 0.42em;
+    right: 12%;
+    width: 0.42em;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .hero-role-anim .hero-deco-component {
+    left: -0.4em;
+  }
+
+  .hero-role-anim .hero-deco-flask {
+    right: -0.32em;
+  }
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-database {
+  color: oklch(78% 0.19 152);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-webhook {
+  color: oklch(87% 0.175 95);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-gauge {
+  color: oklch(66% 0.225 27);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-component {
+  color: oklch(74% 0.17 290);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-merge {
+  color: oklch(66% 0.225 27);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-json {
+  color: oklch(87% 0.175 95);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-device {
+  color: oklch(78% 0.19 152);
+}
+
+:root[data-theme='dark'] .hero-role-anim .hero-deco-flask {
+  color: oklch(74% 0.17 290);
 }
 
 .hero-role-anim .hero-icon svg {
@@ -1250,48 +1466,160 @@ select {
   transform: translateY(68px);
   border: 2px solid var(--egg-ink);
   border-radius: var(--radius-lg);
-  background: var(--egg-shell);
-  box-shadow: var(--card-shadow) var(--card-shadow) 0 0 var(--egg-shadow);
+  /* Hazard tape around an inset plate: reads as "forbidden" at a glance. */
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--egg-hazard) 0 10px,
+    var(--egg-ink) 10px 20px
+  );
+  /* Extruded like the project bento slabs: a swept side wall in deep hazard
+     yellow, an inked edge, then the rim it sits in. Swept in steps so the
+     rounded corners never pinch. */
+  --egg-wall: color-mix(in oklab, var(--egg-hazard) 52%, var(--egg-ink));
+  --egg-rim: color-mix(in oklab, var(--accent-4) 20%, var(--app-bg));
+  --egg-depth: 8px;
+  box-shadow:
+    calc(var(--egg-depth) * 0.1) calc(var(--egg-depth) * 0.1) 0 0 var(--egg-wall),
+    calc(var(--egg-depth) * 0.2) calc(var(--egg-depth) * 0.2) 0 0 var(--egg-wall),
+    calc(var(--egg-depth) * 0.3) calc(var(--egg-depth) * 0.3) 0 0 var(--egg-wall),
+    calc(var(--egg-depth) * 0.4) calc(var(--egg-depth) * 0.4) 0 0 var(--egg-wall),
+    calc(var(--egg-depth) * 0.5) calc(var(--egg-depth) * 0.5) 0 0 var(--egg-wall),
+    calc(var(--egg-depth) * 0.6) calc(var(--egg-depth) * 0.6) 0 0 var(--egg-wall),
+    calc(var(--egg-depth) * 0.7) calc(var(--egg-depth) * 0.7) 0 0 var(--egg-wall),
+    calc(var(--egg-depth) * 0.8) calc(var(--egg-depth) * 0.8) 0 0 var(--egg-wall),
+    calc(var(--egg-depth) * 0.9) calc(var(--egg-depth) * 0.9) 0 0 var(--egg-wall),
+    var(--egg-depth) var(--egg-depth) 0 0 var(--egg-wall),
+    calc(var(--egg-depth) + 1px) calc(var(--egg-depth) + 1px) 0 0 var(--egg-ink),
+    calc(var(--egg-depth) + 2px) calc(var(--egg-depth) + 2px) 0 0 var(--egg-rim),
+    calc(var(--egg-depth) + 3px) calc(var(--egg-depth) + 3px) 0 0 var(--egg-rim);
   cursor: pointer;
   will-change: transform;
 }
 
-.footer-red-button {
-  display: grid;
-  place-items: center;
-  width: clamp(4.6rem, 18vw, 5.8rem);
-  aspect-ratio: 1;
+.footer-easter-egg::before {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border: 2px solid var(--egg-ink);
+  border-radius: calc(var(--radius-lg) - 9px);
+  background: var(--egg-shell);
+}
+
+.footer-easter-egg .footer-red-button {
+  position: relative;
+}
+
+.footer-egg-bubble {
+  position: absolute;
+  bottom: calc(100% + 0.7rem);
+  left: -0.4rem;
+  pointer-events: none;
+}
+
+/* The face sits on its own layer so the halftone below can't print over it. */
+.footer-egg-bubble > span {
+  position: relative;
+  display: block;
+  padding: 0.4rem 0.7rem;
   border: 2px solid var(--egg-ink);
   border-radius: var(--radius-pill);
+  background: var(--egg-hazard);
+  color: var(--egg-ink);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Comic halftone drop: dots in black on light, white on dark. */
+.footer-egg-bubble::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  translate: 7px 7px;
+  border-radius: var(--radius-pill);
+  /* A cast shadow drawn in ink: just pen hatching, no outline. */
+  background: var(--egg-hatch-ink) 0 0 / 24px 24px;
+}
+
+.footer-egg-bubble::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: calc(100% - 4px);
+  left: 1.1rem;
+  width: 10px;
+  height: 10px;
+  background: var(--egg-hazard);
+  border-right: 2px solid var(--egg-ink);
+  border-bottom: 2px solid var(--egg-ink);
+  rotate: 45deg;
+}
+
+.footer-red-button {
+  /* A cartoon arcade button. Every 3D edge on the panel points the same way,
+     down-right at 45°: the base slab, this collar, this cap. The cap stands
+     --button-rise proud of its collar along that same axis, so pressing it
+     slides it down-right into the collar. The cap is drawn up-left of its
+     layout box while the collar shadows sit back by the same amount, so the
+     collar never moves. */
+  --button-rise: 7px;
+  --button-wall: var(--egg-red-deep);
+  --button-shade: color-mix(in oklab, var(--egg-red) 55%, var(--egg-red-deep));
+  --collar-face: color-mix(in oklab, var(--egg-ink) 78%, white);
+  --collar-width: 7px;
+
+  display: grid;
+  place-items: center;
+  width: clamp(4.3rem, 17vw, 5.3rem);
+  aspect-ratio: 1;
+  border: 2.5px solid var(--egg-ink);
+  border-radius: var(--radius-pill);
   color: var(--egg-label);
+  /* Comic shading: hard-edged gloss blobs, no soft gradients. */
   background:
-    radial-gradient(circle at 36% 26%, rgb(255 255 255 / 0.5) 0 9%, transparent 10%),
+    radial-gradient(ellipse 16% 8% at 33% 18%, rgb(255 255 255 / 0.9) 96%, transparent 100%),
+    radial-gradient(ellipse 4% 4% at 55% 15%, rgb(255 255 255 / 0.85) 92%, transparent 100%),
     var(--egg-red);
+  translate: calc(-1 * var(--button-rise)) calc(-1 * var(--button-rise));
   box-shadow:
-    0 var(--egg-rise) 0 0 var(--egg-red-deep),
-    var(--egg-rise) var(--egg-rise) 0 0 var(--egg-shadow);
+    /* Shadow side of the dome, lit from the top-left like everything else. */
+    inset -6px -6px 0 0 var(--button-shade),
+    /* The cap's side wall, swept so the circle never pinches. */
+    calc(var(--button-rise) * 0.25) calc(var(--button-rise) * 0.25) 0 0 var(--button-wall),
+    calc(var(--button-rise) * 0.5) calc(var(--button-rise) * 0.5) 0 0 var(--button-wall),
+    calc(var(--button-rise) * 0.75) calc(var(--button-rise) * 0.75) 0 0 var(--button-wall),
+    var(--button-rise) var(--button-rise) 0 0 var(--button-wall),
+    calc(var(--button-rise) + 2px) calc(var(--button-rise) + 2px) 0 0 var(--egg-ink),
+    /* The collar: an inked ring with its own short wall, in the same direction. */
+    var(--button-rise) var(--button-rise) 0 var(--collar-width) var(--collar-face),
+    var(--button-rise) var(--button-rise) 0 calc(var(--collar-width) + 2px) var(--egg-ink),
+    calc(var(--button-rise) + 2px) calc(var(--button-rise) + 2px) 0 calc(var(--collar-width) + 2px) var(--egg-ink),
+    calc(var(--button-rise) + 4px) calc(var(--button-rise) + 4px) 0 calc(var(--collar-width) + 2px) var(--egg-ink);
   cursor: pointer;
   transition:
-    transform var(--dur-fast) var(--ease-out),
-    box-shadow var(--dur-fast) var(--ease-out);
+    translate 80ms var(--ease-out),
+    box-shadow 80ms var(--ease-out);
 }
 
 .footer-red-button:active {
-  transform: translateY(var(--egg-rise));
-  box-shadow:
-    0 0 0 0 var(--egg-red-deep),
-    0 0 0 0 var(--egg-shadow);
+  --button-rise: 1px;
 }
 
 .footer-red-button span {
   max-width: 5ch;
   font-family: var(--font-mono);
-  font-size: clamp(0.56rem, 2.1vw, 0.68rem);
-  font-weight: 700;
-  line-height: 1.2;
+  font-size: clamp(0.56rem, 2.1vw, 0.66rem);
+  font-weight: 800;
+  line-height: 1.15;
   letter-spacing: var(--track-label);
   text-transform: uppercase;
   text-align: center;
+  /* Stamped onto the cap, inked like the rest. */
+  text-shadow: 1.5px 1.5px 0 var(--egg-ink);
 }
 
 .footer-confetti-canvas {

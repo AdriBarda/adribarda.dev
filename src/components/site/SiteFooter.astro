@@ -21,8 +21,9 @@ const linkClass = [
 	<canvas class="footer-confetti-canvas" data-footer-confetti-canvas aria-hidden="true"></canvas>
 	<div class="footer-egg-zone" data-footer-egg-zone aria-hidden="true"></div>
 	<div class="footer-easter-egg" data-footer-easter-egg-panel>
+		<span class="footer-egg-bubble" data-footer-egg-bubble aria-hidden="true"><span data-footer-egg-whisper>psst…</span></span>
 		<button type="button" class="footer-red-button" data-footer-red-button aria-label="Do not press">
-			<span>DO NOT PRESS!</span>
+			<span data-footer-red-label>DO NOT PRESS!</span>
 		</button>
 	</div>
 	<div class="footer-card" data-footer-card>
@@ -73,6 +74,9 @@ const linkClass = [
 	const zone = document.querySelector<HTMLElement>('[data-footer-egg-zone]')
 	const button = document.querySelector<HTMLButtonElement>('[data-footer-red-button]')
 	const canvas = document.querySelector<HTMLCanvasElement>('[data-footer-confetti-canvas]')
+	const bubble = document.querySelector<HTMLElement>('[data-footer-egg-bubble]')
+	const whisperText = bubble?.querySelector<HTMLElement>('[data-footer-egg-whisper]')
+	const label = document.querySelector<HTMLElement>('[data-footer-red-label]')
 
 	const eggSupported = window.matchMedia('(hover: hover) and (pointer: fine)').matches && motionOK()
 
@@ -89,41 +93,115 @@ const linkClass = [
 			pending ??= load()
 		}
 
-		const fire = async () => {
-			preload()
-			await pending?.then((it) => it.fire())
-		}
-
 		const REST_Y = 68
 		const PEEK_Y = 26
 		const OPEN_Y = -80
 		const HINT_COOLDOWN = 2600
+		const AUTO_HINT_EVERY = 7000
+		const AUTO_HINT_MAX = 3
+
+		const WHISPERS = ['psst…', 'over here', 'nothing to see', 'don’t.']
+		const WARNINGS = ['DO NOT PRESS!', 'STOP.', 'I MEAN IT', 'LAST CHANCE']
 
 		let isOpen = false
+		let pressed = false
 		let lastHint = 0
+		let whisper = 0
+		let autoHints = 0
+		let autoTimer: number | undefined
+		let warnTimer: number | undefined
 
-		gsap.set(panel, { x: 0, y: REST_Y })
+		gsap.set(panel, { x: 0, y: REST_Y, transformOrigin: '50% 100%' })
+		if (bubble) gsap.set(bubble, { autoAlpha: 0, scale: 0.6, transformOrigin: '0% 100%' })
+
+		const setLabel = (text: string) => {
+			if (label) label.textContent = text
+		}
+
+		// While the button is open and ignored, the warning escalates.
+		const startWarnings = () => {
+			window.clearInterval(warnTimer)
+			let step = 0
+			warnTimer = window.setInterval(() => {
+				if (pressed || step >= WARNINGS.length - 1) return window.clearInterval(warnTimer)
+				step += 1
+				setLabel(WARNINGS[step])
+				// Wobble the words, not the cap: rotating the cap would swing its 3D edge off the 45° the rest of the panel uses.
+				if (label) gsap.fromTo(label, { rotation: -10, scale: 1.25 }, { rotation: 0, scale: 1, duration: 0.6, ease: 'elastic.out(1.2, 0.35)' })
+			}, 1400)
+		}
+
+		const stopWarnings = () => {
+			window.clearInterval(warnTimer)
+			if (!pressed) setLabel(WARNINGS[0])
+		}
+
+		const fire = async () => {
+			pressed = true
+			window.clearInterval(warnTimer)
+			setLabel('OOPS.')
+			window.setTimeout(() => {
+				pressed = false
+				setLabel(WARNINGS[0])
+			}, 2400)
+			preload()
+			await pending?.then((it) => it.fire())
+		}
 
 		const reveal = () => {
+			if (isOpen) return
 			isOpen = true
-			gsap.to(panel, { y: OPEN_Y, duration: 0.42, ease: 'back.out(1.6)', overwrite: true })
+			window.clearTimeout(autoTimer)
+			if (bubble) gsap.to(bubble, { autoAlpha: 0, scale: 0.6, duration: 0.15, overwrite: true })
+			gsap.to(panel, { y: OPEN_Y, rotation: 0, duration: 0.42, ease: 'back.out(1.6)', overwrite: true })
+			startWarnings()
 		}
 
 		const hide = () => {
 			isOpen = false
-			gsap.to(panel, { y: REST_Y, duration: 0.5, ease: 'power3.inOut', overwrite: true })
+			stopWarnings()
+			gsap.to(panel, { y: REST_Y, rotation: 0, duration: 0.5, ease: 'power3.inOut', overwrite: true })
 		}
 
+		// A peek that rattles, as if something is trying to get out, with a whisper.
 		const hint = () => {
 			const now = window.performance.now()
 			if (isOpen || now - lastHint < HINT_COOLDOWN) return
 			lastHint = now
 
-			gsap
-				.timeline({ overwrite: true })
-				.to(panel, { y: PEEK_Y, duration: 0.34, ease: 'back.out(2.2)' })
-				.to(panel, { y: REST_Y, duration: 0.62, ease: 'power2.inOut' }, '+=0.35')
+			if (whisperText) whisperText.textContent = WHISPERS[whisper++ % WHISPERS.length]
+
+			const tl = gsap
+				.timeline()
+				.to(panel, { y: PEEK_Y, duration: 0.34, ease: 'back.out(2.2)', overwrite: true })
+				.to(panel, {
+					keyframes: { rotation: [0, -5, 4, -3, 2, 0] },
+					duration: 0.5,
+					ease: 'none'
+				})
+				.to(panel, { y: REST_Y, duration: 0.62, ease: 'power2.inOut' }, '+=0.45')
+
+			if (bubble) {
+				tl.to(bubble, { autoAlpha: 1, scale: 1, duration: 0.3, ease: 'back.out(2.4)' }, 0.18)
+					.to(bubble, { autoAlpha: 0, scale: 0.6, duration: 0.2, ease: 'power2.in' }, '-=0.7')
+			}
 		}
+
+		// Nudge on its own once the footer is on screen, a few times at most.
+		const scheduleAutoHint = () => {
+			window.clearTimeout(autoTimer)
+			if (autoHints >= AUTO_HINT_MAX || isOpen) return
+			autoTimer = window.setTimeout(() => {
+				autoHints += 1
+				hint()
+				scheduleAutoHint()
+			}, autoHints === 0 ? 900 : AUTO_HINT_EVERY)
+		}
+
+		new IntersectionObserver(
+			([entry]) => (entry.isIntersecting ? scheduleAutoHint() : window.clearTimeout(autoTimer)),
+			{ threshold: 0.4 }
+		).observe(footer)
 
 		footer.addEventListener('pointerenter', hint)
 		footer.addEventListener('pointerenter', preload)

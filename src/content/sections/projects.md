@@ -7,6 +7,22 @@ eyebrow: Projects
 title: Things I build in my own time.
 summary: Products I design, build, and ship end to end, plus a few smaller things I keep in the open.
 projects:
+  - name: NoBrainer
+    tagline: A PWA that turns receipt photos into reviewed, itemized expenses and splits costs between group members.
+    stack:
+      - React
+      - TypeScript
+      - Cloudflare Workers
+      - D1
+      - Workers AI
+      - Queues
+      - Durable Objects
+    build: A React and TypeScript application using Cloudflare Queues and Workers AI for receipt extraction, and Durable Objects/WebSockets for real-time notifications.
+    highlights:
+      - Queued AI receipt extraction with Cloudflare Queues and Workers AI.
+      - Protected balances with integer-cent arithmetic, duplicate-safe saves, and retryable photo cleanup.
+    source: private
+
   - name: Archie
     tagline: A Steam price tracker that sends you a Discord DM the moment a game you want drops in price.
     stack:

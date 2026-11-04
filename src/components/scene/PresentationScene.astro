@@ -5,6 +5,14 @@ import GithubIcon from '../../assets/tech-stack/github.svg'
 import SmileIcon from 'lucide-static/icons/smile.svg'
 import HeartIcon from 'lucide-static/icons/heart.svg'
 import CodeIcon from 'lucide-static/icons/code-xml.svg'
+import ComponentIcon from 'lucide-static/icons/component.svg'
+import DeviceIcon from 'lucide-static/icons/monitor-smartphone.svg'
+import GitMergeIcon from 'lucide-static/icons/git-merge.svg'
+import FlaskIcon from 'lucide-static/icons/flask-conical.svg'
+import JsonIcon from 'lucide-static/icons/file-json.svg'
+import DatabaseIcon from 'lucide-static/icons/database.svg'
+import WebhookIcon from 'lucide-static/icons/webhook.svg'
+import GaugeIcon from 'lucide-static/icons/gauge.svg'
 
 const { group } = Astro.props as { group?: SectionGroup; index?: number }
 const entry = group?.entries[0]
@@ -18,7 +26,7 @@ const details = entry?.data.details ?? []
 const github = entry?.data.socials?.github
 const linkedin = entry?.data.socials?.linkedin
 const title = entry?.data.title ?? 'Missing presentation title.'
-const role = entry?.data.role ?? 'Frontend Engineer'
+const role = entry?.data.role ?? 'Software Engineer'
 const status = details.find((detail) => detail.label === 'Status')
 
 const ghostButton = [
@@ -57,18 +65,19 @@ const ghostButton = [
 			aria-hidden="true"
 			class="hero-role-anim pointer-events-none w-full whitespace-nowrap text-(length:--text-hero) leading-[1.02] font-semibold text-app-text"
 		>
-			<span class="hero-word hero-word-front">
-				<span class="hero-letter f"><span class="clip"><span>F</span></span></span>
-				<span class="hero-letter r"><span class="clip"><span>r</span></span></span>
-				<span class="hero-letter o"><span>o</span></span>
-				<span class="hero-letter n"><span class="clip"><span><span>n</span><span>#</span></span></span></span>
-				<span class="hero-tend">
-					<span class="hero-letter t"><span class="clip"><span>t</span></span></span>
-					<span class="hero-letter e"><span class="clip"><span>e</span></span></span>
-					<span class="hero-letter n2"><span>n</span></span>
-					<span class="hero-letter d"><span class="clip"><span>d</span></span></span>
-					<span class="hero-icons"><span class="hero-icon"><SmileIcon /></span><span class="hero-icon"><HeartIcon /></span><span class="hero-icon"><CodeIcon /></span></span>
-				</span>
+			<span class="hero-word hero-word-software">
+				<span class="hero-letter s"><span class="clip"><span>S</span></span></span>
+				<span class="hero-letter o"><span class="glyph">o</span><span class="hero-icon hero-icon-smile"><SmileIcon /></span></span>
+				<span class="hero-letter f"><span class="clip"><span>f</span></span></span>
+				<span class="hero-letter t"><span class="clip"><span><span>t</span><span>#</span></span></span></span>
+				<span class="hero-letter w"><span class="clip"><span>w</span></span></span>
+				<span class="hero-letter a"><span class="clip"><span>a</span></span><span class="hero-icon hero-icon-heart"><HeartIcon /></span></span>
+				<span class="hero-letter r"><span>r</span></span>
+				<span class="hero-letter e"><span class="clip"><span>e</span></span></span>
+				<span class="hero-deco hero-deco-component"><ComponentIcon /></span>
+				<span class="hero-deco hero-deco-merge"><GitMergeIcon /></span>
+				<span class="hero-deco hero-deco-json"><JsonIcon /></span>
+				<span class="hero-deco hero-deco-database"><DatabaseIcon /></span>
 			</span><span class="hero-space"> </span><span class="hero-word hero-word-engineer">
 				<span class="hero-letter cap-e"><span class="clip"><span><span>E</span><span>3</span></span></span></span>
 				<span class="hero-letter n3"><span class="clip"><span>n</span></span></span>
@@ -76,8 +85,12 @@ const ghostButton = [
 				<span class="hero-letter i"><span>i</span></span>
 				<span class="hero-letter n4"><span class="clip"><span>n</span></span></span>
 				<span class="hero-letter e2"><span class="clip"><span>e</span></span></span>
-				<span class="hero-letter e3"><span>e</span></span>
+				<span class="hero-letter e3"><span class="glyph">e</span><span class="hero-icon hero-icon-code"><CodeIcon /></span></span>
 				<span class="hero-letter r2"><span class="clip"><span>r</span></span></span>
+				<span class="hero-deco hero-deco-device"><DeviceIcon /></span>
+				<span class="hero-deco hero-deco-flask"><FlaskIcon /></span>
+				<span class="hero-deco hero-deco-webhook"><WebhookIcon /></span>
+				<span class="hero-deco hero-deco-gauge"><GaugeIcon /></span>
 			</span>
 		</div>
 	</div>
@@ -122,8 +135,11 @@ const ghostButton = [
 		let context: gsap.Context | undefined
 		let cleanedUp = false
 
+		let stopPointer: (() => void) | undefined
+
 		const cleanup = () => {
 			cleanedUp = true
+			stopPointer?.()
 			context?.revert()
 			window.removeEventListener('astro:before-swap', cleanup)
 		}
@@ -138,76 +154,58 @@ const ghostButton = [
 				const letter = (name: string) => select(`.hero-letter.${name}`)
 				const glyph = (name: string) => select(`.hero-letter.${name} .clip > span:first-child`)
 
-				const defaults = { duration: 0.6, ease: 'power2.out' }
-				const PACE = 1.18
+				const defaults = { duration: 0.85, ease: 'power3.out' }
+				const PACE = 0.85
 
 				gsap.set(animatedRole, { autoAlpha: 1 })
 
-				const revealF = () => gsap.timeline({ defaults })
-					.set(select('.f .clip'), { transformOrigin: '50% 100%' })
-					.from(glyph('f'), { yPercent: 100 })
-					.from(select('.f .clip'), {
+				// Icons hold a letter's slot, then hand it over to the real glyph.
+				const standIn = (name: string, swapAt: number, enterGlyph: gsap.TweenVars) => {
+					const icon = select(`.${name} .hero-icon`)
+					const target = select(`.${name} .glyph`).length ? select(`.${name} .glyph`) : glyph(name)
+
+					return gsap.timeline({ defaults })
+						.set(icon, { autoAlpha: 1 })
+						.from(icon, { scale: 0, yPercent: 90, rotationZ: -120, duration: 0.75, ease: 'back.out(1.6)' })
+						.to(icon, {
+							keyframes: { scale: [1, 1.28, 1], easeEach: 'sine.inOut' },
+							duration: 0.36
+						}, '+=0.05')
+						.to(icon, { scale: 0, yPercent: -90, rotationZ: 120, duration: 0.32, ease: 'power2.in' }, swapAt)
+						.set(icon, { autoAlpha: 0 }, swapAt + 0.32)
+						.from(target, enterGlyph, swapAt + 0.18)
+				}
+
+				const flipSwap = (name: string) => gsap.timeline({ defaults })
+					.set(select(`.${name} .clip > span > span:last-child`), { autoAlpha: 1 })
+					.from(select(`.${name} .clip > span`), { yPercent: 100, duration: 0.4 })
+					.from(select(`.${name} .clip > span > span:first-child`), { rotationY: -180, duration: 0.32 }, '+=0.3')
+					.to(select(`.${name} .clip > span > span:last-child`), { rotationY: 180, duration: 0.32 }, '<')
+
+				const revealS = () => gsap.timeline({ defaults })
+					.set(select('.s .clip'), { transformOrigin: '50% 100%' })
+					.from(glyph('s'), { yPercent: 100 })
+					.from(select('.s .clip'), {
 						rotationX: -180,
 						ease: 'back.out(1.7)',
 						duration: 1
 					}, '-=0.4')
 
-				const slideR = () => gsap.from(glyph('r'), { xPercent: 100, ...defaults })
-
-				const sweepO = () => gsap.from(letter('o'), {
-					autoAlpha: 0,
-					xPercent: 110,
-					yPercent: -100,
-					rotationZ: 320,
-					scale: 0.6,
-					duration: 1.4,
-					ease: 'back.out(1.4)'
-				})
-
-				const flipN = () => gsap.timeline({ defaults })
-					.set(select('.n .clip > span > span:last-child'), { autoAlpha: 1 })
-					.from(select('.n .clip > span'), { yPercent: 100, duration: 0.4 })
-					.from(select('.n .clip > span > span:first-child'), { rotationY: -180, duration: 0.3 }, '+=0.4')
-					.to(select('.n .clip > span > span:last-child'), { rotationY: 180, duration: 0.3 }, '<')
-
-				const iconRun = () => gsap.timeline({ defaults })
-					.set(select('.hero-icons'), { autoAlpha: 1 })
-					.fromTo(select('.hero-icon'),
-						{ xPercent: 205 },
-						{ xPercent: -205, duration: 0.95, stagger: 0.3, ease: 'power1.inOut' })
-					.to(select('.hero-icon'), {
-						keyframes: { scale: [1, 1.32, 1], easeEach: 'sine.inOut' },
-						duration: 0.3,
-						stagger: 0.3
-					}, '<0.325')
-					.set(select('.hero-icons'), { autoAlpha: 0 })
-
-				const landT = () => gsap.from(select('.t .clip > span:first-child'),
-					{ yPercent: 100, duration: 0.65, ease: 'power2.out' })
-
-				const slideEnd = () => gsap.timeline({ defaults })
-					.from(glyph('e'), { yPercent: -100 })
-					.from(letter('n2'), { autoAlpha: 0, xPercent: -100 }, '-=0.35')
-					.from(glyph('d'), { xPercent: 100 }, '-=0.35')
-
-				const flipCapE = () => gsap.timeline({ defaults })
-					.set(select('.cap-e .clip > span > span:last-child'), { autoAlpha: 1 })
-					.from(select('.cap-e .clip > span'), { yPercent: 100, duration: 0.4 })
-					.from(select('.cap-e .clip > span > span:first-child'), { rotationY: -180, duration: 0.36 }, '+=0.22')
-					.to(select('.cap-e .clip > span > span:last-child'), { rotationY: 180, duration: 0.36 }, '<')
+				const slide = (name: string, vars: gsap.TweenVars) => gsap.from(glyph(name), { ...defaults, ...vars })
 
 				const buildNg = () => gsap.timeline({ defaults })
-					.from(glyph('n3'), { xPercent: -100 })
+					.from(glyph('n3'), { yPercent: 100 })
 					.from(letter('g'), {
 						autoAlpha: 0,
+						yPercent: -70,
 						rotationZ: -120,
-						duration: 2,
+						duration: 1.6,
 						ease: 'elastic.out(1, 0.4)'
 					}, '-=0.4')
 
 				const spinI = () => gsap.timeline({ defaults })
 					.from(select('.i > span'), { autoAlpha: 0, duration: 0.1 })
-					.from(select('.i > span'), { rotationX: -450, duration: 1.3 }, '<0.14')
+					.from(select('.i > span'), { rotationX: -450, duration: 1.2 }, '<0.1')
 					// Pre-multiplied by PACE so the master timeScale cancels out: the
 					// intro speeds up with everything else, the idle loop does not.
 					.to(select('.i > span'), {
@@ -218,25 +216,88 @@ const ghostButton = [
 						ease: 'power2.inOut'
 					}, '+=2')
 
-				const finishEngineer = () => gsap.timeline({ defaults })
-					.from(glyph('n4'), { yPercent: 100 })
-					.from(glyph('e2'), { xPercent: -100 }, '-=0.35')
-					.from(letter('e3'), { autoAlpha: 0, scale: 0, duration: 0.9, ease: 'back.out(1.4)' }, '-=0.45')
-					.from(glyph('r2'), { xPercent: 100 }, '-=0.5')
+				// Coding icons scattered around the title: pop in once the letters
+				// land, then drift gently forever (durations pre-multiplied by PACE).
+				const DECO = [
+					{ name: 'component', rotate: -32, sway: 4, drift: 4.6, rise: -5, depth: 46 },
+					{ name: 'merge', rotate: 38, sway: -5, drift: 3.8, rise: -9, depth: -28 },
+					{ name: 'json', rotate: -9, sway: 6, drift: 3.4, rise: -11, depth: 18 },
+					{ name: 'device', rotate: 14, sway: -3, drift: 5, rise: -6, depth: -40 },
+					{ name: 'flask', rotate: 27, sway: 6, drift: 4.2, rise: -8, depth: 34 },
+					{ name: 'database', rotate: -21, sway: -4, drift: 4.8, rise: -7, depth: -52 },
+					{ name: 'webhook', rotate: -44, sway: 7, drift: 3.9, rise: -10, depth: 24 },
+					{ name: 'gauge', rotate: 6, sway: -7, drift: 5.4, rise: -6, depth: -36 }
+				]
 
+				const scatterDeco = () => {
+					const tl = gsap.timeline({ defaults })
+
+					DECO.forEach(({ name, rotate, sway, drift, rise }, index) => {
+						const deco = select(`.hero-deco-${name}`)
+
+						tl.set(deco, { autoAlpha: 1, rotationZ: rotate }, index * 0.18)
+							.from(deco, {
+								scale: 0,
+								yPercent: 60,
+								rotationZ: rotate - 90,
+								duration: 0.9,
+								ease: 'back.out(1.5)'
+							}, index * 0.18)
+							.to(deco, {
+								yPercent: rise,
+								rotationZ: rotate + sway,
+								duration: drift * PACE,
+								repeat: -1,
+								yoyo: true,
+								ease: 'sine.inOut'
+							}, index * 0.18 + 0.9)
+					})
+
+					return tl
+				}
+
+				// Letters cascade left to right; icons hold their slot while the
+				// next few letters arrive, then hand over to the real glyph.
 				gsap.timeline({ defaults })
-					.add(revealF(), 0)
-					.add(flipN(), 0.28)
-					.add(slideR(), 0.4)
-					.add(sweepO(), 0.5)
-					.add(iconRun(), 1.25)
-					.add(flipCapE(), 1.6)
-					.add(buildNg(), 2.05)
-					.add(spinI(), 2.6)
-					.add(landT(), 2.85)
-					.add(slideEnd(), 3.1)
-					.add(finishEngineer(), 3.2)
+					.add(revealS(), 0)
+					.add(standIn('o', 1.25, { yPercent: -90, scale: 0.5, autoAlpha: 0, duration: 0.9, ease: 'back.out(1.5)' }), 0.12)
+					.add(slide('f', { yPercent: -100 }), 0.24)
+					.add(flipSwap('t'), 0.36)
+					.add(slide('w', { yPercent: 100 }), 0.5)
+					.add(standIn('a', 1.3, { yPercent: -100, ease: 'back.out(1.4)' }), 0.62)
+					.add(slide('r', { yPercent: 110, autoAlpha: 0, duration: 0.9, ease: 'back.out(1.4)' }), 0.76)
+					.add(slide('e', { yPercent: -100 }), 0.88)
+					.add(flipSwap('cap-e'), 1.05)
+					.add(buildNg(), 1.18)
+					.add(spinI(), 1.42)
+					.add(slide('n4', { yPercent: 100 }), 1.55)
+					.add(slide('e2', { yPercent: -100 }), 1.67)
+					.add(standIn('e3', 1.25, { yPercent: 90, scale: 0.5, autoAlpha: 0, duration: 0.9, ease: 'back.out(1.5)' }), 1.78)
+					.add(slide('r2', { yPercent: 100 }), 1.92)
+					.add(scatterDeco(), 2.1)
 					.timeScale(PACE)
+
+				// Parallax: each icon leans toward (or away from) the cursor by its depth.
+				if (window.matchMedia('(pointer: fine)').matches) {
+					const movers = DECO.map(({ name, depth }) => ({
+						depth,
+						x: gsap.quickTo(select(`.hero-deco-${name}`), 'x', { duration: 0.9, ease: 'power3.out' }),
+						y: gsap.quickTo(select(`.hero-deco-${name}`), 'y', { duration: 0.9, ease: 'power3.out' })
+					}))
+
+					const onPointerMove = (event: PointerEvent) => {
+						const dx = event.clientX / window.innerWidth - 0.5
+						const dy = event.clientY / window.innerHeight - 0.5
+
+						movers.forEach(({ depth, x, y }) => {
+							x(dx * depth)
+							y(dy * depth)
+						})
+					}
+
+					window.addEventListener('pointermove', onPointerMove, { passive: true })
+					stopPointer = () => window.removeEventListener('pointermove', onPointerMove)
+				}
 			}, animatedRole)
 		})
 	}

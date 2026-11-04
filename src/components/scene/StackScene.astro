@@ -1,7 +1,18 @@
 ---
 import type { SectionGroup } from '../../content/sections'
 import SectionHead from './SectionHead.astro'
-import astroIcon from '../../assets/tech-stack/astro.svg'
+import {
+	siCloudflare,
+	siCloudflareworkers,
+	siDocker,
+	siModelcontextprotocol,
+	siNextdotjs,
+	siSpring,
+	siTailwindcss
+} from 'simple-icons'
+import BoxIcon from 'lucide-static/icons/box.svg'
+import NetworkIcon from 'lucide-static/icons/network.svg'
+import WandIcon from 'lucide-static/icons/wand-sparkles.svg'
 import vueIcon from '../../assets/tech-stack/vue.svg'
 import vitestIcon from '../../assets/tech-stack/vitest.svg'
 import viteIcon from '../../assets/tech-stack/vite.svg'
@@ -10,76 +21,87 @@ import reactIcon from '../../assets/tech-stack/react.svg'
 import playwrightIcon from '../../assets/tech-stack/playwright.svg'
 import piniaIcon from '../../assets/tech-stack/pinia.svg'
 import nodeIcon from '../../assets/tech-stack/node.svg'
-import mysqlIcon from '../../assets/tech-stack/mysql.svg'
 import javascriptIcon from '../../assets/tech-stack/javascript.svg'
 import javaIcon from '../../assets/tech-stack/java.svg'
-import expressIcon from '../../assets/tech-stack/express.svg'
-import eslintIcon from '../../assets/tech-stack/eslint.svg'
 import gitIcon from '../../assets/tech-stack/git.svg'
 import postgresqlIcon from '../../assets/tech-stack/postgresql.svg'
 import claudeCodeIcon from '../../assets/tech-stack/claude-code.svg'
 import codexIcon from '../../assets/tech-stack/codex.svg'
-import copilotIcon from '../../assets/tech-stack/copilot.svg'
 import openCodeIcon from '../../assets/tech-stack/opencode.svg'
+import type { SimpleIcon } from 'simple-icons'
 
 const { group, index = 0 } = Astro.props as { group?: SectionGroup; index?: number }
 const stack = group?.entries.find((entry) => entry.data.section === 'stack')
 
 type Level = 'Advanced' | 'Comfortable' | 'Familiar'
-type Tech = { name: string; Icon: any; level: Level }
+// Either a local SVG component, a simple-icons brand (drawn from its path), or a
+// lucide line icon for tools with no brand mark.
+type Tech = { name: string; level: Level; Icon?: any; brand?: SimpleIcon }
 
 const stackGroups: Array<{ label: string; technologies: Tech[] }> = [
 	{
-		label: 'Frontend systems',
+		label: 'Frontend',
 		technologies: [
-			{ name: 'Vue', Icon: vueIcon, level: 'Advanced' },
-			{ name: 'React', Icon: reactIcon, level: 'Comfortable' },
 			{ name: 'TypeScript', Icon: typescriptIcon, level: 'Advanced' },
 			{ name: 'JavaScript', Icon: javascriptIcon, level: 'Advanced' },
-			{ name: 'Astro', Icon: astroIcon, level: 'Comfortable' },
+			{ name: 'React', Icon: reactIcon, level: 'Comfortable' },
+			{ name: 'Vue 3', Icon: vueIcon, level: 'Advanced' },
+			{ name: 'Next.js', brand: siNextdotjs, level: 'Comfortable' },
 			{ name: 'Pinia', Icon: piniaIcon, level: 'Advanced' },
+			{ name: 'Zustand', Icon: BoxIcon, level: 'Comfortable' },
+			{ name: 'Tailwind CSS', brand: siTailwindcss, level: 'Comfortable' },
 			{ name: 'Vite', Icon: viteIcon, level: 'Comfortable' }
 		]
 	},
 	{
-		label: 'Quality and tooling',
-		technologies: [
-			{ name: 'Vitest', Icon: vitestIcon, level: 'Comfortable' },
-			{ name: 'Playwright', Icon: playwrightIcon, level: 'Comfortable' },
-			{ name: 'Git', Icon: gitIcon, level: 'Comfortable' },
-			{ name: 'ESLint', Icon: eslintIcon, level: 'Comfortable' }
-		]
-	},
-	{
-		label: 'Backend and data',
+		label: 'Backend, data & cloud',
 		technologies: [
 			{ name: 'Node.js', Icon: nodeIcon, level: 'Comfortable' },
-			{ name: 'Express', Icon: expressIcon, level: 'Comfortable' },
+			{ name: 'Java', Icon: javaIcon, level: 'Familiar' },
+			{ name: 'Spring', brand: siSpring, level: 'Familiar' },
 			{ name: 'PostgreSQL', Icon: postgresqlIcon, level: 'Comfortable' },
-			{ name: 'MySQL', Icon: mysqlIcon, level: 'Comfortable' },
-			{ name: 'Java', Icon: javaIcon, level: 'Familiar' }
+			{ name: 'REST APIs', Icon: NetworkIcon, level: 'Comfortable' },
+			{ name: 'Cloudflare Workers', brand: siCloudflareworkers, level: 'Comfortable' },
+			{ name: 'D1', brand: siCloudflare, level: 'Comfortable' },
+			{ name: 'Queues', brand: siCloudflare, level: 'Comfortable' },
+			{ name: 'Durable Objects', brand: siCloudflare, level: 'Comfortable' }
 		]
 	},
 	{
-		label: 'AI tools and agents',
+		label: 'Testing & tooling',
 		technologies: [
+			{ name: 'Playwright', Icon: playwrightIcon, level: 'Comfortable' },
+			{ name: 'Vitest', Icon: vitestIcon, level: 'Comfortable' },
+			{ name: 'Git', Icon: gitIcon, level: 'Comfortable' },
+			{ name: 'Docker', brand: siDocker, level: 'Comfortable' }
+		]
+	},
+	{
+		label: 'AI tools & integration',
+		technologies: [
+			{ name: 'Workers AI', brand: siCloudflare, level: 'Comfortable' },
 			{ name: 'Claude Code', Icon: claudeCodeIcon, level: 'Comfortable' },
 			{ name: 'Codex', Icon: codexIcon, level: 'Comfortable' },
-			{ name: 'Copilot', Icon: copilotIcon, level: 'Comfortable' },
-			{ name: 'OpenCode', Icon: openCodeIcon, level: 'Comfortable' }
+			{ name: 'OpenCode', Icon: openCodeIcon, level: 'Comfortable' },
+			{ name: 'Agent skills', Icon: WandIcon, level: 'Comfortable' },
+			{ name: 'MCP', brand: siModelcontextprotocol, level: 'Comfortable' }
 		]
 	}
 ]
 
 const filled = (level: Level) => (level === 'Advanced' ? 3 : level === 'Comfortable' ? 2 : 1)
 
-const MONO_ICONS = new Set(['Astro', 'Codex', 'Copilot', 'Express'])
+const MONO_ICONS = new Set(['Codex'])
+const LINE_ICONS = new Set(['Zustand', 'REST APIs', 'Agent skills'])
+
+// Black brand marks (Next.js, MCP) take the card text colour so they survive dark mode.
+const brandFill = (brand: SimpleIcon) => (brand.hex === '000000' ? 'currentColor' : `#${brand.hex}`)
 
 ---
 
 <div data-stack-scene class="flex w-full flex-col gap-(--space-3xl)">
 	<div class="flex flex-col items-start gap-(--space-xl)">
-		<SectionHead title={'Technologies I ship with.'} lead={stack?.data.summary && !stack.data.summary.toLowerCase().startsWith('lorem') ? stack.data.summary : 'The tools I reach for most, the ones I work with confidently in production, and the ones I can step into when a project calls for them.'} />
+		<SectionHead title={stack?.data.title || 'Technologies I ship with.'} lead={stack?.data.summary || 'The tools I use in professional work and personal projects.'} />
 
 		<button data-gravity-toggle type="button" aria-pressed="true" hidden class="gravity-toggle">
 			<span data-gravity-dot aria-hidden="true"></span>
@@ -100,7 +122,25 @@ const MONO_ICONS = new Set(['Astro', 'Codex', 'Copilot', 'Express'])
 					<ul class="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-(--space-lg)">
 						{stackGroup.technologies.map((technology) => (
 							<li data-tool class="flex items-center gap-2.5">
-								<technology.Icon aria-hidden="true" class:list={['size-7 shrink-0', MONO_ICONS.has(technology.name) && 'tech-icon-mono']} />
+								{technology.brand ? (
+									<svg
+										aria-hidden="true"
+										viewBox="0 0 24 24"
+										fill={brandFill(technology.brand)}
+										class="size-7 shrink-0 p-0.5 text-(--stack-card-text)"
+									>
+										<path d={technology.brand.path} />
+									</svg>
+								) : (
+									<technology.Icon
+										aria-hidden="true"
+										class:list={[
+											'size-7 shrink-0',
+											MONO_ICONS.has(technology.name) && 'tech-icon-mono',
+											LINE_ICONS.has(technology.name) && 'p-0.5 text-(--stack-card-text)'
+										]}
+									/>
+								)}
 								<span class="min-w-0">
 									<span class="block text-(length:--text-body) leading-tight font-medium text-(--stack-card-text)">
 										{technology.name}
@@ -140,7 +180,7 @@ const MONO_ICONS = new Set(['Astro', 'Codex', 'Copilot', 'Express'])
 	const pointerOK = window.matchMedia('(hover: hover) and (pointer: fine)').matches
 
 	if (scene && toggle && state && tools.length > 0 && motionOK() && pointerOK) {
-		const field = createPointerField(scene, tools)
+		const field = createPointerField(scene, tools, { radius: 420, pull: 30, scatter: 26 })
 
 		toggle.hidden = false
 
