@@ -8,7 +8,7 @@ title: My engineering journey.
 summary: Where I’ve worked and what I’ve contributed.
 items:
   - company: Logbook AG
-    location: Switzerland
+    location: Zurich, Switzerland
     role: Frontend Engineer
     period: May 2024 - Jul 2025
     description: Developed a logistics master data platform, taking ownership of frontend architecture, implementation, and new product features.
