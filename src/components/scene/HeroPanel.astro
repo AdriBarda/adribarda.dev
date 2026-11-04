@@ -14,11 +14,11 @@ const groupFor = (scene: number) => sectionGroups.find((group) => group.scene ==
 
 const bands = [
 	{ id: 'presentation', accent: 1, variant: 'plain', hero: true, Component: PresentationScene, scene: 1 },
-	{ id: 'experience', accent: 2, variant: 'paper', Component: ExperienceScene, scene: 2 },
-	{ id: 'stack', accent: 3, variant: 'field', Component: StackScene, scene: 3 },
-	{ id: 'projects', accent: 4, variant: 'plain', Component: ProjectsScene, scene: 4 },
-	{ id: 'open-source', accent: 5, variant: 'paper', Component: OpenSourceScene, scene: 5 },
-	{ id: 'about-me', accent: 6, variant: 'plain', Component: AboutScene, scene: 6 }
+	{ id: 'experience', accent: 2, variant: 'paper', hero: false, Component: ExperienceScene, scene: 2 },
+	{ id: 'stack', accent: 3, variant: 'field', hero: false, Component: StackScene, scene: 3 },
+	{ id: 'projects', accent: 4, variant: 'plain', hero: false, Component: ProjectsScene, scene: 4 },
+	{ id: 'open-source', accent: 5, variant: 'paper', hero: false, Component: OpenSourceScene, scene: 5 },
+	{ id: 'about-me', accent: 6, variant: 'plain', hero: false, Component: AboutScene, scene: 6 }
 ] as const
 ---
 
@@ -26,7 +26,7 @@ const bands = [
 
 {
 	bands.map(({ id, accent, variant, hero, Component, scene }, index) => (
-		<Band id={id} accent={accent} variant={variant} hero={Boolean(hero)}>
+		<Band id={id} accent={accent} variant={variant} hero={hero}>
 			<Component group={groupFor(scene)} index={index} />
 		</Band>
 	))

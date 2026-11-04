@@ -1,6 +1,6 @@
 import { glob } from 'astro/loaders'
 import { defineCollection } from 'astro:content'
-import z from 'zod'
+import { z } from 'astro/zod'
 
 const sections = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/sections' }),
